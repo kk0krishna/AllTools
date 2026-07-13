@@ -20,8 +20,14 @@ export function Footer() {
             <Link href="/#categories" className="hover:text-primary transition-colors">Categories</Link>
           </div>
         </div>
-        <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} AllTools. All rights reserved.
+        <div className="mt-8 border-t pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground gap-4">
+          <div>© {new Date().getFullYear()} AllTools. All rights reserved.</div>
+          <div className="flex items-center space-x-1">
+            <span>Built by</span>
+            <a href="https://github.com/kk0krishna" target="_blank" rel="noopener noreferrer" className="font-medium hover:text-primary transition-colors">
+              Krishna
+            </a>
+          </div>
         </div>
       </div>
     </footer>

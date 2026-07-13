@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "AllTools | Every Tool. One Place.",
   description: "A fast, modern collection of practical online tools for everyone.",
   verification: {
-    google: "pzdaEGutVsL10Sk2wEHlevvpAc9GoiDW-p-TElh6ZeY",
+    google: "4IpyiZCA8UUzZEiR-TJvvfVHj-FhZKEnTeHfWHok_ZQ",
   },
 };
 
