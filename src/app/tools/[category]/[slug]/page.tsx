@@ -56,7 +56,7 @@ export default async function ToolPage({ params }: Props) {
       <nav className="flex items-center text-sm text-muted-foreground mb-8">
         <Link href="/" className="hover:text-primary transition-colors">Home</Link>
         <ChevronRight className="h-4 w-4 mx-2" />
-        <Link href={`/category/${metadata.category}`} className="hover:text-primary transition-colors capitalize">
+        <Link href={`/categories/${metadata.category}`} className="hover:text-primary transition-colors capitalize">
           {metadata.category}
         </Link>
         <ChevronRight className="h-4 w-4 mx-2" />
