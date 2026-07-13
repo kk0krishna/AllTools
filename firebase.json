@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "alltools-cb86e",
+    "site": "alltools",
     "public": "out",
     "ignore": [
       "firebase.json",

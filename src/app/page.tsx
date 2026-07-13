@@ -2,6 +2,7 @@ import { Search, Calculator, Wallet, HeartPulse, GraduationCap, Code, FileText, 
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import { toolsRegistry } from "@/tools/registry";
 
 const CATEGORIES = [
   { name: "Calculators", icon: Calculator, color: "text-blue-500", bg: "bg-blue-500/10", href: "/category/calculators" },
@@ -14,14 +15,7 @@ const CATEGORIES = [
   { name: "Converters", icon: ArrowRightLeft, color: "text-teal-500", bg: "bg-teal-500/10", href: "/category/converters" },
 ];
 
-const TRENDING = [
-  { name: "Age Calculator", desc: "Calculate exact age in years, months, and days.", category: "calculators", slug: "age-calculator" },
-  { name: "JSON Formatter", desc: "Format, validate, and minify JSON data instantly.", category: "developer", slug: "json-formatter" },
-  { name: "BMI Calculator", desc: "Check your Body Mass Index and healthy weight range.", category: "health", slug: "bmi-calculator" },
-  { name: "EMI Calculator", desc: "Calculate your Equated Monthly Installment for loans.", category: "finance", slug: "emi-calculator" },
-  { name: "Markdown Editor", desc: "Live preview markdown editor with syntax highlighting.", category: "developer", slug: "markdown-editor" },
-  { name: "Color Picker", desc: "Pick colors and get HEX, RGB, HSL values.", category: "developer", slug: "color-picker" },
-];
+const TRENDING = toolsRegistry.slice(0, 6);
 
 export default function Home() {
   return (
@@ -69,11 +63,11 @@ export default function Home() {
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {TRENDING.map((tool) => (
-            <Link key={tool.name} href={`/tools/${tool.category}/${tool.slug}`}>
+            <Link key={tool.metadata.name} href={`/tools/${tool.metadata.category}/${tool.metadata.slug}`}>
               <Card className="hover:shadow-md transition-shadow h-full flex flex-col">
                 <CardHeader>
-                  <CardTitle className="text-xl font-heading">{tool.name}</CardTitle>
-                  <CardDescription>{tool.desc}</CardDescription>
+                  <CardTitle className="text-xl font-heading">{tool.metadata.name}</CardTitle>
+                  <CardDescription>{tool.metadata.description}</CardDescription>
                 </CardHeader>
               </Card>
             </Link>

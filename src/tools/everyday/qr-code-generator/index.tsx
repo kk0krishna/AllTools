@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { QRCodeSVG } from "qrcode.react";
 
 export function QRCodeGenerator() {
-  const [url, setUrl] = useState("https://alltools-cb86e.web.app");
+  const [url, setUrl] = useState("https://alltools.web.app");
 
   const downloadQR = () => {
     const svg = document.getElementById("qr-code-svg");
@@ -50,7 +50,7 @@ export function QRCodeGenerator() {
             <div className="bg-white p-4 rounded-xl shadow-sm">
               <QRCodeSVG 
                 id="qr-code-svg"
-                value={url || "https://alltools-cb86e.web.app"} 
+                value={url || "https://alltools.web.app"} 
                 size={200}
                 level="H"
                 includeMargin={true}
