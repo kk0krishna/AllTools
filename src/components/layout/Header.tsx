@@ -13,13 +13,10 @@ export function Header() {
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-4">
             <Link
-              href="/"
+              href="/#categories"
               className="text-sm font-medium transition-colors hover:text-primary"
             >
               Categories
-            </Link>
-            <Link href="/" className={buttonVariants({ variant: "outline", size: "sm" })}>
-              Submit Tool
             </Link>
           </nav>
         </div>

@@ -5,14 +5,9 @@ import Link from "next/link";
 import { toolsRegistry } from "@/tools/registry";
 
 const CATEGORIES = [
-  { name: "Calculators", icon: Calculator, color: "text-blue-500", bg: "bg-blue-500/10", href: "/category/calculators" },
-  { name: "Finance", icon: Wallet, color: "text-green-500", bg: "bg-green-500/10", href: "/category/finance" },
-  { name: "Health", icon: HeartPulse, color: "text-red-500", bg: "bg-red-500/10", href: "/category/health" },
-  { name: "Education", icon: GraduationCap, color: "text-yellow-500", bg: "bg-yellow-500/10", href: "/category/education" },
-  { name: "Developer", icon: Code, color: "text-purple-500", bg: "bg-purple-500/10", href: "/category/developer" },
-  { name: "Text", icon: FileText, color: "text-orange-500", bg: "bg-orange-500/10", href: "/category/text" },
-  { name: "AI", icon: Bot, color: "text-indigo-500", bg: "bg-indigo-500/10", href: "/category/ai" },
-  { name: "Converters", icon: ArrowRightLeft, color: "text-teal-500", bg: "bg-teal-500/10", href: "/category/converters" },
+  { name: "Calculators", icon: Calculator, color: "text-blue-500", bg: "bg-blue-500/10", href: "/categories/calculators" },
+  { name: "Developer", icon: Code, color: "text-purple-500", bg: "bg-purple-500/10", href: "/categories/developer" },
+  { name: "Everyday", icon: Bot, color: "text-indigo-500", bg: "bg-indigo-500/10", href: "/categories/everyday" },
 ];
 
 const TRENDING = toolsRegistry.slice(0, 6);
@@ -38,8 +33,7 @@ export default function Home() {
 
       <section className="mb-24">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold font-heading">Popular Categories</h2>
-          <Link href="/categories" className="text-primary hover:underline text-sm font-medium">View All</Link>
+          <h2 id="categories" className="text-2xl font-bold font-heading">Popular Categories</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {CATEGORIES.map((category) => (
