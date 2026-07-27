@@ -9,6 +9,30 @@
     ],
     "rewrites": [
       {
+        "source": "/pregnancy-calculator",
+        "destination": "/tools/obstetrics/pregnancy-calculator.html"
+      },
+      {
+        "source": "/edd-calculator",
+        "destination": "/tools/obstetrics/pregnancy-calculator.html"
+      },
+      {
+        "source": "/lmp-calculator",
+        "destination": "/tools/obstetrics/pregnancy-calculator.html"
+      },
+      {
+        "source": "/pregnancy-timeline",
+        "destination": "/tools/obstetrics/pregnancy-timeline.html"
+      },
+      {
+        "source": "/edd-reverse",
+        "destination": "/tools/obstetrics/edd-reverse-calculator.html"
+      },
+      {
+        "source": "/gestational-age",
+        "destination": "/tools/obstetrics/gestational-age-calculator.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

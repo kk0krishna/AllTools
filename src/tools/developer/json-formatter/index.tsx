@@ -18,8 +18,8 @@ export function JsonFormatter() {
       setError("");
       setSuccess(true);
       setTimeout(() => setSuccess(false), 2000);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e: unknown) {
+      setError((e as Error).message || "Invalid JSON");
       setSuccess(false);
     }
   };
@@ -31,8 +31,8 @@ export function JsonFormatter() {
       setError("");
       setSuccess(true);
       setTimeout(() => setSuccess(false), 2000);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e: unknown) {
+      setError((e as Error).message || "Invalid JSON");
       setSuccess(false);
     }
   };
