@@ -1,9 +1,8 @@
 import { toolsRegistry } from "@/tools/registry";
 import { notFound } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { ObstetricsCategoryDashboard } from "@/components/obstetrics/ObstetricsCategoryDashboard";
 
 // Generate static params for all categories
 export function generateStaticParams() {
@@ -28,6 +27,15 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
 
   if (categoryTools.length === 0) {
     notFound();
+  }
+
+  // Render specialized high-density clinical dashboard for Obstetrics category
+  if (resolvedParams.category === "obstetrics") {
+    return (
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <ObstetricsCategoryDashboard tools={categoryTools} />
+      </div>
+    );
   }
 
   const categoryName = resolvedParams.category.charAt(0).toUpperCase() + resolvedParams.category.slice(1);

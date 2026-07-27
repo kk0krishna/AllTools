@@ -1,4 +1,4 @@
-import { Search, Calculator, Wallet, HeartPulse, GraduationCap, Code, FileText, Bot, ArrowRightLeft } from "lucide-react";
+import { Search, Calculator, Code, Bot, Headphones, Stethoscope } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
@@ -8,9 +8,14 @@ const CATEGORIES = [
   { name: "Calculators", icon: Calculator, color: "text-blue-500", bg: "bg-blue-500/10", href: "/categories/calculators" },
   { name: "Developer", icon: Code, color: "text-purple-500", bg: "bg-purple-500/10", href: "/categories/developer" },
   { name: "Everyday", icon: Bot, color: "text-indigo-500", bg: "bg-indigo-500/10", href: "/categories/everyday" },
+  { name: "Audio", icon: Headphones, color: "text-rose-500", bg: "bg-rose-500/10", href: "/categories/audio" },
+  { name: "Obstetrics", icon: Stethoscope, color: "text-emerald-500", bg: "bg-emerald-500/10", href: "/categories/obstetrics" },
 ];
 
-const TRENDING = toolsRegistry.slice(0, 6);
+const TRENDING = [
+  ...toolsRegistry.filter((t) => t.metadata.category === "obstetrics").slice(0, 2),
+  ...toolsRegistry.filter((t) => t.metadata.category !== "obstetrics").slice(0, 4),
+];
 
 export default function Home() {
   return (
@@ -35,7 +40,7 @@ export default function Home() {
         <div className="flex items-center justify-between mb-8">
           <h2 id="categories" className="text-2xl font-bold font-heading">Popular Categories</h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
           {CATEGORIES.map((category) => (
             <Link key={category.name} href={category.href}>
               <Card className="hover:border-primary/50 transition-colors cursor-pointer group h-full">

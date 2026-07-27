@@ -1,0 +1,25 @@
+{
+  "name": "ToolVerse — Obstetric Clinical Suite & Online Tools",
+  "short_name": "ToolVerse OCS",
+  "description": "World's best FREE web-based Obstetric & Pregnancy Clinical Calculator Suite and practical utilities. Extremely fast, offline-first PWA with zero login required.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981",
+  "categories": ["medical", "education", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -52,23 +52,33 @@ export default async function ToolPage({ params }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      {/* Breadcrumbs */}
-      <nav className="flex items-center text-sm text-muted-foreground mb-8">
-        <Link href="/" className="hover:text-primary transition-colors">Home</Link>
-        <ChevronRight className="h-4 w-4 mx-2" />
-        <Link href={`/categories/${metadata.category}`} className="hover:text-primary transition-colors capitalize">
-          {metadata.category}
+      {/* Breadcrumbs - Compact on mobile, full on desktop */}
+      <nav className="mb-4 sm:mb-8">
+        {/* Mobile: Simple Back Link */}
+        <Link 
+          href={`/categories/${metadata.category}`} 
+          className="inline-flex sm:hidden items-center text-xs font-semibold text-muted-foreground hover:text-primary transition-colors bg-muted/50 px-2.5 py-1 rounded-lg border border-border/40 capitalize"
+        >
+          ← {metadata.category}
         </Link>
-        <ChevronRight className="h-4 w-4 mx-2" />
-        <span className="text-foreground font-medium">{metadata.name}</span>
+        {/* Desktop: Full Breadcrumbs */}
+        <div className="hidden sm:flex items-center text-sm text-muted-foreground">
+          <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+          <ChevronRight className="h-4 w-4 mx-2" />
+          <Link href={`/categories/${metadata.category}`} className="hover:text-primary transition-colors capitalize">
+            {metadata.category}
+          </Link>
+          <ChevronRight className="h-4 w-4 mx-2" />
+          <span className="text-foreground font-medium">{metadata.name}</span>
+        </div>
       </nav>
 
-      {/* Header */}
-      <header className="mb-12">
-        <h1 className="text-3xl md:text-5xl font-bold font-heading mb-4 text-foreground">
+      {/* Header - Tighter spacing on mobile */}
+      <header className="mb-6 sm:mb-10">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-heading mb-2 sm:mb-3 text-foreground tracking-tight">
           {metadata.name}
         </h1>
-        <p className="text-lg text-muted-foreground">
+        <p className="text-sm sm:text-lg text-muted-foreground leading-relaxed">
           {metadata.description}
         </p>
       </header>
