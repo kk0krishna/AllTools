@@ -2,6 +2,7 @@
   "hosting": {
     "site": "alltools",
     "public": "out",
+    "cleanUrls": true,
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -31,10 +32,6 @@
       {
         "source": "/gestational-age",
         "destination": "/tools/obstetrics/gestational-age-calculator.html"
-      },
-      {
-        "source": "**",
-        "destination": "/index.html"
       }
     ]
   }

@@ -15,8 +15,13 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "AllTools & OCS | Every Tool. One Place.",
-  description: "World's best FREE web-based Obstetric Clinical Suite (OCS) and fast practical online tools.",
+  metadataBase: new URL("https://alltools.web.app"),
+  title: {
+    default: "AllTools & OCS | Every Tool. One Place.",
+    template: "%s | AllTools",
+  },
+  description: "World's best FREE web-based Obstetric Clinical Suite (OCS) and fast practical online tools for developers, students, and everyday users.",
+  keywords: ["online tools", "calculators", "developer tools", "obstetrics calculator", "medical tools", "free online utilities", "AllTools"],
   manifest: "/manifest.json",
   verification: {
     google: "4IpyiZCA8UUzZEiR-TJvvfVHj-FhZKEnTeHfWHok_ZQ",
