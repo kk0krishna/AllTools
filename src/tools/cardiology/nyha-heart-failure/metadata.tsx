@@ -14,7 +14,7 @@ export const nyhaHeartFailureEntry: ToolEntry = {
     <>
       <h2>NYHA Functional Classification</h2>
       <p>
-        The NYHA Functional Classification is a widely utilized system to categorize the severity of heart failure based on a patient's physical limitations and symptom burden.
+        The NYHA Functional Classification is a widely utilized system to categorize the severity of heart failure based on a patient&apos;s physical limitations and symptom burden.
       </p>
 
       <h3>Clinical Pearls</h3>
@@ -26,7 +26,7 @@ export const nyhaHeartFailureEntry: ToolEntry = {
       <h3>Next Steps &amp; Pitfalls</h3>
       <ul>
         <li><strong>Clinical Context:</strong> The AHA/ACC guidelines recommend using the NYHA class to characterize symptom burden in Stage C and D heart failure. However, it should never be the sole metric for clinical decision-making.</li>
-        <li><strong>Objective Correlation:</strong> Always interpret a patient's NYHA class alongside objective clinical data (e.g., LVEF via echocardiogram, BNP levels, and 6-minute walk test results).</li>
+        <li><strong>Objective Correlation:</strong> Always interpret a patient&apos;s NYHA class alongside objective clinical data (e.g., LVEF via echocardiogram, BNP levels, and 6-minute walk test results).</li>
       </ul>
     </>
   ),

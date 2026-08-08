@@ -19,8 +19,8 @@ export const bishopScoreEntry: ToolEntry = {
 
       <h3>Clinical Pearls</h3>
       <ul>
-        <li><strong>Score Interpretation:</strong> A score of &ge; 8 is considered "favorable," meaning the probability of vaginal delivery is comparable to that of spontaneous labor. A score of &le; 6 is "unfavorable."</li>
-        <li><strong>Modifications:</strong> The classic Bishop Score used station relative to -3 to +3. The "Modified" version adjusts for cervical effacement measured in centimeters rather than percentages, though both are used clinically.</li>
+        <li><strong>Score Interpretation:</strong> A score of &ge; 8 is considered &quot;favorable,&quot; meaning the probability of vaginal delivery is comparable to that of spontaneous labor. A score of &le; 6 is &quot;unfavorable.&quot;</li>
+        <li><strong>Modifications:</strong> The classic Bishop Score used station relative to -3 to +3. The &quot;Modified&quot; version adjusts for cervical effacement measured in centimeters rather than percentages, though both are used clinically.</li>
       </ul>
 
       <h3>Next Steps &amp; Pitfalls</h3>

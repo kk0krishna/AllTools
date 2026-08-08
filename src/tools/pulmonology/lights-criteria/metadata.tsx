@@ -12,9 +12,9 @@ export const lightsCriteriaEntry: ToolEntry = {
   component: LightsCriteria,
   content: () => (
     <>
-      <h2>Understanding Light's Criteria</h2>
+      <h2>Understanding Light&apos;s Criteria</h2>
       <p>
-        Light's Criteria is used to accurately distinguish between exudative and transudative pleural effusions, guiding further diagnostic workup and treatment.
+        Light&apos;s Criteria is used to accurately distinguish between exudative and transudative pleural effusions, guiding further diagnostic workup and treatment.
       </p>
       
       <h3>The Criteria</h3>
@@ -27,7 +27,7 @@ export const lightsCriteriaEntry: ToolEntry = {
 
       <h3>Clinical Pearls</h3>
       <ul>
-        <li><strong>High Sensitivity:</strong> Light's criteria are highly sensitive (up to 98%) for identifying exudates, meaning it rarely misses one. However, specificity is lower (~83%), so it may misclassify a transudate as an exudate (especially in patients taking diuretics).</li>
+        <li><strong>High Sensitivity:</strong> Light&apos;s criteria are highly sensitive (up to 98%) for identifying exudates, meaning it rarely misses one. However, specificity is lower (~83%), so it may misclassify a transudate as an exudate (especially in patients taking diuretics).</li>
         <li><strong>Exudative Etiologies:</strong> Common causes include malignancy, infection (pneumonia, TB), pulmonary embolism, and inflammatory conditions.</li>
         <li><strong>Transudative Etiologies:</strong> Typically caused by systemic imbalances in hydrostatic or oncotic pressures (e.g., heart failure, cirrhosis, nephrotic syndrome).</li>
       </ul>

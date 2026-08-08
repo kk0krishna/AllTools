@@ -14,51 +14,41 @@ export function LightsCriteria({ metadata }: ToolComponentProps) {
   const [sLdh, setSLdh] = useState("");
   const [ulnLdh, setUlnLdh] = useState("200"); // Common default
 
-  const [result, setResult] = useState<{isExudate: boolean; reasons: string[]} | null>(null);
+  const pfP = parseFloat(pfProtein);
+  const sP = parseFloat(sProtein);
+  const pfL = parseFloat(pfLdh);
+  const sL = parseFloat(sLdh);
+  const uln = parseFloat(ulnLdh);
 
-  useEffect(() => {
-    const pfP = parseFloat(pfProtein);
-    const sP = parseFloat(sProtein);
-    const pfL = parseFloat(pfLdh);
-    const sL = parseFloat(sLdh);
-    const uln = parseFloat(ulnLdh);
+  const reasons: string[] = [];
+  let canEvaluate = false;
+  let isExudate = false;
 
-    const reasons: string[] = [];
-
-    // We can evaluate partial criteria if data is present
-    let canEvaluate = false;
-    let isExudate = false;
-
-    if (!isNaN(pfP) && !isNaN(sP) && sP > 0) {
-      canEvaluate = true;
-      if (pfP / sP > 0.5) {
-        isExudate = true;
-        reasons.push(`Fluid/Serum Protein ratio is > 0.5 (${(pfP/sP).toFixed(2)})`);
-      }
+  if (!isNaN(pfP) && !isNaN(sP) && sP > 0) {
+    canEvaluate = true;
+    if (pfP / sP > 0.5) {
+      isExudate = true;
+      reasons.push(`Fluid/Serum Protein ratio is > 0.5 (${(pfP/sP).toFixed(2)})`);
     }
+  }
 
-    if (!isNaN(pfL) && !isNaN(sL) && sL > 0) {
-      canEvaluate = true;
-      if (pfL / sL > 0.6) {
-        isExudate = true;
-        reasons.push(`Fluid/Serum LDH ratio is > 0.6 (${(pfL/sL).toFixed(2)})`);
-      }
+  if (!isNaN(pfL) && !isNaN(sL) && sL > 0) {
+    canEvaluate = true;
+    if (pfL / sL > 0.6) {
+      isExudate = true;
+      reasons.push(`Fluid/Serum LDH ratio is > 0.6 (${(pfL/sL).toFixed(2)})`);
     }
+  }
 
-    if (!isNaN(pfL) && !isNaN(uln) && uln > 0) {
-      canEvaluate = true;
-      if (pfL > (2/3 * uln)) {
-        isExudate = true;
-        reasons.push(`Fluid LDH is > 2/3 the upper limit of normal serum LDH`);
-      }
+  if (!isNaN(pfL) && !isNaN(uln) && uln > 0) {
+    canEvaluate = true;
+    if (pfL > (2/3 * uln)) {
+      isExudate = true;
+      reasons.push(`Fluid LDH is > 2/3 the upper limit of normal serum LDH`);
     }
+  }
 
-    if (canEvaluate) {
-      setResult({ isExudate, reasons });
-    } else {
-      setResult(null);
-    }
-  }, [pfProtein, sProtein, pfLdh, sLdh, ulnLdh]);
+  const result = canEvaluate ? { isExudate, reasons } : null;
 
   return (
     <div className="grid md:grid-cols-12 gap-8 items-start">
@@ -136,7 +126,7 @@ export function LightsCriteria({ metadata }: ToolComponentProps) {
               <div className="bg-muted p-4 rounded-xl flex gap-3 text-sm relative z-10">
                 <Info className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
                 <p className="text-muted-foreground leading-relaxed">
-                  <strong className="text-foreground">Clinical Insight:</strong> Light's criteria are highly sensitive (98%) for identifying exudates, but have lower specificity. If Light's criteria suggest exudate but clinical suspicion strongly favors transudate (like heart failure), calculating the serum-to-pleural fluid albumin gradient (gradient &gt; 1.2 g/dL suggests transudate) may be helpful.
+                  <strong className="text-foreground">Clinical Insight:</strong> Light&apos;s criteria are highly sensitive (98%) for identifying exudates, but have lower specificity. If Light&apos;s criteria suggest exudate but clinical suspicion strongly favors transudate (like heart failure), calculating the serum-to-pleural fluid albumin gradient (gradient &gt; 1.2 g/dL suggests transudate) may be helpful.
                 </p>
               </div>
             </CardContent>
@@ -147,7 +137,7 @@ export function LightsCriteria({ metadata }: ToolComponentProps) {
               <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-2 shadow-sm">
                 <Activity className="w-8 h-8 opacity-50" />
               </div>
-              <p className="max-w-xs">Enter Protein and/or LDH levels to evaluate Light's Criteria.</p>
+              <p className="max-w-xs">Enter Protein and/or LDH levels to evaluate Light&apos;s Criteria.</p>
             </CardContent>
           </Card>
         )}

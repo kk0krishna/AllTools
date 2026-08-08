@@ -25,7 +25,7 @@ export const glasgowComaScaleEntry: ToolEntry = {
 
       <h3>Next Steps &amp; Pitfalls</h3>
       <ul>
-        <li><strong>Intubation Threshold:</strong> The classic axiom "GCS less than 8, intubate" serves as a clinical heuristic for airway protection, though clinical judgment regarding airway reflexes always supersedes the raw number.</li>
+        <li><strong>Intubation Threshold:</strong> The classic axiom &quot;GCS less than 8, intubate&quot; serves as a clinical heuristic for airway protection, though clinical judgment regarding airway reflexes always supersedes the raw number.</li>
         <li><strong>Serial Monitoring:</strong> A single GCS score is less valuable than the trend. A drop of 2 or more points is considered a significant neurologic decline warranting immediate reassessment or imaging (e.g., Stat CT Head).</li>
       </ul>
     </>

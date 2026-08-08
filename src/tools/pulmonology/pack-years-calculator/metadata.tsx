@@ -14,7 +14,7 @@ export const packYearsCalculatorEntry: ToolEntry = {
     <>
       <h2>Understanding Pack Years</h2>
       <p>
-        A "pack year" is the standard clinical metric used to quantify a patient's cumulative lifetime exposure to tobacco smoke. It is a critical predictor for lung disease and malignancy risk.
+        A &quot;pack year&quot; is the standard clinical metric used to quantify a patient&apos;s cumulative lifetime exposure to tobacco smoke. It is a critical predictor for lung disease and malignancy risk.
       </p>
       
       <h3>Clinical Pearls</h3>
