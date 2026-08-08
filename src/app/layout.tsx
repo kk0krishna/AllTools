@@ -20,8 +20,8 @@ export const metadata: Metadata = {
     default: "AllTools & OCS | Every Tool. One Place.",
     template: "%s | AllTools",
   },
-  description: "World's best FREE web-based Obstetric Clinical Suite (OCS) and fast practical online tools for developers, students, and everyday users.",
-  keywords: ["online tools", "calculators", "developer tools", "obstetrics calculator", "medical tools", "free online utilities", "AllTools"],
+  description: "AllTools provides a premium, free Obstetric Clinical Suite (OCS) alongside professional-grade online tools for developers, audiophiles, and everyday users. Built with clinical precision and state-of-the-art engineering.",
+  keywords: ["online tools", "medical calculators", "obstetrics suite", "developer tools", "audio spectrum analyzer", "lossless audio checker", "free online utilities", "AllTools", "clinical calculators"],
   manifest: "/manifest.json",
   verification: {
     google: "4IpyiZCA8UUzZEiR-TJvvfVHj-FhZKEnTeHfWHok_ZQ",

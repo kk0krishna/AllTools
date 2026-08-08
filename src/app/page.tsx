@@ -25,7 +25,7 @@ export default function Home() {
           Every Tool. <span className="text-primary">One Place.</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mb-12">
-          A fast, modern, and comprehensive collection of practical online tools for everyday users, students, professionals, and developers.
+          A comprehensive, lightning-fast collection of clinical medical calculators, developer utilities, and audiophile forensics. Engineered with precision and 100% local processing for ultimate privacy.
         </p>
         <div className="w-full max-w-2xl relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />

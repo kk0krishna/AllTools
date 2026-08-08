@@ -11,8 +11,8 @@ export function Footer() {
               <Image src="/logo.png" alt="AllTools Logo" width={24} height={24} className="rounded-md grayscale opacity-80" />
               <span className="font-bold text-lg text-foreground/80">AllTools</span>
             </Link>
-            <p className="text-sm text-muted-foreground text-center md:text-left max-w-xs">
-              Every Tool. One Place. A fast, modern collection of practical online tools.
+            <p className="text-sm text-muted-foreground text-center md:text-left max-w-xs mt-2">
+              Every Tool. One Place. Built with clinical precision and state-of-the-art web engineering to deliver reliable, lightning-fast utilities.
             </p>
           </div>
           
