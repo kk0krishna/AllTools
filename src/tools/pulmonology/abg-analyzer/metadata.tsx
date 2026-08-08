@@ -14,12 +14,12 @@ export const abgAnalyzerEntry: ToolEntry = {
     <>
       <h2>Arterial Blood Gas (ABG) Interpretation</h2>
       <p>
-        ABG analysis provides critical insights into a patient's acid-base balance and oxygenation status. It is essential for evaluating complex respiratory, metabolic, and circulatory conditions.
+        ABG analysis provides critical insights into a patient&apos;s acid-base balance and oxygenation status. It is essential for evaluating complex respiratory, metabolic, and circulatory conditions.
       </p>
       
       <h3>Clinical Pearls</h3>
       <ul>
-        <li><strong>Context is Key:</strong> Always interpret results alongside the patient's clinical history. Laboratory values alone cannot diagnose the underlying etiology.</li>
+        <li><strong>Context is Key:</strong> Always interpret results alongside the patient&apos;s clinical history. Laboratory values alone cannot diagnose the underlying etiology.</li>
         <li><strong>Determine Chronicity:</strong> For respiratory acid-base disorders, calculating compensation helps differentiate between acute and chronic processes.</li>
       </ul>
 

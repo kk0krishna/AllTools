@@ -25,7 +25,7 @@ export const immunizationScheduleEntry: ToolEntry = {
 
       <h3>Next Steps &amp; Pitfalls</h3>
       <ul>
-        <li><strong>Catch-up Schedules:</strong> If a child falls behind, refer to the CDC's dedicated catch-up schedule. Do not restart a vaccine series simply because the interval was prolonged.</li>
+        <li><strong>Catch-up Schedules:</strong> If a child falls behind, refer to the CDC&apos;s dedicated catch-up schedule. Do not restart a vaccine series simply because the interval was prolonged.</li>
         <li><strong>Live Vaccines:</strong> Pay special attention to live-attenuated vaccines (e.g., MMR, Varicella, Rotavirus), which have specific contraindications (like severe immunodeficiency or pregnancy) and spacing requirements.</li>
       </ul>
       <p>

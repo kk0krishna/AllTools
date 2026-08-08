@@ -10,18 +10,14 @@ import { Activity, Info, Flame, Calendar } from "lucide-react";
 export function PackYearsCalculator({ metadata }: ToolComponentProps) {
   const [cigsPerDay, setCigsPerDay] = useState("20");
   const [yearsSmoked, setYearsSmoked] = useState("10");
-  const [packYears, setPackYears] = useState<number | null>(null);
 
-  useEffect(() => {
-    const cigs = parseFloat(cigsPerDay);
-    const years = parseFloat(yearsSmoked);
+  const cigs = parseFloat(cigsPerDay);
+  const years = parseFloat(yearsSmoked);
 
-    if (!isNaN(cigs) && !isNaN(years) && cigs >= 0 && years >= 0) {
-      setPackYears((cigs / 20) * years);
-    } else {
-      setPackYears(null);
-    }
-  }, [cigsPerDay, yearsSmoked]);
+  let packYears: number | null = null;
+  if (!isNaN(cigs) && !isNaN(years) && cigs >= 0 && years >= 0) {
+    packYears = (cigs / 20) * years;
+  }
 
   let riskCategory = "";
   let riskColor = "";

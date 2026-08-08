@@ -20,7 +20,7 @@ export const gleasonScoreEntry: ToolEntry = {
       <h3>Clinical Pearls</h3>
       <ul>
         <li><strong>Sum of Patterns:</strong> The score is the sum of the primary (most prevalent) and secondary (second most prevalent) tumor patterns. In modern practice, patterns 1 and 2 are rarely assigned, meaning total scores effectively range from 6 to 10.</li>
-        <li><strong>ISUP Grade Groups:</strong> Because a Gleason 6 represents the lowest grade of prostate cancer (with excellent prognosis), the International Society of Urological Pathology (ISUP) introduced Grade Groups (1-5). A Gleason 3+3=6 is Grade Group 1, helping to reduce patient anxiety regarding the "6" out of 10 score.</li>
+        <li><strong>ISUP Grade Groups:</strong> Because a Gleason 6 represents the lowest grade of prostate cancer (with excellent prognosis), the International Society of Urological Pathology (ISUP) introduced Grade Groups (1-5). A Gleason 3+3=6 is Grade Group 1, helping to reduce patient anxiety regarding the &quot;6&quot; out of 10 score.</li>
       </ul>
 
       <h3>Next Steps &amp; Pitfalls</h3>

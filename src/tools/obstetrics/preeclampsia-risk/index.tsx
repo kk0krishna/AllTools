@@ -55,6 +55,13 @@ function assessRisk(factors: {
   return { level, color: colors[level], aspirin: aspirinMsg, notes };
 }
 
+const CheckRow = ({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) => (
+  <label className="flex items-center gap-2 cursor-pointer select-none py-1">
+    <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="w-4 h-4 accent-red-600" />
+    <span className="text-xs">{label}</span>
+  </label>
+);
+
 export function PreeclampsiaRiskCalculator({ metadata }: ToolComponentProps) {
   const [age, setAge] = useState("");
   const [bmi, setBmi] = useState("");
@@ -80,12 +87,7 @@ export function PreeclampsiaRiskCalculator({ metadata }: ToolComponentProps) {
     setAutoimmune(false); setCkd(false); setResult(null);
   };
 
-  const CheckRow = ({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) => (
-    <label className="flex items-center gap-2 cursor-pointer select-none py-1">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="w-4 h-4 accent-red-600" />
-      <span className="text-xs">{label}</span>
-    </label>
-  );
+
 
   return (
     <div className="max-w-md mx-auto space-y-3 p-4">

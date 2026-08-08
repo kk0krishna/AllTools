@@ -12,22 +12,13 @@ export function AbgAnalyzer({ metadata }: ToolComponentProps) {
   const [pco2, setPco2] = useState("40");
   const [hco3, setHco3] = useState("24");
 
-  const [result, setResult] = useState<{
-    primary: string;
-    compensation: string;
-    expected: string;
-  } | null>(null);
+  const vPh = parseFloat(ph);
+  const vPco2 = parseFloat(pco2);
+  const vHco3 = parseFloat(hco3);
 
-  useEffect(() => {
-    const vPh = parseFloat(ph);
-    const vPco2 = parseFloat(pco2);
-    const vHco3 = parseFloat(hco3);
+  let result = null;
 
-    if (isNaN(vPh) || isNaN(vPco2) || isNaN(vHco3)) {
-      setResult(null);
-      return;
-    }
-
+  if (!isNaN(vPh) && !isNaN(vPco2) && !isNaN(vHco3)) {
     let primary = "Normal";
     let expected = "";
     let compStatus = "No compensation needed";
@@ -89,8 +80,8 @@ export function AbgAnalyzer({ metadata }: ToolComponentProps) {
       }
     }
 
-    setResult({ primary, compensation: compStatus, expected });
-  }, [ph, pco2, hco3]);
+    result = { primary, compensation: compStatus, expected };
+  }
 
   return (
     <div className="grid md:grid-cols-12 gap-8 items-start">

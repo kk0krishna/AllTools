@@ -47,7 +47,9 @@ export function IshiharaTest({ metadata }: ToolComponentProps) {
                 <Eye className="w-6 h-6 text-primary" />
                 Plate {currentPlate + 1} of {PLATES.length}
               </CardTitle>
-              <CardDescription>What number do you see in the circle below?</CardDescription>
+              <CardDescription>
+                Identify the number or path hidden in the plates. This is a digital approximation and NOT a clinical &quot;gold standard&quot; test.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-8 pt-8 flex flex-col items-center">
               {/* Fake Ishihara Plate using CSS dotted patterns */}
@@ -106,7 +108,7 @@ export function IshiharaTest({ metadata }: ToolComponentProps) {
                     <div key={plate.id} className={`flex items-start gap-3 p-3 border rounded-lg ${isCorrect ? "bg-emerald-500/5 border-emerald-500/20" : "bg-rose-500/5 border-rose-500/20"}`}>
                       {isCorrect ? <Check className="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" /> : <X className="w-5 h-5 text-rose-500 mt-0.5 shrink-0" />}
                       <div>
-                        <div className="font-semibold text-sm">Plate {idx + 1}: You answered "{answers[idx]}" (Correct: {plate.correct})</div>
+                        <div className="font-semibold text-sm">Plate {idx + 1}: You answered &quot;{answers[idx]}&quot; (Correct: {plate.correct})</div>
                         <div className="text-xs text-muted-foreground mt-1">{plate.desc}</div>
                       </div>
                     </div>
