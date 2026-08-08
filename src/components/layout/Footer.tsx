@@ -18,6 +18,7 @@ export function Footer() {
           
           <div className="flex space-x-6 text-sm font-medium text-muted-foreground">
             <Link href="/#categories" className="hover:text-primary transition-colors">Categories</Link>
+            <Link href="/contact" className="hover:text-primary transition-colors">Suggest or Request More Tools</Link>
           </div>
         </div>
         <div className="mt-8 border-t pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground gap-4">
