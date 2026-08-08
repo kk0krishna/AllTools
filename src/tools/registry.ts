@@ -30,6 +30,28 @@ import { gestationalAgeCalculatorEntry } from "./obstetrics/gestational-age-calc
 import { bishopScoreEntry } from "./obstetrics/bishop-score/metadata";
 import { preeclampsiaRiskEntry } from "./obstetrics/preeclampsia-risk/metadata";
 
+// Pulmonology
+import { packYearsCalculatorEntry } from "./pulmonology/pack-years-calculator/metadata";
+import { mmrcDyspneaScaleEntry } from "./pulmonology/mmrc-dyspnea-scale/metadata";
+import { lightsCriteriaEntry } from "./pulmonology/lights-criteria/metadata";
+import { abgAnalyzerEntry } from "./pulmonology/abg-analyzer/metadata";
+
+// Neurology
+import { glasgowComaScaleEntry } from "./neurology/glasgow-coma-scale/metadata";
+
+// Cardiology
+import { nyhaHeartFailureEntry } from "./cardiology/nyha-heart-failure/metadata";
+import { jonesCriteriaEntry } from "./cardiology/jones-criteria/metadata";
+
+// Oncology
+import { gleasonScoreEntry } from "./oncology/gleason-score/metadata";
+
+// Pediatrics
+import { immunizationScheduleEntry } from "./pediatrics/immunization-schedule/metadata";
+
+// Ophthalmology
+import { ishiharaTestEntry } from "./ophthalmology/ishihara-test/metadata";
+
 export const toolsRegistry: ToolEntry[] = [
   ageCalculatorEntry,
   bmiCalculatorEntry,
@@ -42,6 +64,16 @@ export const toolsRegistry: ToolEntry[] = [
   gestationalAgeCalculatorEntry,
   bishopScoreEntry,
   preeclampsiaRiskEntry,
+  packYearsCalculatorEntry,
+  mmrcDyspneaScaleEntry,
+  lightsCriteriaEntry,
+  abgAnalyzerEntry,
+  glasgowComaScaleEntry,
+  nyhaHeartFailureEntry,
+  jonesCriteriaEntry,
+  gleasonScoreEntry,
+  immunizationScheduleEntry,
+  ishiharaTestEntry,
 ];
 
 export function getToolBySlug(category: string, slug: string): ToolEntry | undefined {

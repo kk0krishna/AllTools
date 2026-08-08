@@ -22,7 +22,12 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground gap-4">
-          <div>© {new Date().getFullYear()} AllTools. All rights reserved.</div>
+          <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 text-xs sm:text-sm">
+            <span>© {new Date().getFullYear()} AllTools. All rights reserved.</span>
+            <Link href="/terms" className="hover:text-primary transition-colors">Terms</Link>
+            <Link href="/privacy" className="hover:text-primary transition-colors">Privacy</Link>
+            <Link href="/disclaimer" className="hover:text-primary transition-colors">Disclaimer</Link>
+          </div>
           <div className="flex items-center space-x-1.5 font-medium">
             <span>Crafted with</span>
             <span className="text-rose-500 animate-pulse">❤️</span>

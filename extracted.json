@@ -1,0 +1,617 @@
+{
+  "arterial-blood-gas-abg-analyzer.htm": {
+    "name": "Arterial Blood Gas (ABG) Analyzer",
+    "about": {
+      "evidence_based_medicine_en": "",
+      "formula_en": "<p>This tool, developed by <a href=\"https://profiles.stanford.edu/jonc101\" target=\"_blank\" rel=\"noopener\">Jonathan Chen, MD</a> first determines the primary process by looking at the pH and the PCO<sub>2</sub>. It then calculates compensations to determine chronicity, compensatory, and co-existing acid-base disturbances.</p>\n<p>These calculations use the following normal values:</p>\n<ul>\n<li>Arterial pH: 7.40</li>\n<li>P<sub>a</sub>CO<sub>2</sub>: 40 mmHg</li>\n<li>HCO<sub>3</sub><sup>-</sup>: 24 mEq/L</li>\n<li>Albumin: 4.0 g/dL</li>\n<li>Anion gap: 12 mEq/L</li>\n</ul>",
+      "more_info_en": "<h3>Metabolic Acidosis (Anion Gap)</h3>\n<p>MUDPILES</p>\n<ul>\n<li>Methanol</li>\n<li>Uremia</li>\n<li>Diabetic Ketoacidosis (check serum ketones)</li>\n<li>Propylene Glycol or Paraldehydes</li>\n<li>Isoniazid</li>\n<li>Lactic Acidosis (check serum lactate)</li>\n<li>Ethylene Glycol (anti-freeze)</li>\n<li>Salycylates</li>\n</ul>\n<p>GOLDMARK</p>\n<ul>\n<li>Glycols (ethylene or propylene)</li>\n<li>Oxoporin (reflects fatty liver damage from glutathione consumption, e.g. acetaminophen toxicity)</li>\n<li>L-Lactate</li>\n<li>D-Lactate (bacterial form)</li>\n<li>Methanol</li>\n<li>Aspirin (salicylate)</li>\n<li>Renal Failure (BUN uremia)</li>\n<li>Ketoacidosis</li>\n</ul>\n<h3>Metabolic Acidosis (Non-Anion Gap)</h3>\n<p>GI Loss</p>\n<ul>\n<li>Diarrhea / Laxatives</li>\n<li>Fistula, (pancreatic, biliary)</li>\n<li>Uretero-intestinal diversion (ileal conduit)</li>\n</ul>\n<p>Renal Loss</p>\n<ul>\n<li>Renal Tubular Acidosis (Type 1 Distal or Type 2 Proximal)</li>\n<li>Renal Failure</li>\n<li>Hyper-kalemia</li>\n</ul>\n<p>Exogenous Acid</p>\n<ul>\n<li>HCl</li>\n<li>Amino Acids</li>\n</ul>\n<p>FUSED CARS</p>\n<ul>\n<li>Fistula (pancreatic, biliary)</li>\n<li>Uretero-gastric conduit</li>\n<li>Saline admin (dilutional acidosis)</li>\n<li>Endocrine (hyper-PTH)</li>\n<li>Diarrhea</li>\n<li>Carbonic anhydrase inhibitor (acetazolamide)</li>\n<li>Ammonium chloride</li>\n<li>Renal tubular acidosis</li>\n<li>Spironolactone</li>\n</ul>\n<h3>Metabolic Alkalosis</h3>\n<p>Alkaline Input</p>\n<ul>\n<li>Bicarbonate Infusion</li>\n<li>Hemodialysis</li>\n<li>Calcium Carbonate</li>\n<li>Parenteral Nutrition</li>\n</ul>\n<p>Proton Loss</p>\n<ul>\n<li>GI Loss (vomiting, NG suction)</li>\n<li>Renal loss</li>\n<li>Diuretics</li>\n<li>Mineralocorticoids</li>\n</ul>\n<h3>Respiratory Acidosis</h3>\n<p>Airway Obstruction</p>\n<ul>\n<li>Foreign body, aspiration</li>\n<li>OSA (obstructive sleep apnea)</li>\n<li>Laryngo- or broncho-spasm</li>\n</ul>\n<p>Neuromuscular</p>\n<ul>\n<li>Myasthenia gravis</li>\n<li>Hypokalemic periodic paralysis</li>\n<li>Guillain-Barre</li>\n<li>Botulism, Tetanus</li>\n<li>Hypo-kalemia, hypo-phosphatemia</li>\n<li>Cervical spine injury</li>\n<li>Morbid obesity</li>\n<li>Polio, MS, ALS</li>\n</ul>\n<p>Central</p>\n<ul>\n<li>Drugs (opiates, sedatives)</li>\n<li>Oxygen treatment in acute hypercapnia</li>\n<li>Brain trauma or stroke</li>\n</ul>\n<p>Pulmonary</p>\n<ul>\n<li>Pulmonary edema</li>\n<li>Asthma</li>\n<li>Pneumonia</li>\n<li>ARDS</li>\n<li>COPD</li>\n<li>Pulmonary Fibrosis</li>\n<li>Mechanical Ventilation</li>\n</ul>\n<h3>Respiratory Alkalosis</h3>\n<p>Hypoxia</p>\n<ul>\n<li>High altitude</li>\n<li>CHF</li>\n<li>Pulmonary Embolism</li>\n</ul>\n<p>Lung Disease</p>\n<ul>\n<li>Pulmonary fibrosis</li>\n<li>Pulmonary edema</li>\n<li>Pneumonia</li>\n</ul>\n<p>Drugs</p>\n<ul>\n<li>Progesterone</li>\n<li>Nicotine</li>\n</ul>\n<p>Stimulation of Respiratory Drive</p>\n<ul>\n<li>Psychogenic</li>\n<li>Neurologic (pontine tumor)</li>\n<li>Sepsis</li>\n<li>Pregnancy</li>\n<li>Mechanical ventilation</li>\n</ul>",
+      "references_list": {
+        "Clinical Practice Guidelines": [],
+        "Manufacturer Website": [],
+        "Original/Primary Reference": [
+          {
+            "href": "https://thorax.bmj.com/content/63/3/289.extract",
+            "text": "Baillie JK. Simple, easily memorised 'rules of thumb' for the rapid assessment of physiological compensation for respiratory acid-base disorders. Thorax 2008;63:289-290 doi:10.1136/thx.2007.091223"
+          }
+        ],
+        "Other References": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/books/NBK138661/",
+            "text": "WHO Guidelines Arterial Blood Sampling: This 2014 source explains best practices for adequate ABG sampling.  WHO Guidelines on Drawing Blood: Best Practices in Phlebotomy. Geneva: World Health Organization; 2010. 5, Arterial blood sampling."
+          },
+          {
+            "href": "https://pubmed.ncbi.nlm.nih.gov/36176645/",
+            "text": "Fundamentals of Arterial Blood Gas Interpretation: This 2022 source provides an up-to-date systematic approach to analyzing ABG.  Yee, J., Frinak, S., Mohiuddin, N., & Uduman, J. (2022). Fundamentals of Arterial Blood Gas Interpretation. Kidney360, 3(8), 1458–1466."
+          }
+        ],
+        "Outcomes": [],
+        "Validation": [
+          {
+            "href": "https://www.thoracic.org/clinical/critical-care/clinical-education/abgs.php",
+            "text": "Kaufman DA. Interpretation of Arterial Blood Gases (ABGs). Written for Thoracic.org. Retrieved 12/9/2014."
+          }
+        ],
+        "Validations": []
+      }
+    },
+    "how_to_use": {
+      "pearls_pitfalls_en": "<p>While the analyzer can often help with analysis, the history of the patient is critical for accurate interpretation.</p>",
+      "use_case_en": "<ul>\n<li>ABG analysis is useful when diagnosing or monitoring various respiratory, metabolic, and circulatory disorders.</li>\n<li>If a respiratory process is present, ABG analysis can help indicate if the process is acute or chronic.&nbsp;</li>\n</ul>",
+      "why_use_en": "<ul>\n<li>The ABG analysis is a systematic approach that, when used in conjunction with patient history and clinical scenario, helps to determine the primary disease process and subsequently calculate any evidence of compensatory process.</li>\n<li>It also can aid in determining the chronicity of the acid-base disturbance along with any secondary or co-existing acid-base disturbances.</li>\n</ul>"
+    },
+    "next_steps": {
+      "advice_en": "<ul>\n<li>Technique matters when it comes to collecting the blood specimen.</li>\n<li>Inaccurate results may be due to obtaining a venous sample instead of an arterial sample, the presence of air bubbles in the specimen (lowering PaCO<sub>2</sub>), or a delay in analyzing the sample (lowering PaO<sub>2</sub>).&nbsp;</li>\n</ul>",
+      "critical_actions_en": "<p dir=\"ltr\"><span>1. Ensure proper sampling of blood specimen.</span></p>\n<p dir=\"ltr\"><span>2. Consider repeating ABG if results do not fit the patient history and clinical scenario.&nbsp;</span></p>\n<p dir=\"ltr\"><span>3. A venous blood gas (VBG) can also be checked to see if it correlates with ABG results (only PaO<sub>2</sub> should be different).</span></p>",
+      "management_en": "<p>Management varies significantly depending on the ABG results, <span style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;\">along with the clinical scenario.</span></p>"
+    },
+    "equation_logic": "409298954d4c09dfb27140082efaccd5"
+  },
+  "lights-criteria-exudative-effusions.htm": {
+    "name": "Light's Criteria for Exudative Effusions",
+    "about": {
+      "evidence_based_medicine_en": "<p>The original prospective study was of 150 different patients that had their respective pleural fluid studies analyzed. Pleural fluid cell counts, protein levels, and lactic dehydrogenase were collected on each. In addition, these same patients were evaluated for a diagnosis of malignant effusion, CHF, tuberculosis, pancreatitis, collagen vascular disease, PE, or Dressler&rsquo;s syndrome based on pre-set non-pleural fluid based criteria. The aforementioned Light&rsquo;s criteria in the original study was associated with more than 70% of the exudates. However, 10% of the exudates were misclassified as transudates.</p>",
+      "formula_en": "<p>Light's Criteria: Exudative Effusions will have at least one or more of the following:</p>\n<ul>\n<li>Pleural fluid protein / Serum protein &gt;0.5</li>\n<li>Pleural fluid LDH / Serum LDH &gt;0.6</li>\n<li>Pleural fluid LDH &gt; 2/3 * Serum LDH Upper Limit of Normal</li>\n</ul>",
+      "more_info_en": "<p><strong>Note</strong>: While Light's Criteria are reported to be highly sensitive for exudative effusions, their specificity for exudative effusions is only 83%. Please see table 3 to compare sensitivities and specificities of the various criteria.</p>\n<div class=\"table-responsive\">\n<table class=\"table table-bordered table-hover\">\n<tbody>\n<tr>\n<th>Light&rsquo;s Criteria</th>\n<th>Sensitivity (%)</th>\n<th>Specificity (%)</th>\n</tr>\n<tr>\n<td>Light&rsquo;s Criteria (1 or more of the following</td>\n<td>98</td>\n<td>83</td>\n</tr>\n<tr>\n<td>Pleural fluid protein / Serum protein &gt;0.5</td>\n<td>86</td>\n<td>84</td>\n</tr>\n<tr>\n<td>Pleural fluid LDH / Serum LDH &gt;0.6</td>\n<td>90</td>\n<td>82</td>\n</tr>\n<tr>\n<td>Pleural fluid LDH &gt; 2/3 * Serum LDH upper limit of normal</td>\n<td>82</td>\n<td>89</td>\n</tr>\n</tbody>\n</table>\n</div>",
+      "references_list": {
+        "Clinical Practice Guidelines": [],
+        "Manufacturer Website": [],
+        "Original/Primary Reference": [
+          {
+            "href": "https://annals.org/article.aspx?articleid=686932",
+            "text": "Light RW, et. al. Pleural Effusions: The Diagnostic Separation of Transudates and Exudates. Ann Intern Med. 1972;77:507-513. doi:10.7326/0003-4819-77-4-507"
+          }
+        ],
+        "Other References": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/18988781",
+            "text": "Ali HA, Lippmann M, Mundathaje U, Khaleeq G. Spontaneous hemothorax: a comprehensive review. Chest. Nov 2008;134(5):1056-65"
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/12075059",
+            "text": "Light RW. Clinical practice. Pleural effusion. N Engl J Med. Jun 20 2002;346(25):1971-7."
+          }
+        ],
+        "Outcomes": [],
+        "Validation": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/4757257",
+            "text": "Light RW, Erozan YS, Ball WC Jr. Cells in pleural fluid. Their value in differential diagnosis. Arch Intern Med. Dec 1973;132(6):854-60."
+          }
+        ],
+        "Validations": []
+      }
+    },
+    "how_to_use": {
+      "pearls_pitfalls_en": "<p>The following diseases typically are exudative effusions, but in certain cases may be transudative:</p>\n<ul>\n<li>Amyloidosis</li>\n<li>Chylothorax</li>\n<li>Constrictive pericarditis</li>\n<li>Malignancy</li>\n<li>Pulmonary embolism</li>\n<li>Sarcoidosis</li>\n<li>Trapped lung</li>\n</ul>\n<p>Light&rsquo;s criteria are more sensitive than specific for exudative effusions.</p>",
+      "use_case_en": "<p>Light&rsquo;s criteria can be used to determine the type of a patient&rsquo;s pleural effusion and thus its etiology.</p>",
+      "why_use_en": "<p>Calculation of Light&rsquo;s criteria provides a systematic, validated approach to evaluating pleural fluid studies. It can save the clinician significant time and avoid unnecessary additional workup. Remember, however, that Light&rsquo;s criteria is more sensitive than specific test for exudative effusions.</p>"
+    },
+    "next_steps": {
+      "advice_en": "<p>A thoracentesis is typically indicated if a clinically significant pleural effusion is present that is radiographically at least 10mm thick.</p>\n<ul>\n<li>A transudative effusion occurs due to an imbalance between the hydrostatic and oncotic pressure.</li>\n<li>An exudative effusion, however, represents an alteration of the local factors that then precipitates a pleural fluid accumulation.</li>\n</ul>",
+      "critical_actions_en": "<p>Proper diagnosis of the underlying etiology is important as the treatments for the numerous exudative and transudative etiologies differ significantly. Typically, exudative effusions require a further investigative workup which may include cytopathology studies, biopsy, or even a thoracotomy. Conversely, transudative effusions usually resolve with treatment of the underlying condition.</p>",
+      "management_en": "<ul>\n<li>Perform a diagnostic and therapeutic needle thoracentesis or chest tube drainage of pleural effusion.</li>\n<li>Obtain pleural fluid and serum studies of protein and LDH.</li>\n<li>Consider additional pleural fluid studies (cell count, differential, culture, cytology, triglycerides).</li>\n<li>Determine if pleural fluid is exudative by meeting at least one of Light&rsquo;s criteria:\n<ul>\n<li>Pleural fluid protein / Serum protein &gt;0.5</li>\n<li>Pleural fluid LDH / Serum LDH &gt;0.6</li>\n<li>Pleural fluid LDH &gt; 2/3 * Serum LDH Upper Limit of Normal</li>\n</ul>\n</li>\n<li>Review table 1 below to narrow differential:</li>\n</ul>\n<div class=\"table-responsive\">\n<table class=\"table table-bordered table-hover\">\n<tbody>\n<tr>\n<th>Exudative</th>\n<th>Transudative</th>\n</tr>\n<tr>\n<td>Malignancy</td>\n<td>Heart failure</td>\n</tr>\n<tr>\n<td>ARDS</td>\n<td>Atelectasis</td>\n</tr>\n<tr>\n<td>Meigs syndrome</td>\n<td>CSF leak into pleural space</td>\n</tr>\n<tr>\n<td>Pancreatitis</td>\n<td>Hepatic hydrothorax</td>\n</tr>\n<tr>\n<td>Eosinophilic granulomatosis with polyangiitis</td>\n<td>Hypoalbuminemia</td>\n</tr>\n<tr>\n<td>Granulomatosis with polyangiitis</td>\n<td>Nephrotic syndrome</td>\n</tr>\n<tr>\n<td>Lupus</td>\n<td>Peritoneal dialysis</td>\n</tr>\n<tr>\n<td>Lung abscess</td>\n<td>Urinothorax</td>\n</tr>\n<tr>\n<td>Chylothorax</td>\n<td></td>\n</tr>\n<tr>\n<td>Sarcoidosis</td>\n<td></td>\n</tr>\n<tr>\n<td>Hypothyroidism</td>\n<td></td>\n</tr>\n</tbody>\n</table>\n</div>\n<p></p>\n<ul>\n<li>Fluid color itself can also assist in suggesting a potential etiology as in table 2:</li>\n</ul>\n<div class=\"table-responsive\">\n<table class=\"table table-bordered table-hover\">\n<tbody>\n<tr>\n<th>Fluid Appearance/Odor</th>\n<th>Necessary Fluid Study</th>\n<th>Differential</th>\n</tr>\n<tr>\n<td>Bloody</td>\n<td>Hematocrit and RBC count</td>\n<td>Malignancy, trauma, PE, hemothorax</td>\n</tr>\n<tr>\n<td>Cloudy</td>\n<td>Triglycerides</td>\n<td>Chylothorax</td>\n</tr>\n<tr>\n<td>Putrid odor</td>\n<td>Gram stain and culture</td>\n<td>Anaerobic infection</td>\n</tr>\n</tbody>\n</table>\n</div>"
+    },
+    "equation_logic": "4c35f396048aff70a4bd2c48bb16a79a"
+  },
+  "mmrc-modified-medical-research-council-dyspnea-scale.htm": {
+    "name": "mMRC (Modified Medical Research Council) Dyspnea Scale",
+    "about": {
+      "evidence_based_medicine_en": "<p>The Medical Research Council (MRC) scale was developed in the 1950s based on questions used by healthcare providers in the Pneumoconiosis Research Unit in Cardiff, Wales, and was first referred to in a manuscript in 1952 (<a href=\"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1987525/\" target=\"_blank\" rel=\"noopener\">Fletcher 1952</a>). The original MRC scale was developed from these clinical questions and used in numerous research studies over the past 60 years. The MRC was modified in a study in 1988, generating the modified Medical Research Council (mMRC) scale.</p>\n<p>The original study of the mMRC involved 161 patients with shortness of breath at a single medical center (<a href=\"https://www.ncbi.nlm.nih.gov/pubmed/3342669\" target=\"_blank\" rel=\"noopener\">Mahler 1988</a>). Of the 161 patients, a diagnosis for their dyspnea could only be determined in 153 patients, who constituted the research cohort. Patients&rsquo; mMRC scores were compared to other dyspnea measures (BDI and OCD) and spirometric results (FEV₁, FVC, and maximum inspiratory and expiratory pressures). Inter-rater reliability of the mMRC was 98% in this study, and the mMRC was moderately to strongly correlated with the OCD and BDI indices. mMRC moderately correlated with pulmonary function measurements.</p>\n<p>A subsequent validation study of 161 patients at a single outpatient clinic in Japan demonstrated factor grouping of the mMRC with other dyspnea measurements (BDI and OCD) and healthcare related quality of life (<a href=\"https://www.ncbi.nlm.nih.gov/pubmed/9769280\" target=\"_blank\" rel=\"noopener\">Hajiro 1998</a>). Furthermore, mMRC scores moderately to strongly correlated with functional assessments of patients&rsquo; cardiopulmonary fitness (including FEV₁, <abbr title=\"Residual volume\">RV</abbr>/<abbr title=\"Total lung capacity\">TLC</abbr>, and <abbr title=\"Maximal oxygen consumption\">VO₂max</abbr>).</p>\n<p>Subsequent single center and small to moderate sized studies, have consistently demonstrated moderate correlations between the mMRC and other dyspnea scores (<a href=\"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2714566/\">Chhabra 2009</a>). mMRC scores have been shown to be highly correlated with health care associated quality of life, particularly for patients with COPD (<a href=\"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4884681/\" target=\"_blank\" rel=\"noopener\">Henoch 2016</a>). However, correlations between mMRC scores and spirometric results, ABG results, or 6 minute walk distance were not noted in some studies, such that the association between mMRC results and functional metrics is uncertain (<a href=\"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2714566/\" target=\"_blank\" rel=\"noopener\">Chhabra 2009</a>).</p>",
+      "formula_en": "<p><span>Selection of the appropriate grade:</span></p>\n<div class=\"table-responsive\">\n<table class=\"table table-bordered\">\n<tbody>\n<tr>\n<td>\n<p><strong>Grade</strong></p>\n</td>\n<td>\n<p><strong>Symptom severity</strong></p>\n</td>\n</tr>\n<tr>\n<td>\n<p><span>0</span></p>\n</td>\n<td>\n<p><span>Dyspnea only with strenuous exercise</span></p>\n</td>\n</tr>\n<tr>\n<td>\n<p><span>1</span></p>\n</td>\n<td>\n<p><span>Dyspnea when hurrying on level ground or walking up a slight hill</span></p>\n</td>\n</tr>\n<tr>\n<td>\n<p><span>2</span></p>\n</td>\n<td>\n<p><span>Walks slower than people of the same age because of dyspnea, or has to stop for breath when walking at own pace on level ground</span></p>\n</td>\n</tr>\n<tr>\n<td>\n<p><span>3</span></p>\n</td>\n<td>\n<p><span>Stops for breath after walking 100 yards (91 m) or after a few minutes on level ground</span></p>\n</td>\n</tr>\n<tr>\n<td>\n<p><span>4</span></p>\n</td>\n<td>\n<p><span>Too dyspneic to leave house or breathless when dressing</span></p>\n</td>\n</tr>\n</tbody>\n</table>\n</div>",
+      "more_info_en": "<p>Interpretation:</p>\n<p>Higher grade indicates higher severity.</p>",
+      "references_list": {
+        "Clinical Practice Guidelines": [],
+        "Manufacturer Website": [],
+        "Original/Primary Reference": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/3342669",
+            "text": "Mahler DA, Wells CK. Evaluation of clinical methods for rating dyspnea. Chest. 1988;93(3):580-6."
+          }
+        ],
+        "Other References": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/20413545",
+            "text": "Nishiyama O, Taniguchi H, Kondoh Y, et al. A simple assessment of dyspnoea as a prognostic indicator in idiopathic pulmonary fibrosis. Eur Respir J. 2010;36(5):1067-72."
+          },
+          {
+            "href": "https://bmcpulmmed.biomedcentral.com/articles/10.1186/1471-2466-12-61 ",
+            "text": "Launois C, Barbe C, Bertin E, et al. The modified Medical Research Council scale for the assessment of dyspnea in daily living in obesity: a pilot study. BMC Pulm Med. 2012;12:61."
+          },
+          {
+            "href": "https://www.nejm.org/doi/full/10.1056/NEJMoa021322",
+            "text": "Celli BR, Cote CG, Marin JM, Casanova C, de Oca MM, Mendez RA, et al. The body mass index, airflow obstruction, dyspnea, and exercise capacity index in chronic obstructive pulmonary disease. N Engl J Med. 2004;350:1005–12. "
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2714566/",
+            "text": "Chhabra SK, Gupta AK, Khuma MZ. Evaluation of three scales of dyspnea in chronic obstructive pulmonary disease. Ann Thorac Med. 2009;4(3):128-32."
+          },
+          {
+            "href": "https://www.goldcopd.com",
+            "text": "GOLD: Global Initiative for Obstructive Lung Disease Global Strategy for the Diagnosis, Management and Prevention of Chronic Obstructive Pulmonary Disease 2011 Available from: http://www.goldcopd.com Accessed August 2nd, 2017"
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1987525/ ",
+            "text": "Fletcher CM. Discussion on the diagnosis of pulmonary emphysema. Proc R Soc Med. 1952;45:576-585. "
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4884681/",
+            "text": "Henoch I, Strang S, Löfdahl CG, Ekberg-Jansson A. Health-related quality of life in a nationwide cohort of patients with COPD related to other characteristics. Eur Clin Respir J.  2016;3:31459."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/12412667",
+            "text": "Rennard S, Decramer M, Calverley PM, et al. Impact of COPD in North America and Europe in 2000: subjects’ perspective of confronting COPD International Survey. Eur Respir J. 2002;20(4):799–805."
+          }
+        ],
+        "Outcomes": [],
+        "Validation": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/9769280 ",
+            "text": "Hajiro T, Nishimura K, Tsukino M, Ikeda A, Koyama H, Izumi T. Analysis of clinical methods used to evaluate dyspnea in patients with chronic obstructive pulmonary disease. Am J Respir Crit Care Med. 1998;158(4):1185-9."
+          }
+        ],
+        "Validations": []
+      }
+    },
+    "how_to_use": {
+      "pearls_pitfalls_en": "<ul>\n<li>The mMRC Dyspnea Scale quantifies disability attributable to breathlessness, and is useful for characterizing baseline dyspnea in patients with respiratory diseases.</li>\n<li>Describes baseline dyspnea, but does not accurately quantify response to treatment of chronic obstructive pulmonary disease (COPD).</li>\n<li>Does not capture patient effort, such that dyspnea from pulmonary disease (and not behavioral responses to disability) are reflected in mMRC Dyspnea Scale scores.</li>\n<li>Does not consistently correlate with spirometric measurements (e.g. FEV₁) for patients with respiratory disease due to COPD.</li>\n<li>Demonstrates at least moderate positive correlation with other dyspnea scores, including the baseline dyspnea index (BDI) and oxygen cost diagram (OCD) (<a href=\"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2714566/\" target=\"_blank\" rel=\"noopener\">Chhabra 2009</a>).</li>\n<li>At least moderately correlated with healthcare-associated quality of life, particularly for patients with COPD (<a href=\"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4884681/\" target=\"_blank\" rel=\"noopener\">Henoch 2016</a>).</li>\n<li>Scores are variably associated with patients&rsquo; perceptions of respiratory symptom burden or disease severity (<a href=\"https://www.ncbi.nlm.nih.gov/pubmed/12412667\" target=\"_blank\" rel=\"noopener\">Rennard 2002</a>).</li>\n<li>Scores are associated with morbidity (hospitalization and adverse cardiovascular outcomes) and, in some studies, mortality.</li>\n<li>Used as a component of the <calculator id=\"3916\">BODE Index</calculator>, which predicts adverse outcomes, including mortality and risk of hospitalization (<a href=\"https://www.nejm.org/doi/full/10.1056/NEJMoa021322\" target=\"_blank\" rel=\"noopener\">Celli 2004</a>).</li>\n</ul>",
+      "use_case_en": "<p>Patients with respiratory diseases, to assess degree of baseline functional disability due to dyspnea.</p>",
+      "why_use_en": "<ul>\n<li>Easy and efficient to calculate.</li>\n<li>Provides a baseline assessment of functional impairment attributable to dyspnea from respiratory disease.</li>\n<li>Correlates with healthcare-associated quality of life, morbidity, and possibly mortality for patients with respiratory diseases (particularly COPD). &nbsp;</li>\n<li>Has been used for almost two decades in multiple different heterogeneous patient populations.</li>\n<li>Correlates with other clinical and research dyspnea indices.</li>\n<li>Inter-rater reliability is very high.</li>\n</ul>"
+    },
+    "next_steps": {
+      "advice_en": "<ul>\n<li>The mMRC Dyspnea Scale is best used to establish <em>baseline</em> functional impairment due to dyspnea attributable to respiratory disease; tracking the mMRC over time or with therapeutic interventions is of less certain clinical utility.</li>\n<li>Furthermore, while the mMRC is correlated with morbidity and mortality for patients with respiratory disease, currently-available data do not confirm attributable cause and effect between mMRC Dyspnea Scale scores and patient-centered outcomes.</li>\n</ul>",
+      "critical_actions_en": "<p>The mMRC Dyspnea Scale score must be contextualized with an individual patient&rsquo;s history, physical, and available diagnostic test results. For patients with a higher mMRC grade&nbsp;(e.g. &ge;2) and clinical circumstances consistent with respiratory disease, measuring spirometry (e.g., FEV₁ and FVC), determining the patient&rsquo;s <calculator id=\"3916\">BODE Index</calculator> and/or GOLD stage, and pursuing further targeted diagnostic and/or therapeutic interventions is appropriate.</p>",
+      "management_en": "<ul>\n<li><span>While measuring mMRC Dyspnea Scale scores in patients with respiratory disease (particularly COPD) to establish baseline functional dyspnea burden is appropriate, mMRC scores are not independently used in clinical practice to guide clinical management or therapeutic interventions. </span></li>\n<li><span>However, the Global Initiative for Obstructive Lung Disease (GOLD) treatment guidelines have, since 2011, included the mMRC as a component of a multi-faceted assessment and treatment approach to patients with COPD. </span></li>\n<li><span>A patient&rsquo;s mMRC Dyspnea Scale score, or another dyspnea measurement, such as the COPD Assessment Test (CAT), is combined with the patient&rsquo;s FEV₁ percent predicted and the frequency of COPD exacerbations to guide treatment interventions</span></li>\n</ul>"
+    },
+    "equation_logic": "360c0c59b8a7b83620e9d5e667ac1aad"
+  },
+  "pack-years-calculator.htm": {
+    "name": "Pack Years Calculator",
+    "about": {
+      "evidence_based_medicine_en": "",
+      "formula_en": "<p dir=\"ltr\">Pack years = number of packs of cigarettes smoked per day &times; number of years the patient has smoked (excluding nonsmoking years)</p>\n<p dir=\"ltr\">Note: 1 pack = 20 cigarettes.</p>\n<p dir=\"ltr\">From <a href=\"https://www.cancer.gov/dictionary?CdrID=306510\" target=\"_blank\" rel=\"noopener\">National Cancer Institute</a>.</p>",
+      "more_info_en": "<p dir=\"ltr\">Interpretation:<span id=\"docs-internal-guid-59b030d9-7fff-a944-b290-6ccdff3d3786\">&nbsp;</span></p>\n<p dir=\"ltr\">More pack years correlates with higher lung disease risk, including lung cancer. Consider screening with low-dose CT in adult patients ages 50-80 years with &ge;20 pack year history of smoking and who currently smoke or have quit within the last 15 years.&nbsp;Counsel patients on smoking cessation.</p>",
+      "references_list": {
+        "Clinical Practice Guidelines": [
+          {
+            "href": "https://www.aafp.org/afp/2014/0715/od1.html",
+            "text": "Moyer VA. Screening for lung cancer: U.S. Preventive Services Task Force recommendation statement. Ann Intern Med. 2014;160(5):330-8."
+          },
+          {
+            "href": "https://jnccn.org/view/journals/jnccn/16/4/article-p412.xml",
+            "text": "Wood DE, Kazerooni EA, Baum SL, et al. Lung Cancer Screening, Version 3.2018, NCCN Clinical Practice Guidelines in Oncology. J Natl Compr Canc Netw. 2018;16(4):412-441."
+          },
+          {
+            "href": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/lung-cancer-screening",
+            "text": "Moyer VA. Screening for lung cancer: u. S. Preventive services task force recommendation statement. Ann Intern Med. 2014;160(5):330-338."
+          }
+        ],
+        "Manufacturer Website": [
+          {
+            "href": "",
+            "text": ""
+          }
+        ],
+        "Original/Primary Reference": [
+          {
+            "href": "",
+            "text": ""
+          }
+        ],
+        "Other References": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/20029977",
+            "text": "Janjigian YY, Mcdonnell K, Kris MG, et al. Pack-years of cigarette smoking as a prognostic factor in patients with stage IIIB/IV nonsmall cell lung cancer. Cancer. 2010;116(3):670-5."
+          }
+        ],
+        "Outcomes": [
+          {
+            "href": "",
+            "text": ""
+          }
+        ],
+        "Validation": [
+          {
+            "href": "",
+            "text": ""
+          }
+        ],
+        "Validations": []
+      }
+    },
+    "how_to_use": {
+      "pearls_pitfalls_en": "",
+      "use_case_en": "<p>Patients who report any smoking history.</p>",
+      "why_use_en": "<ul>\n<li dir=\"ltr\">\n<p dir=\"ltr\">Standard clinical measure of quantifying smoking history.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\">Correlates with survival, particularly in patients with diagnosed lung cancer. In one study of patients with advanced lung cancer (stage IIIB/IV <abbr title=\"Non-small cell lung cancer\">NSCLC</abbr>),&nbsp;median overall survival was 10.8 months in patients with &gt;15 pack year history, compared to 14.6 months in those with &le;15 pack year history&nbsp;(<a href=\"https://www.ncbi.nlm.nih.gov/pubmed/20029977\" target=\"_blank\" rel=\"noopener\">Janjigian 2010</a>).</p>\n</li>\n</ul>"
+    },
+    "next_steps": {
+      "advice_en": "<p><span id=\"docs-internal-guid-31b99af7-7fff-482c-999e-e72ff3631658\">According to clinical practice guidelines, adult patients ages 50-80 years with &ge;20 pack year history of smoking and who currently smoke or have quit within the last 15 years are generally considered high risk for lung cancer and should undergo annual screening with low-dose CT &nbsp;(<a href=\"https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/lung-cancer-screening\" target=\"_blank\" rel=\"noopener\">USPSTF</a>, <a href=\"https://www.aafp.org/afp/2014/0715/od1.html\" target=\"_blank\" rel=\"noopener\">AAFP</a>, <a href=\"https://jnccn.org/view/journals/jnccn/16/4/article-p412.xml\" target=\"_blank\" rel=\"noopener\">NCCN</a>, and others).</span></p>",
+      "critical_actions_en": "",
+      "management_en": ""
+    },
+    "equation_logic": "51a613dd1fa5c640b5cb045d0f1eff97"
+  },
+  "jones-criteria-acute-rheumatic-fever-diagnosis.htm": {
+    "name": "Jones Criteria for Acute Rheumatic Fever Diagnosis",
+    "about": {
+      "evidence_based_medicine_en": "<p dir=\"ltr\">The Jones Criteria were initially created by <a href=\"https://jamanetwork.com/journals/jama/article-abstract/271116?redirect=true\" target=\"_blank\" rel=\"noopener\">Dr. T Duckett Jones in 1944</a> in an attempt to unify the varying diagnostic criteria of this disease. The &ldquo;major manifestations&rdquo; were those that would offer the least likelihood of improper diagnosis. &ldquo;Minor manifestations&rdquo; could be suggestive of but not diagnostic of ARF.</p>\n<p dir=\"ltr\">These criteria were then later updated by the <a href=\"https://www.ncbi.nlm.nih.gov/pubmed/1404745\" target=\"_blank\" rel=\"noopener\">American Heart Association (AHA) in 1992</a>, then <a href=\"https://www.ncbi.nlm.nih.gov/pubmed/25908771\" target=\"_blank\" rel=\"noopener\">revised in 2015 by the AHA</a> to include the use of doppler echocardiography. The use of certain echo findings (such as evidence of pathologic mitral regurgitation or aortic regurgitation, or morphologic valvulitis findings) are used to fulfill carditis as a major criteria, in the absence of clinical/auscultatory findings.</p>\n<p dir=\"ltr\">This 2015 revision also distinguished low risk populations (ARF incidence &lt;2 per 100,000 school aged children or all-age RHD prevalence &lt;1 per 100,000) and moderate-high risk populations, and included slightly different Jones criteria for each. In high-risk groups, subclinical carditis, monoarthritis, and polyarthralgia become major criteria, the cut-off for fever drops to 38.0C, and the cut-off for ESR drops to 30 mm/hr.</p>\n<p dir=\"ltr\">Most common &ldquo;major criteria&rdquo; found in first episode of ARF is carditis (50-70%), followed by arthritis (35-66%), chorea (10-30%), subcutaneous nodules (0-10%), erythema marginatum (&lt;6%) (<a href=\"https://www.ncbi.nlm.nih.gov/pubmed/25908771\" target=\"_blank\" rel=\"noopener\">Gewitz 2015</a>).</p>",
+      "formula_en": "<p dir=\"ltr\">Revised Jones Criteria (<a href=\"https://www.ahajournals.org/doi/pdf/10.1161/CIR.0000000000000205\" target=\"_blank\" rel=\"noopener\">Gewitz 2015</a>):</p>\n<ol>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Diagnosis for initial ARF is positive if evidence of preceding group A streptococcal (GAS) infection is present AND two major criteria (or one major and two minor criteria) from the table below are present.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Diagnosis for recurrent ARF is positive if evidence of preceding GAS infection is present, there is a previous history of ARF or established rheumatic heart disease, AND two major criteria (or one major and two minor OR three minor criteria) from the table below are present.</p>\n</li>\n</ol>\n<div dir=\"ltr\" align=\"left\">\n<table><colgroup><col><col></colgroup>\n<tbody>\n<tr>\n<td colspan=\"2\">\n<p dir=\"ltr\"><strong>Criteria</strong></p>\n</td>\n</tr>\n<tr>\n<td colspan=\"2\">\n<p dir=\"ltr\"><strong>Evidence of preceding&nbsp;GAS infection (&ge;1 of the following)</strong></p>\n</td>\n</tr>\n<tr>\n<td colspan=\"2\">\n<p dir=\"ltr\">Increased or rising anti-streptolysin O titer or other streptococcal antibodies (anti-DNASE B)</p>\n</td>\n</tr>\n<tr>\n<td colspan=\"2\">\n<p dir=\"ltr\">A positive rapid group A streptococcal carbohydrate antigen test in a child whose clinical presentation suggests a high pretest probability of streptococcal pharyngitis</p>\n</td>\n</tr>\n<tr>\n<td colspan=\"2\">\n<p dir=\"ltr\">A positive throat culture for group A &beta;-hemolytic streptococci</p>\n</td>\n</tr>\n<tr>\n<td colspan=\"2\">\n<p dir=\"ltr\"><strong>Major criteria</strong></p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\"><strong>Low-risk populations*</strong></p>\n</td>\n<td>\n<p dir=\"ltr\"><strong>Moderate- and high-risk populations</strong></p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">Carditis (clinical and/or subclinical**)</p>\n</td>\n<td>\n<p dir=\"ltr\">Carditis (clinical and/or subclinical**)</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">Arthritis (polyarthritis only)</p>\n</td>\n<td>\n<p dir=\"ltr\">Arthritis (monoarthritis or polyarthritis; polyarthralgia)</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">Chorea</p>\n</td>\n<td>\n<p dir=\"ltr\">Chorea</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">Erythema marginatum</p>\n</td>\n<td>\n<p dir=\"ltr\">Erythema marginatum</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">Subcutaneous nodules</p>\n</td>\n<td>\n<p dir=\"ltr\">Subcutaneous nodules</p>\n</td>\n</tr>\n<tr>\n<td colspan=\"2\">\n<p dir=\"ltr\"><strong>Minor criteria</strong></p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\"><strong>Low-risk populations*</strong></p>\n</td>\n<td>\n<p dir=\"ltr\"><strong>Moderate- and high-risk populations</strong></p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">Prolonged PR interval, after accounting for age variability (unless carditis is a major criterion)</p>\n</td>\n<td>\n<p dir=\"ltr\">Prolonged PR interval, after accounting for age variability (unless carditis is a major criterion)</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">Polyarthralgia</p>\n</td>\n<td>\n<p dir=\"ltr\">Monoarthralgia</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">Fever (&ge;38.5&deg;C or 101.3&deg;F)</p>\n</td>\n<td>\n<p dir=\"ltr\">Fever (&ge;38&deg;C or 100.4&deg;F)</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">ESR &ge;60 mm in the first hour and/or CRP &ge;3.0 mg/dL***</p>\n</td>\n<td>\n<p dir=\"ltr\">ESR &ge;30 mm/hr and/or CRP &ge;3.0 mg/dL***</p>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<p dir=\"ltr\">*Low-risk populations are those with ARF incidence &le;2 per 100,000 school-aged children or all-age rheumatic heart disease prevalence of &le;1 per 1000 population per year.</p>\n<p dir=\"ltr\">**Subclinical carditis indicates echocardiographic valvulitis.</p>\n<p></p>\n<p dir=\"ltr\">***CRP value must be greater than the upper limit of normal for laboratory; use peak ESR values as ESR may evolve during the course of ARF.</p>",
+      "more_info_en": "",
+      "references_list": {
+        "Clinical Practice Guidelines": [],
+        "Manufacturer Website": [],
+        "Original/Primary Reference": [
+          {
+            "href": "https://jamanetwork.com/journals/jama/article-abstract/271116?redirect=true",
+            "text": "Jones, TD. The diagnosis of rheumatic fever. JAMA. 1944;126(8):481-484."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/1404745",
+            "text": "Guidelines for the diagnosis of rheumatic fever. Jones Criteria, 1992 update. Special Writing Group of the Committee on Rheumatic Fever, Endocarditis, and Kawasaki Disease of the Council on Cardiovascular Disease in the Young of the American Heart Association. JAMA. 1992;268(15):2069-73."
+          }
+        ],
+        "Other References": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/25908771",
+            "text": "Gewitz MH, Baltimore RS, Tani LY, et al. Revision of the Jones Criteria for the diagnosis of acute rheumatic fever in the era of Doppler echocardiography: a scientific statement from the American Heart Association. Circulation. 2015;131(20):1806-18."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4898634/",
+            "text": "Kumar D, Bhutia E, Kumar P, Shankar B, Juneja A, Chandelia S. Evaluation of the American Heart Association 2015 Revised Jones Criteria Versus Existing Guidelines. Heart Asia. 2016;8:30-35."
+          }
+        ],
+        "Outcomes": [],
+        "Validation": [],
+        "Validations": []
+      }
+    },
+    "how_to_use": {
+      "pearls_pitfalls_en": "<p><span id=\"docs-internal-guid-24b77335-7fff-acaa-9a4a-2ccaf5a3b36e\"></span></p>\n<ul>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">An initial presentation of possible ARF should not be diagnosed based on minor criteria alone.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Other illnesses may mimic ARF. Laboratory evidence of an antecedent group A streptococcal (GAS) infection (i.e., streptococcal antibody titers, positive throat culture or rapid Strep test) is mandatory to establish the diagnosis.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Only GAS infections of the upper respiratory tract lead to ARF; GAS skin infections do not lead to ARF.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">A <a href=\"https://www.ncbi.nlm.nih.gov/pubmed/25908771\" target=\"_blank\" rel=\"noopener\">2015 revision</a> made modifications to the criteria, most notably providing two separate diagnostic pathways for those at low risk and those at moderate/high risk, and adding subclinical carditis as a major criterion. However, the <a href=\"https://www.ncbi.nlm.nih.gov/pubmed/1404745\" target=\"_blank\" rel=\"noopener\">1992 (original) version</a> remains popular in clinical use.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Children less than 3 years of age are unlikely to develop an autoimmune response that leads to ARF. Even with laboratory evidence of GAS infection, consider other diagnoses first. Expert consultation with pediatric infectious disease, cardiology, and/or rheumatology may be helpful.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Myocarditis without valvulitis (without new murmur or echo evidence suggestive of RHD) is unlikely to be rheumatic in origin.</p>\n</li>\n</ul>",
+      "use_case_en": "<ul>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Use in the diagnosis of suspected acute rheumatic fever (ARF).</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Diagnosis of ARF is a clinical diagnosis based on these standard diagnostic criteria.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Do not use to measure rheumatic activity, establish the diagnosis of inactive or chronic rheumatic heart disease, or to predict the course or severity of the disease.</p>\n</li>\n</ul>",
+      "why_use_en": "<p><span id=\"docs-internal-guid-33ba7867-7fff-9f5f-42f0-75cc76443bbb\"></span></p>\n<ul>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">To establish a diagnosis of initial&nbsp;or recurrent acute rheumatic fever.&nbsp;</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Failing to meet the criteria suggests that another diagnosis is more likely.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Adherence to the Jones Criteria will help prevent over-diagnosis and the long-term sequelae of over-diagnosis such as prophylactic antibiotic use, patient/family stress, and insurance concerns.</p>\n</li>\n</ul>"
+    },
+    "next_steps": {
+      "advice_en": "<p><span id=\"docs-internal-guid-af293eb1-7fff-a9c4-894a-cad98221af13\"></span></p>\n<ul>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Cases of isolated chorea, indolent carditis, or recurrent episodes of rheumatic fever are more suggestive of rheumatic fever regardless of the presence of other Jones Criteria. In these scenarios, ARF is the presumptive diagnosis until proven otherwise.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Remember that arthralgia (joint pain) is distinct from arthritis (objective findings related to inflammation such as warmth, erythema, or swelling).</p>\n</li>\n</ul>",
+      "critical_actions_en": "<p><span id=\"docs-internal-guid-547963a3-7fff-84da-4fbf-1c93e82f68dd\"></span></p>\n<ul>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Household members living with a patient with confirmed ARF should be screened and treated for GAS infection/colonization when appropriate.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">A penicillin antibiotic is typically the first line treatment for ARF (oral penicillin V or intramuscular penicillin G); amoxicillin can also be considered.</p>\n</li>\n</ul>",
+      "management_en": "<p><span id=\"docs-internal-guid-96da97a9-7fff-263a-c3c9-69490aae17b4\"></span></p>\n<ul>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">Echocardiogram is key in the evaluation of ARF, and should be performed in all cases of confirmed or suspected ARF.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\" role=\"presentation\">If the diagnosis of ARF has been made without evidence of structural heart disease, an echocardiogram and cardiology consult are still recommended.</p>\n</li>\n</ul>"
+    },
+    "equation_logic": "d3cfd3381c4e4e794b086d349420f049"
+  },
+  "new-york-heart-association-nyha-functional-classification-heart-failure.htm": {
+    "name": "New York Heart Association (NYHA) Functional Classification for Heart Failure",
+    "about": {
+      "evidence_based_medicine_en": "<p>The NYHA Classification was developed by expert consensus rather than a formal derivation study. It was introduced by the New York Heart Association to standardize descriptions of functional limitations in cardiac disease and has been carried forward in clinical practice and guidelines (<a href=\"https://pubmed.ncbi.nlm.nih.gov/14210612/\" target=\"_blank\" rel=\"noopener\">Criteria Committee of the New York Heart Association, 1964</a>). Evidence suggests that the NYHA Classification is subjective, with poor interobserver agreement (~54%) and no standardized method for assigning class (<a href=\"https://pmc.ncbi.nlm.nih.gov/articles/PMC1861501/\" target=\"_blank\" rel=\"noopener\">Raphael et al., 2007</a>). <a href=\"https://pubmed.ncbi.nlm.nih.gov/7296795/\" target=\"_blank\" rel=\"noopener\">Goldman et al. (1981)</a> showed that NYHA Classification has only modest reproducibility (~56% agreement between physicians) and limited correlation with objective exercise performance, highlighting its subjectivity.&nbsp;</p>\n<p>However, evidence does suggest predictive benefit of the score. In an analysis of 8,326 patients in PARADIGM-HF (<a href=\"https://pubmed.ncbi.nlm.nih.gov/36477809/\" target=\"_blank\" rel=\"noopener\">Rhode et al., 2023</a>), patients with NYHA Class III symptoms had higher rates of cardiovascular events (HR 1.84 compared with NYHA Class I), although earlier classes (I/II) showed greater overlap in prognosis than later classes.</p>\n<p>A literature review (<a href=\"https://pubmed.ncbi.nlm.nih.gov/12122390/\" target=\"_blank\" rel=\"noopener\">Bennett et al., 2002</a>) concluded that NYHA Class is a valid measure of functional status but has uncertain reliability and limited evidence supporting reproducibility, particularly when used as a research outcome. The authors recommend reporting how NYHA Class is assigned and caution against using it as the sole measure of change in clinical studies.&nbsp;</p>\n<p>A systematic review (<a href=\"https://www.sciencedirect.com/science/article/pii/S2772632025000339\" target=\"_blank\" rel=\"noopener\">Stamp et al., 2025</a>) found that NYHA Classification predicts functional limitation in heart failure but has limited evidence in certain subtypes and variable reproducibility. The authors emphasize the need for clearer, more objective definitions or complementary measures to improve consistency in assigning functional class.</p>\n<p>Overall, the <a href=\"https://pubmed.ncbi.nlm.nih.gov/35363499/\" target=\"_blank\" rel=\"noopener\">2022 AHA/ACC/HFSA guideline</a> recommends using NYHA Classification to characterize symptom burden in patients with symptomatic (Stage C&ndash;D) heart failure, recognizing that it is a subjective assessment that can change over time. NYHA Class remains widely used to guide therapy eligibility and assess prognosis but should be interpreted alongside objective clinical data.</p>",
+      "formula_en": "<p></p>\n<div dir=\"ltr\">\n<table><colgroup><col width=\"*\"><col width=\"*\"></colgroup>\n<tbody>\n<tr>\n<td>\n<p dir=\"ltr\"><b>NYHA Heart Failure Classification</b></p>\n</td>\n<td>\n<p dir=\"ltr\"><strong>Criteria</strong></p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">Class I</p>\n</td>\n<td>\n<p dir=\"ltr\">No limitation of physical activity; ordinary physical activity does not cause undue fatigue, palpitation, or dyspnea</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">Class II</p>\n</td>\n<td>\n<p dir=\"ltr\">Slight limitation of physical activity; comfortable at rest; ordinary physical activity results in fatigue, palpitation, or dyspnea</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">Class III</p>\n</td>\n<td>\n<p dir=\"ltr\">Marked limitation of physical activity; comfortable at rest; less than ordinary activity causes fatigue, palpitation, or dyspnea</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">Class IV</p>\n</td>\n<td>\n<p dir=\"ltr\">Unable to carry on any physical activity without discomfort; symptoms of heart failure at rest; if any physical activity is undertaken, discomfort increases</p>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<p></p>",
+      "more_info_en": "",
+      "references_list": {
+        "Clinical Practice Guidelines": [
+          {
+            "href": "",
+            "text": ""
+          },
+          {
+            "href": "https://pubmed.ncbi.nlm.nih.gov/35363499/",
+            "text": "Heidenreich PA, Bozkurt B, Aguilar D, et al. 2022 AHA/ACC/HFSA Guideline for the Management of Heart Failure: A Report of the American College of Cardiology/American Heart Association Joint Committee on Clinical Practice Guidelines. Circulation. 2022;145:e895–e1032. doi:10.1161/CIR.0000000000001063."
+          }
+        ],
+        "Manufacturer Website": [
+          {
+            "href": "",
+            "text": ""
+          }
+        ],
+        "Original/Primary Reference": [
+          {
+            "href": "https://pubmed.ncbi.nlm.nih.gov/14210612/",
+            "text": "Kossman CE. Nomenclature and criteria for the diagnosis of cardiovascular diseases. Circulation. 1964;30(3):321-325. doi:10.1161/01.CIR.30.3.321."
+          }
+        ],
+        "Other References": [
+          {
+            "href": null,
+            "text": null
+          },
+          {
+            "href": "https://pubmed.ncbi.nlm.nih.gov/12122390/",
+            "text": "Bennett JA, Riegel B, Bittner V, Nichols J. Validity and reliability of the NYHA classes for measuring research outcomes in patients with cardiac disease. Heart Lung. 2002;31(4):262–270. PMID: 12122390."
+          },
+          {
+            "href": "https://www.sciencedirect.com/science/article/pii/S2772632025000339",
+            "text": "Stamp KD, Prasun MA, McCoy TP, Rathman L. Utility of the New York Heart Association functional classification compared to other measures: A systematic review. Health Sciences Review. 2025;17:100241. doi:10.1016/j.hsr.2025.100241."
+          }
+        ],
+        "Outcomes": [
+          {
+            "href": "",
+            "text": ""
+          }
+        ],
+        "Validation": [
+          {
+            "href": "",
+            "text": ""
+          },
+          {
+            "href": "https://pubmed.ncbi.nlm.nih.gov/7296795/",
+            "text": "Goldman L, Hashimoto B, Cook EF, Loscalzo A. Comparative reproducibility and validity of systems for assessing cardiovascular functional class: advantages of a new specific activity scale. Circulation. 1981;64:1227–1234."
+          },
+          {
+            "href": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1861501/",
+            "text": "Raphael C, Briscoe C, Davies J, et al. Limitations of the New York Heart Association functional classification system and self-reported walking distances in chronic heart failure. Heart. 2007;93:476–482."
+          },
+          {
+            "href": "https://pubmed.ncbi.nlm.nih.gov/36477809/",
+            "text": "Rhode, LE, Zimerman A, Vaduganathan M, et al. Associations Between New York Heart Association Classification, Objective Measures, and Long-term Prognosis in Mild Heart Failure: A Secondary Analysis of the PARADIGM-HF Trial. JAMA Cardiol. 2023 Feb 1;8(2):150-158."
+          }
+        ],
+        "Validations": []
+      }
+    },
+    "how_to_use": {
+      "pearls_pitfalls_en": "<ul>\n<li>Subjective, relying on patient-reported symptoms and clinician interpretation</li>\n<li>Shows only moderate interobserver agreement (56% according to <a href=\"https://www.ncbi.nlm.nih.gov/pubmed/7296795/\" target=\"_blank\" rel=\"noopener\">Goldman et al., 1981</a>); variability may impact risk stratification.</li>\n<li>Persists as a common clinical and research standard due to its simplicity and historical use.</li>\n<li>Functional class is not necessarily linked to a specific treatment strategy; the more modern <calculator id=\"3826\">ACC/AHA Heart Failure Staging</calculator> is one attempt to bridge the gap.</li>\n<li>Use with caution in patients with noncardiac limitations in functional capacity (e.g., arthritis).</li>\n<li>May be less reliable in patients with heart failure with preserved ejection fraction (HFpEF), where symptoms may not correlate well with objective measures of cardiac function.</li>\n<li>Useful for broad, general stratification of functional status in heart failure, but not for precise assessment or short-term monitoring.</li>\n</ul>",
+      "use_case_en": "<ul>\n<li>Use in patients with signs and symptoms of heart failure.</li>\n<li>Reassess periodically as clinical status changes.</li>\n</ul>",
+      "why_use_en": "<p>Quickly assesses symptom burden and functional limitation in patients with heart failure, helping guide prognosis, inform treatment discussions, and standardize communication across clinicians and clinical trials.</p>"
+    },
+    "next_steps": {
+      "advice_en": "<p>Management decisions should not rely on NYHA Class alone.</p>\n<ul>\n<li>Use alongside clinical context, objective measures of heart failure severity, and additional functional capacity data, and other classification methods (e.g., ACC/AHA staging); examples of additional data may include:<br>\n<ul>\n<li>Echocardiographic measures (e.g., ejection fraction).</li>\n<li>Biomarkers (e.g., BNP or NT-proBNP).</li>\n<li>Exercise capacity (e.g., 6-minute walk test).</li>\n<li>Patient-reported outcomes (e.g., Kansas City Cardiomyopathy Questionnaire).</li>\n</ul>\n</li>\n<li>Classification may help guide therapy intensification and support comprehensive evaluation for advanced therapies.</li>\n</ul>",
+      "critical_actions_en": "<p>Clinical decision-making should prioritize identification of decompensated heart failure or high-risk features that may provide important additional clinical context.</p>",
+      "management_en": "<ul>\n<li>Use results to contextualize symptom burden and help guide heart failure management.&nbsp;</li>\n<li>Results can help assess functional limitations, which are important when considering therapies, such as cardiac resynchronization therapy, certain guideline-directed medical therapies, and advanced heart failure therapies.&nbsp;</li>\n</ul>"
+    },
+    "equation_logic": "a3de6cf1f1ad4c620d610746902f92e9"
+  },
+  "glasgow-coma-scale-score-gcs.htm": {
+    "name": "Glasgow Coma Scale (GCS)",
+    "about": {
+      "evidence_based_medicine_en": "<ul>\n<li>The Modified Glasgow Coma Scale (the 15-point scale that has been widely adopted, including by the original unit in Glasgow, as opposed to the 14 point original GCS Scale) was developed to be used in a repeated manner in the inpatient setting to assess and communicate changes in mental status and to measure the duration of coma (<a href=\"https://www.ncbi.nlm.nih.gov/pubmed/4136544\" target=\"_blank\" rel=\"noopener\">Teasdale 1974)</a>.</li>\n<li>The evidence in 53 published reports on the reproducibility of the scale was synthesised in a systematic review by <a href=\"https://www.ncbi.nlm.nih.gov/pubmed/26564211\" target=\"_blank\" rel=\"noopener\">Reith et al</a>. 85% of the findings in higher quality studies showed substantial reliability as judged by the standard criterion of a kappa statistic (k) above 0.6. Reproducibility of the total GCS Score was also high, with kappa greater than 0.6 in 77% of observations. Education and training on usage of the scale resulted in A clear beneficial effect on reliability (<a href=\"https://www.ncbi.nlm.nih.gov/pubmed/26564211\" target=\"_blank\" rel=\"noopener\">Reith 2016</a>).</li>\n<li>In its most common usage, the three sections of the scale are often summed to provide a summary of severity. The authors themselves have explicitly objected to the score being used in this way, and analysis has shown that patients with the same total score can have huge variations in outcomes, specifically mortality (GCS score of 4 predicts a mortality rate of 48% if calculated 1+1+2 for eye, verbal, and motor, a mortality of 27% if calculated 1+2+1, but a mortality of only 19% if calculated 2+1+1 (<a href=\"https://www.ncbi.nlm.nih.gov/pubmed/12707528\" target=\"_blank\" rel=\"noopener\">Healey 2014</a>).</li>\n</ul>\n<p>In summary, the Modified Glasgow Coma Scale provides a nearly universally accepted method of assessing patients with acute brain damage. Summation of its components into a single overall score loses information and provides only a rough guide to severity. In some circumstances, such as early triage of severe injuries, assessment of only a contracted version of the motor component of the scale, as in the <calculator id=\"1832\">Simplified Motor Scale (SMS)</calculator> can perform as well the GCS and is significantly less complicated. However, the <calculator id=\"1832\">SMS</calculator> may be less informative in patients with lesser injuries.</p>",
+      "formula_en": "<p>The Glasgow Coma <strong>Score&nbsp;</strong>is calculated by addition of the total points selected under each component (eye, verbal, motor) below, e.g. \"15 points\".</p>\n<p>The Glasgow Coma <strong>Scale</strong> is&nbsp;comprised of the individual components, e.g. \"E(4) V(5) M (6)\".</p>",
+      "more_info_en": "<div class=\"table-responsive\">\n<table class=\"table table-bordered\">\n<tbody>\n<tr>\n<th style=\"text-align: left;\">Component</th>\n<th style=\"text-align: left;\">Response</th>\n<th style=\"text-align: left;\">Points</th>\n</tr>\n<tr>\n<td rowspan=\"5\">Eye</td>\n<td>Eyes open spontaneously</td>\n<td>+4</td>\n</tr>\n<tr>\n<td>Eye opening to verbal command</td>\n<td>+3</td>\n</tr>\n<tr>\n<td>Eye opening to pain</td>\n<td>+2</td>\n</tr>\n<tr>\n<td>No eye opening</td>\n<td>+1</td>\n</tr>\n<tr>\n<td>Not testable*</td>\n<td>NT</td>\n</tr>\n<tr>\n<td rowspan=\"6\">Verbal</td>\n<td>Oriented</td>\n<td>+5</td>\n</tr>\n<tr>\n<td>Confused</td>\n<td>+4</td>\n</tr>\n<tr>\n<td>Inappropriate words</td>\n<td>+3</td>\n</tr>\n<tr>\n<td>Incomprehensible sounds</td>\n<td>+2</td>\n</tr>\n<tr>\n<td>No verbal response</td>\n<td>+1</td>\n</tr>\n<tr>\n<td>Not testable/intubated*</td>\n<td>NT</td>\n</tr>\n<tr>\n<td rowspan=\"7\">Motor</td>\n<td>Obeys commands</td>\n<td>+6</td>\n</tr>\n<tr>\n<td>Localizes pain</td>\n<td>+5</td>\n</tr>\n<tr>\n<td>Withdrawal from pain</td>\n<td>+4</td>\n</tr>\n<tr>\n<td>Flexion to pain</td>\n<td>+3</td>\n</tr>\n<tr>\n<td>Extension to pain</td>\n<td>+2</td>\n</tr>\n<tr>\n<td>No motor response</td>\n<td>+1</td>\n</tr>\n<tr>\n<td>Not testable*</td>\n<td>NT</td>\n</tr>\n</tbody>\n</table>\n<p>*Individual components may be not testable due to any of&nbsp;the following (note this is not a comprehensive list):</p>\n<ul>\n<li><strong>Eye:</strong> local injury and/or edema.</li>\n<li><strong>Verbal:</strong> intubation.</li>\n<li><strong>All (eye, verbal, motor):</strong> sedation, paralysis, and ventilation eliminating all responses.&nbsp;</li>\n</ul>\n</div>",
+      "references_list": {
+        "Clinical Practice Guidelines": [],
+        "Manufacturer Website": [],
+        "Original/Primary Reference": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/4136544",
+            "text": "Teasdale G, Jennett B.Assessment of coma and impaired consciousness. A practical scale. Lancet. 1974 Jul 13;2(7872):81-4."
+          }
+        ],
+        "Other References": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/686455",
+            "text": "Teasdale G, Jennett B. Assessment of coma and severity of brain damage. Anesthesiology. 1978;49:225-226."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/6136811",
+            "text": "Teasdale G, Jennett B, Murray L, Murray G. Glasgow coma scale: to sum or not to sum. Lancet. 1983 Sep 17;2(8351):678."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/12707528",
+            "text": "Healey C, Osler TM, Rogers FB, Healey MA, Glance LG, Kilgo PD, Shackford SR, Meredith JW. Improving the Glasgow Coma Scale score: motor score alone is a better predictor. J Trauma. 2003 Apr;54(4):671-8; discussion 678-80."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/21803447",
+            "text": "Green SM. Cheerio, laddie! Bidding farewell to the Glasgow Coma Scale. Ann Emerg Med. 2011 Nov;58(5):427-30. doi: 10.1016/j.annemergmed.2011.06.009. Epub 2011 Jul 30."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/22947690",
+            "text": "Middleton PM. Practical use of the Glasgow Coma Scale; a comprehensive narrative review of GCS methodology. Australas Emerg Nurs J. 2012 Aug;15(3):170-83. doi: 10.1016/j.aenj.2012.06.002. Epub 2012 Aug 3. Review."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/24899079",
+            "text": "Yeh DD. Glasgow Coma Scale 40 years later: in need of recalibration? JAMA Surg. 2014 Jul;149(7):734. doi: 10.1001/jamasurg.2014.47. No abstract available."
+          },
+          {
+            "href": "https://www.nursingtimes.net/Journals/2014/10/10/n/p/l/141015Forty-years-on-updating-the-Glasgow-coma-scale.pdf",
+            "text": "Teasdale G. Forty Years on: Updating the Glasgow Coma Scale. Nursing Times. 2014; 110(42)."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/15635308",
+            "text": "Gill M, Windemuth R, Steele R, Green SM. A comparison of the Glasgow Coma Scale score to simplified alternative scores for the prediction of traumatic brain injury outcomes. Ann Emerg Med. 2005 Jan;45(1):37-42."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/17113193",
+            "text": "Haukoos JS, Gill MR, Rabon RE, Gravitz CS, Green SM. Validation of the Simplified Motor Score for the prediction of brain injury outcomes after trauma. Ann Emerg Med. 2007 Jul;50(1):18-24. Epub 2006 Nov 16."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/21803448",
+            "text": "Thompson DO, Hurtado TR, Liao MM, Byyny RL, Gravitz C, Haukoos JS. Validation of the Simplified Motor Score in the out-of-hospital setting for the prediction of outcomes after traumatic brain injury. Ann Emerg Med. 2011 Nov;58(5):417-25. doi: 10.1016/j.annemergmed.2011.05.033. Epub 2011 Jul 30."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/25030516",
+            "text": "Teasdale G, Maas A, Lecky F, Manley G, Stocchetti N, Murray G. The Glasgow Coma Scale at 40 years: standing the test of time. Lancet Neurol. 2014;13(8):844-54."
+          }
+        ],
+        "Outcomes": [],
+        "Validation": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/16766966",
+            "text": "Moore L, Lavoie A, Camden S, Le Sage N, Sampalis JS, Bergeron E, Abdous B. Statistical validation of the Glasgow Coma Score.J Trauma. 2006 Jun;60(6):1238-43; discussion 1243-4."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/26564211",
+            "text": "Reith FC, Van den brande R, Synnot A, Gruen R, Maas AI. The reliability of the Glasgow Coma Scale: a systematic review. Intensive Care Med. 2016;42(1):3-15."
+          }
+        ],
+        "Validations": []
+      }
+    },
+    "how_to_use": {
+      "pearls_pitfalls_en": "<ul>\n<li>The GCS allows providers in multiple settings and with varied levels of training to communicate succinctly about a patient&rsquo;s mental status.</li>\n<li>The GCS has been shown to have statistical correlation with a broad array of adverse neurologic outcomes, including brain injury, need for neurosurgery, and mortality.</li>\n<li>The GCS has been incorporated into numerous guidelines and assessment scores (e.g. ACLS, ATLS, <calculator id=\"1868\">APACHE I-III</calculator>, <calculator id=\"10404\">TRISS</calculator>, and WNS SAH Grading Scale).</li>\n<li>In some patients, it may be impossible to assess one or more of the three components of the coma scale. The reasons include, but are not limited to:\n<ul>\n<li>Eye: local injury and/or edema.</li>\n<li>Verbal: intubation.</li>\n<li>All (eye, verbal, motor): sedation, paralysis, and ventilation eliminating all responses.&nbsp;</li>\n</ul>\n</li>\n<li>If a component is untestable, a score of 1 should not be assigned (<a href=\"https://www.ncbi.nlm.nih.gov/pubmed/25030516\" target=\"_blank\" rel=\"noopener\">Teasdale 2014</a>). In this circumstance, summation of the findings into a total Glasgow Coma <strong>Score</strong> is invalid.</li>\n<li>The 3 parts of the Glasgow Coma <strong>Scale</strong> are charted independently, and the position can be recorded as NT (not testable), with an option of indicating the reason, e.g. C for eye closure and T for intubation.</li>\n</ul>\n<p><strong>Points to keep in mind:</strong></p>\n<ul>\n<li>Correlation with outcome and severity is most accurate when applied to an individual patient over time; the patient&rsquo;s trend is important.</li>\n<li>A GCS of 8 should not be used in isolation to make a determination of whether to intubate a patient, but does suggest a level of obtundation that should be evaluated carefully.</li>\n<li>Reproducibility&nbsp;is usually good (<a href=\"https://pubmed.ncbi.nlm.nih.gov/26564211/\" target=\"_blank\" rel=\"noopener\">Reith 2016</a>). If individual institutions have concerns about agreement&nbsp;among providers, training and education are available from the GCS creators at <a href=\"https://www.glasgowcomascale.org/\" target=\"_blank\" rel=\"noopener\">glasgowcomascale.org</a>.</li>\n<li>Simpler scores have been shown to perform as well as the GCS in the prehospital and emergency department setting (for initial evaluation). These are often contracted versions of the GCS itself (the <calculator id=\"1832\">Simplified Motor Score (SMS)</calculator> uses the motor portion of the GCS only) and are less well studied than the GCS for outcomes like long-term mortality, and the GCS has been studied trended over time, while the SMS has not.</li>\n</ul>",
+      "use_case_en": "<ul>\n<li>Designed for use in serial assessments of patients with coma from either medical or surgical causes to be widely applicable.</li>\n<li>The GCS is commonly used in the pre-hospital and acute care setting as well as over a patient&rsquo;s hospital course to evaluate for mental status assessment in both traumatic and non-traumatic presentations.</li>\n<li>In the care of an individual patient, the ratings of the three criteria in the <strong>Scale</strong> should be assessed,&nbsp;monitored, reported, and communicated separately.</li>\n<li>The combined <strong>Score</strong> is an index of the net severity of impairment and is useful as a summary of a patients condition, in classifying groups of different severity, for triage, and in research. The&nbsp;<strong>Score</strong> cannot be calculated if one or other of the component criteria is not testable.</li>\n</ul>",
+      "why_use_en": "<p>The Glasgow Coma Scale is an adopted standard for assessment of impaired consciousness and coma in the acutely ill trauma and non-trauma patient and assists with predictions of neurological outcomes (complications, impaired recovery) and mortality.</p>"
+    },
+    "next_steps": {
+      "advice_en": "<p>The GCS score can be indicative of how critically ill a patient is.</p>\n<ul>\n<li>Trauma patients presenting with GCS &lt;15 warrant close attention and reassessment.</li>\n<li>A declining GCS is concerning in any setting and should prompt assessment of the airway and possible intervention.</li>\n</ul>\n<p>Conversely, a GCS of 15 should not be taken as an indication that a patient (trauma or medical) is not critically ill. Decisions about the aggressiveness of the management and treatment plans should be made based on clinical presentation and context and not in any way overridden by the GCS score.</p>",
+      "critical_actions_en": "<ul>\n<li>Although it has been adopted widely and in a variety of settings, the GCS score is not intended for quantitative use.</li>\n<li>Clinical management decisions should not be based solely on the GCS score in the acute setting.</li>\n</ul>\n<p>From the creators of the GCS:</p>\n<p><strong>&ldquo;We have never recommended using the GCS alone, either as a means of monitoring coma, or to assess the severity of brain damage or predict outcome.&rdquo;</strong> (<a href=\"https://www.nursingtimes.net/Journals/2014/10/10/n/p/l/141015Forty-years-on-updating-the-Glasgow-coma-scale.pdf\" target=\"_blank\" rel=\"noopener\">Teasdale 2014</a>)</p>",
+      "management_en": "<ul>\n<li>Clinical management decisions should not be based solely on the GCS score in the acute setting.</li>\n<li>If a trauma patient has a GCS &le;8 and there is clinical concern that they are unable to protect their airway or that they have an expected worsening clinical course based on exam or imaging findings, then intubation can be considered.</li>\n<li>In any patient, a rapidly declining or waxing and waning GCS is concerning and intubation should be considered in the context of the patient's overall clinical picture.</li>\n</ul>"
+    },
+    "equation_logic": "5867dd4be9000e630108f61d86978846"
+  },
+  "gleason-score-prostate-cancer.htm": {
+    "name": "Gleason Score for Prostate Cancer",
+    "about": {
+      "evidence_based_medicine_en": "",
+      "formula_en": "<p>Addition of primary, secondary and tertiary scores.</p>",
+      "more_info_en": "<p><strong>Grading System:</strong></p>\n<div class=\"table-responsive\">\n<table class=\"table table-bordered table-hover\">\n<tbody>\n<tr>\n<th>Gleason Score</th>\n<th>Prognostic Grade Group</th>\n</tr>\n<tr>\n<td>Gleason score &le;6:</td>\n<td>I</td>\n</tr>\n<tr>\n<td>Gleason score 3 + 4 = 7:</td>\n<td>II</td>\n</tr>\n<tr>\n<td>Gleason score 4 + 3 = 7:</td>\n<td>III</td>\n</tr>\n<tr>\n<td>Gleason score 8:</td>\n<td>IV</td>\n</tr>\n<tr>\n<td>Gleason score 9-10:</td>\n<td>V</td>\n</tr>\n</tbody>\n</table>\n</div>\n<p><strong>See below for the Gleason Score Diagram:</strong></p>\n<div class=\"authorimage\"><img style=\"max-width: 100%;\" src=\"https://cdn-web-img.mdcalc.com/gleason-pattern.jpeg\" class=\"alignnone size-full wp-image-1839\" alt=\"gleason score\"></div>",
+      "references_list": {
+        "Clinical Practice Guidelines": [],
+        "Manufacturer Website": [],
+        "Original/Primary Reference": [],
+        "Other References": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/16096414",
+            "text": "Epstein JI, Allsbrook WC Jr, Amin MB, Egevad LL; ISUP Grading Committee. The 2005 International Society of Urological Pathology (ISUP) Consensus Conference on Gleason grading of prostatic carcinoma. Am J Surg Pathol 2005;29(9):1228-42."
+          }
+        ],
+        "Outcomes": [],
+        "Validation": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/16096414",
+            "text": "Pierorazio PM, Walsh PC, Partin AW, Epstein JI. Prognostic Gleason grade grouping: data based on the modified Gleason scoring system. BJU international. 2013;111(5):753-760. doi:10.1111/j.1464-410X.2012.11611.x."
+          }
+        ],
+        "Validations": []
+      }
+    },
+    "how_to_use": {
+      "pearls_pitfalls_en": "",
+      "use_case_en": "<p>Staging prostate cancer based on biopsy findings.</p>",
+      "why_use_en": "<p>The Gleason Score is the standard staging criteria for prostate cancer.</p>"
+    },
+    "next_steps": {
+      "advice_en": "<p>Other scores like the <calculator id=\"2046\">UCSF-CAPRA Score</calculator> or the <calculator id=\"2049\">D&rsquo;Amico Risk Classification</calculator> can help prognosticate using the Gleason Score and other clinical criteria.</p>",
+      "critical_actions_en": "",
+      "management_en": ""
+    },
+    "equation_logic": "0a3b87cd7ca95da6d818cda6eb9863ff"
+  },
+  "immunization-schedule-calculator.htm": {
+    "name": "Immunization Schedule Calculator",
+    "about": {
+      "evidence_based_medicine_en": "",
+      "formula_en": "<p>See full schedule at the CDC's website for <a href=\"https://www.cdc.gov/vaccines/hcp/imz-schedules/child-adolescent-age.html\" target=\"_blank\" rel=\"noopener\">children</a> and <a href=\"https://www.cdc.gov/vaccines/hcp/imz-schedules/adult-age.html\" target=\"_blank\" rel=\"noopener\">adults</a>.</p>",
+      "more_info_en": "",
+      "references_list": {
+        "Clinical Practice Guidelines": [
+          {
+            "href": "https://www.cdc.gov/vaccines/hcp/imz-schedules/child-adolescent-age.html",
+            "text": "CDC. Child and adolescent immunization schedule by age(Addendum updated June 27, 2024). Vaccines & Immunizations."
+          },
+          {
+            "href": "https://www.cdc.gov/vaccines/hcp/imz-schedules/adult-age.html",
+            "text": "CDC. Adult immunization schedule by age(Addendum updated June 27, 2024). Vaccines & Immunizations."
+          }
+        ],
+        "Manufacturer Website": [],
+        "Original/Primary Reference": [],
+        "Other References": [],
+        "Outcomes": [],
+        "Validation": [],
+        "Validations": []
+      }
+    },
+    "how_to_use": {
+      "pearls_pitfalls_en": "<ul>\n<li>This calculator is meant to provide a general schedule of vaccination doses. Clinical judgment and knowledge of past vaccinations should guide the decision to provide vaccinations to patients.</li>\n<li>Be aware of appropriate interval dosing and catch-up schedules. Giving a vaccine prior to the appropriate interval may invalidate it and require revaccination.</li>\n<li>Live vaccines are <strong><em>contraindicated</em></strong> in pregnancy. If you are evaluating a patient who could be pregnant, ensure pregnancy is ruled out prior to administering a live vaccine.</li>\n</ul>",
+      "use_case_en": "<p>Use for pediatric and adult patients to determine if they may be eligible for vaccination.</p>",
+      "why_use_en": ""
+    },
+    "next_steps": {
+      "advice_en": "<ul>\n<li>Make sure to discuss vaccination and immunization safety with the patient, and have a full understanding of the patient's history before administration.</li>\n<li>Determine pregnancy status if administering a live vaccine. Live vaccines are <strong>contraindicated</strong> in pregnancy.</li>\n<li>COVID-19 vaccination recommendations change frequently; consult the&nbsp;<a href=\"https://www.cdc.gov/covid/vaccines/stay-up-to-date.html\" target=\"_blank\" rel=\"noopener\">CDC website</a> for the most up-to-date information.</li>\n<li>Pneumococcal vaccination is now recommended for adults ages 50 and older.</li>\n<li>There are many pneumococcal vaccine options including pneumococcal conjugate vaccines (PCV15, PCV20, and PCV21) and p<span>neumococcal polysaccharide vaccine (PPSV23)</span>; follow <a href=\"https://www.cdc.gov/pneumococcal/hcp/vaccine-recommendations/index.html\" target=\"_blank\" rel=\"noopener\">CDC guidance</a> to ensure your patient receives the most appropriate vaccination based on their medical history.</li>\n<li>Be aware of specific pneumococcal vaccination recommendations from the <a href=\"https://www.cdc.gov/mmwr/volumes/73/wr/pdfs/mm7336a3-H.pdf\" target=\"_blank\" rel=\"noopener\">CDC</a> for those patients who live in areas with high rates of serotype 4 invasive pneumococcal disease (IPD).</li>\n</ul>",
+      "critical_actions_en": "",
+      "management_en": ""
+    },
+    "equation_logic": "7a231c35f589e392f2ebc965cb4c7a88"
+  },
+  "color-vision-screening-ishihara-test.htm": {
+    "name": "Color Vision Screening (Ishihara Test)",
+    "about": {
+      "evidence_based_medicine_en": "<p dir=\"ltr\">The use of smartphones has greatly increased the clinician&rsquo;s ability to quickly access screening tools. <a href=\"https://www.ncbi.nlm.nih.gov/pubmed/29438263\" target=\"_blank\" rel=\"noopener\">Ozgur et al (2018)</a> demonstrated that using a smartphone application with the abbreviated 11 plate test (excluding plates 9, 11, and 14) compared with physical Ishihara color plates in healthy controls and patients with ocular pathology had close agreement in the number of correctly identified plates. The sensitivity and specificity of the smartphone application was 92% and specificity was 100%. The majority of patients preferred the smartphone application to the physical Ishihara plates.</p>\n<p dir=\"ltr\">Similarly, <a href=\"https://iovs.arvojournals.org/article.aspx?articleid=2360097\" target=\"_blank\" rel=\"noopener\">Shah et al (2012)</a> found that a smartphone-based application did not have any significant differences when compared with physical Ishihara plates in evaluating red-green color deficiencies .</p>\n<p dir=\"ltr\">In patients suspected of having optic neuritis, <a href=\"https://www.ncbi.nlm.nih.gov/pubmed/26896905\" target=\"_blank\" rel=\"noopener\">Campbell et al (2016)</a> demonstrated that screening for color deficiencies using a tablet application was comparable to physical Ishihara plates.</p>\n<p dir=\"ltr\">In cases of suspected optic neuritis, clinicians can also evaluate for loss of color vision. In the Optic Neuritis Treatment Trial (ONTT), 88% of patients had abnormal color vision when evaluated with Ishihara color plates (<a href=\"https://www.ncbi.nlm.nih.gov/pubmed/1841573\" target=\"_blank\" rel=\"noopener\">Optic Neuritis Study Group 1991</a>).</p>\n<p dir=\"ltr\">Traditional printed Ishihara plates are expensive and require careful storage to ensure maintenance of the plates. The above studies support that a smartphone or tablet color vision screening application can potentially be utilized in clinical settings such as emergency rooms, inpatient settings, or non-ophthalmological settings where Ishihara plates are not routinely available.</p>",
+      "formula_en": "<p>X means that the plate cannot be read. Dashes denote that the reading is indefinite.</p>\n<div dir=\"ltr\">\n<table><colgroup><col width=\"56\"><col width=\"88\"><col width=\"51\"><col width=\"42\"><col width=\"57\"><col width=\"38\"><col width=\"85\"></colgroup>\n<tbody>\n<tr>\n<td>\n<p dir=\"ltr\"><strong>Plate number</strong></p>\n</td>\n<td>\n<p dir=\"ltr\"><strong>Normal patient</strong></p>\n</td>\n<td colspan=\"4\">\n<p dir=\"ltr\"><b>Red-green color deficiency</b></p>\n</td>\n<td>\n<p dir=\"ltr\"><strong>Total color blindness</strong></p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">1</p>\n</td>\n<td>\n<p dir=\"ltr\">12</p>\n</td>\n<td colspan=\"4\">\n<p dir=\"ltr\">12</p>\n</td>\n<td>\n<p dir=\"ltr\">12</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">2</p>\n</td>\n<td>\n<p dir=\"ltr\">8</p>\n</td>\n<td colspan=\"4\">\n<p dir=\"ltr\">3</p>\n</td>\n<td>\n<p dir=\"ltr\">X</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">3</p>\n</td>\n<td>\n<p dir=\"ltr\">5</p>\n</td>\n<td colspan=\"4\">\n<p dir=\"ltr\">2</p>\n</td>\n<td>\n<p dir=\"ltr\">X</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">4</p>\n</td>\n<td>\n<p dir=\"ltr\">29</p>\n</td>\n<td colspan=\"4\">\n<p dir=\"ltr\">70</p>\n</td>\n<td>\n<p dir=\"ltr\">X</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">5</p>\n</td>\n<td>\n<p dir=\"ltr\">74</p>\n</td>\n<td colspan=\"4\">\n<p dir=\"ltr\">21</p>\n</td>\n<td>\n<p dir=\"ltr\">X</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">6</p>\n</td>\n<td>\n<p dir=\"ltr\">7</p>\n</td>\n<td colspan=\"4\">\n<p dir=\"ltr\">X</p>\n</td>\n<td>\n<p dir=\"ltr\">X</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">7</p>\n</td>\n<td>\n<p dir=\"ltr\">45</p>\n</td>\n<td colspan=\"4\">\n<p dir=\"ltr\">X</p>\n</td>\n<td>\n<p dir=\"ltr\">X</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">8</p>\n</td>\n<td>\n<p dir=\"ltr\">2</p>\n</td>\n<td colspan=\"4\">\n<p dir=\"ltr\">X</p>\n</td>\n<td>\n<p dir=\"ltr\">X</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">9</p>\n</td>\n<td>\n<p dir=\"ltr\">16</p>\n</td>\n<td colspan=\"4\">\n<p dir=\"ltr\">X</p>\n</td>\n<td>\n<p dir=\"ltr\">X</p>\n</td>\n</tr>\n<tr>\n<td colspan=\"2\" rowspan=\"2\"></td>\n<td colspan=\"2\">\n<p dir=\"ltr\"><strong>Protan</strong></p>\n</td>\n<td colspan=\"2\">\n<p dir=\"ltr\"><strong>Deutan</strong></p>\n</td>\n<td rowspan=\"2\">\n<p dir=\"ltr\"></p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\"><strong>Strong</strong></p>\n</td>\n<td>\n<p dir=\"ltr\"><strong>Mild</strong></p>\n</td>\n<td>\n<p dir=\"ltr\"><strong>Strong</strong></p>\n</td>\n<td>\n<p dir=\"ltr\"><strong>Mild</strong></p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">10</p>\n</td>\n<td>\n<p dir=\"ltr\">35</p>\n</td>\n<td>\n<p dir=\"ltr\">5</p>\n</td>\n<td>\n<p dir=\"ltr\">(3)5*</p>\n</td>\n<td>\n<p dir=\"ltr\">3</p>\n</td>\n<td>\n<p dir=\"ltr\">3(5)*</p>\n</td>\n<td>\n<p dir=\"ltr\">-</p>\n</td>\n</tr>\n<tr>\n<td>\n<p dir=\"ltr\">11</p>\n</td>\n<td>\n<p dir=\"ltr\">96</p>\n</td>\n<td>\n<p dir=\"ltr\">6</p>\n</td>\n<td>\n<p dir=\"ltr\">(9)6*</p>\n</td>\n<td>\n<p dir=\"ltr\">9</p>\n</td>\n<td>\n<p dir=\"ltr\">9(6)*</p>\n</td>\n<td>-</td>\n</tr>\n</tbody>\n</table>\n<p>*The numbers in parentheses indicate they can be read but are comparatively unclear.</p>\n</div>",
+      "more_info_en": "",
+      "references_list": {
+        "Clinical Practice Guidelines": [],
+        "Manufacturer Website": [],
+        "Original/Primary Reference": [
+          {
+            "href": "https://www.dfis.ubi.pt/~hgil/P.V.2/Ishihara/Ishihara.24.Plate.TEST.Book.pdf",
+            "text": "S. Ishihara, Tests for color-blindness (Handaya, Tokyo, Hongo Harukicho, 1917)."
+          }
+        ],
+        "Other References": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/1841573 ",
+            "text": "Optic Neuritis Study Group. The clinical profile of optic neuritis. Experience of the Optic Neuritis Treatment Trial. Arch Ophthalmol. 1991 Dec;109(12):1673-8. "
+          }
+        ],
+        "Outcomes": [],
+        "Validation": [
+          {
+            "href": "https://iovs.arvojournals.org/article.aspx?articleid=2360097 ",
+            "text": "Shah AA, Pasadhika S, Kim J, Wang M. Pseudoisochromatic color vision testing on an iPhone. Invest Ophthalmol Vis Sci. 2012;53:6399."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/26896905 ",
+            "text": "Campbell TG, Lehn A, Blum S, Airey C, Brown H. iPad colour vision apps for dyschromatopsia screening. J Clin Neurosci. 2016 Jul;29:92-4."
+          },
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/29438263 ",
+            "text": "Ozgur OK, Emborgo TS, Vieyra MB, Huselid RF, Banik R.Validity and Acceptance of Color Vision Testing on Smartphones. J Neuroophthalmol. 2018 Mar;38(1):13-16."
+          }
+        ],
+        "Validations": []
+      }
+    },
+    "how_to_use": {
+      "pearls_pitfalls_en": "<p><span id=\"docs-internal-guid-da760620-9523-08a1-b45f-7d803332da1f\"></span></p>\n<ul>\n<li dir=\"ltr\">\n<p dir=\"ltr\">This test evaluates for the most common type of color blindness (red-green deficiency) and not other types of color blindness.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\">For purposes of rapid screening, this test uses an abbreviated version of the concise 14 plate test. The complete test consists of 38 Ishihara pseudoisochromatic plates, and a shorter 24 plate version exists as well.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\">This&nbsp;abbreviated version of the 14 plate test excludes the hidden digit plate (original plate 9) and the line tracing plates (original plates 11 and 14).</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\">Testing is less accurate in patients who have <calculator id=\"10060\">near visual acuity</calculator> less than ~20/100 at 30 inches.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\">This test is less reliable in very young children (&lt;5 years of age).</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\">Ishihara pseudoisochromatic plates are the most commonly used initial test for color vision testing; however, there are other tests which may be more accurate and sensitive, but more time-consuming (e.g. Farnsworth Panel D-15 and Farnsworth-Munsell 100-hue tests).</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\">An alternative pseudoisochromatic plate test is the Hardy-Rand-Ritter (HRR) test. &nbsp;</p>\n</li>\n</ul>",
+      "use_case_en": "<p><span id=\"docs-internal-guid-e7c0e986-9522-d49f-4c23-6f1f348375e9\"></span></p>\n<ul>\n<li dir=\"ltr\">\n<p dir=\"ltr\">To screen for red-green color blindness.</p>\n</li>\n<li dir=\"ltr\">\n<p dir=\"ltr\">This test can also provide an initial assessment regarding the type of red-green color blindness (protan or deutan).</p>\n</li>\n</ul>",
+      "why_use_en": "<p><span id=\"docs-internal-guid-de30b92a-9523-2fac-b2cf-17137803d843\">Provides a rapid assessment of color vision and evaluation of red-green color blindness.</span></p>"
+    },
+    "next_steps": {
+      "advice_en": "<p><span id=\"docs-internal-guid-4dd0c919-9523-6cb1-c612-e40e670e3ed4\">Patients with more than two incorrect plates are considered to have color vision deficiency.</span></p>",
+      "critical_actions_en": "",
+      "management_en": "<p>Patients with color vision deficiency should undergo further evaluation by an ophthalmologist or neuro-ophthalmologist.</p>"
+    },
+    "equation_logic": "bdd8c0f111a054918c6eb90261476d71"
+  },
+  "bishop-score-vaginal-delivery-induction-labor.htm": {
+    "name": "Bishop Score for Vaginal Delivery and Induction of Labor",
+    "about": {
+      "evidence_based_medicine_en": "",
+      "formula_en": "<p>Addition of the selected points.</p>",
+      "more_info_en": "<p><strong>Score interpretation:</strong></p>\n<ul>\n<li>Scores &le; 5 suggest an unfavorable cervix, and that induction may be necessary for successful vaginal delivery.</li>\n<li>Scores 6-7 do not definitively predict whether or not induction will be successful. Consider induction or augmentation of labor based on clinical judgment.</li>\n<li>Scores &ge; 8 suggest spontaneous vaginal delivery is more likely and augmentation or induction may be unnecessary.</li>\n</ul>",
+      "references_list": {
+        "Clinical Practice Guidelines": [],
+        "Manufacturer Website": [],
+        "Original/Primary Reference": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/14199536",
+            "text": "Bishop EH. Pelvic scoring for elective induction. Obstet Gynecol. 1964;24: 266–8. PMID 14199536."
+          }
+        ],
+        "Other References": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3297470/",
+            "text": "Laughon SK, Zhang J, Troendle J, Sun L, Reddy UM. Using a Simplified Bishop Score to Predict Vaginal Delivery. Obstetrics and Gynecology 2011;117(4):805-811. doi:10.1097/AOG.0b013e3182114ad2."
+          }
+        ],
+        "Outcomes": [],
+        "Validation": [
+          {
+            "href": "https://www.ncbi.nlm.nih.gov/pubmed/18757646",
+            "text": "Newman RB, Goldenberg RL, Iams JD et al. Preterm Prediction Study: Comparison of the Cervical Score and Bishop Score for Prediction of Spontaneous Preterm Delivery. Obstet Gynecol. 2008;112 (3): 508–15. doi:10.1097/AOG.0b013e3181842087. PMID 18757646."
+          }
+        ],
+        "Validations": []
+      }
+    },
+    "how_to_use": {
+      "pearls_pitfalls_en": "<ul>\n<li>The Bishop Score for Vaginal Delivery and Induction of Pregnancy was originally developed to predict failure of elective induction in multiparous women.</li>\n<li>It is commonly considered for predicting the need for caesarean section after induction and preterm labor.</li>\n<li>Some centers recommend using the Modified Bishop Score which was developed in 1982 as an update to Bishop's original 1964 scoring system.</li>\n<li>The scoring system was developed prior to cervical ripening agents.</li>\n<li>Typically a score &ge; 8 is used to predict spontaneous vaginal delivery without induction and a score &le;5 suggests an unfavorable cervix likely to require induction.</li>\n</ul>",
+      "use_case_en": "<p>Patients being evaluated for labor (including possible induction).</p>",
+      "why_use_en": "<p>Predicting which women will successfully deliver with induction is difficult, and the Bishop Score is a standardized system used for evaluation.</p>"
+    },
+    "next_steps": {
+      "advice_en": "<p>Induction is often considered at a Bishop Score of &le;5.</p>",
+      "critical_actions_en": "",
+      "management_en": ""
+    },
+    "equation_logic": "e9f489bbbdfa333a62ec02f48ea46c03"
+  }
+}
