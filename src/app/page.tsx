@@ -4,12 +4,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Link from "next/link";
 import { toolsRegistry } from "@/tools/registry";
 
+import { HeartPulse, Wind, Brain, Activity, Baby, Eye } from "lucide-react";
+
 const CATEGORIES = [
   { name: "Calculators", icon: Calculator, color: "text-blue-500", bg: "bg-blue-500/10", href: "/categories/calculators" },
   { name: "Developer", icon: Code, color: "text-purple-500", bg: "bg-purple-500/10", href: "/categories/developer" },
   { name: "Everyday", icon: Bot, color: "text-indigo-500", bg: "bg-indigo-500/10", href: "/categories/everyday" },
   { name: "Audio", icon: Headphones, color: "text-rose-500", bg: "bg-rose-500/10", href: "/categories/audio" },
   { name: "Obstetrics", icon: Stethoscope, color: "text-emerald-500", bg: "bg-emerald-500/10", href: "/categories/obstetrics" },
+  { name: "Cardiology", icon: HeartPulse, color: "text-red-500", bg: "bg-red-500/10", href: "/categories/cardiology" },
+  { name: "Pulmonology", icon: Wind, color: "text-cyan-500", bg: "bg-cyan-500/10", href: "/categories/pulmonology" },
+  { name: "Neurology", icon: Brain, color: "text-pink-500", bg: "bg-pink-500/10", href: "/categories/neurology" },
+  { name: "Oncology", icon: Activity, color: "text-orange-500", bg: "bg-orange-500/10", href: "/categories/oncology" },
+  { name: "Pediatrics", icon: Baby, color: "text-teal-500", bg: "bg-teal-500/10", href: "/categories/pediatrics" },
+  { name: "Ophthalmology", icon: Eye, color: "text-amber-500", bg: "bg-amber-500/10", href: "/categories/ophthalmology" },
 ];
 
 const TRENDING = [
