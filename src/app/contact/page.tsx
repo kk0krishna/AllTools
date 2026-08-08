@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, Send } from 'lucide-react';
 
 export default function ContactPage() {
   const [result, setResult] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -24,8 +26,9 @@ export default function ContactPage() {
 
       const data = await response.json();
       if (data.success) {
-        setResult("Success! Your message has been sent.");
+        setResult("Success! Redirecting...");
         (event.target as HTMLFormElement).reset();
+        router.push("/thank-you");
       } else {
         setResult("Error! Something went wrong.");
       }

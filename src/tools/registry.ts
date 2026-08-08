@@ -19,6 +19,7 @@ export interface ToolEntry {
 }
 
 import { ageCalculatorEntry } from "./calculators/age-calculator/metadata";
+import { bmiCalculatorEntry } from "./calculators/bmi-calculator/metadata";
 import { jsonFormatterEntry } from "./developer/json-formatter/metadata";
 import { qrCodeGeneratorEntry } from "./everyday/qr-code-generator/metadata";
 import { audioSpectrumAnalyzerEntry } from "./audio/audio-spectrum-analyzer/metadata";
@@ -31,6 +32,7 @@ import { preeclampsiaRiskEntry } from "./obstetrics/preeclampsia-risk/metadata";
 
 export const toolsRegistry: ToolEntry[] = [
   ageCalculatorEntry,
+  bmiCalculatorEntry,
   jsonFormatterEntry,
   qrCodeGeneratorEntry,
   audioSpectrumAnalyzerEntry,
