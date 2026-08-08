@@ -52,6 +52,24 @@ export default async function ToolPage({ params }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            name: metadata.name,
+            applicationCategory: metadata.category === "obstetrics" ? "HealthApplication" : "UtilityApplication",
+            operatingSystem: "All",
+            description: metadata.description,
+            offers: {
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "USD"
+            }
+          })
+        }}
+      />
       {/* Breadcrumbs - Compact on mobile, full on desktop */}
       <nav className="mb-4 sm:mb-8">
         {/* Mobile: Simple Back Link */}
