@@ -71,6 +71,14 @@ export default function Home() {
               </Card>
             </Link>
           ))}
+          <Link href="/contact">
+            <Card className="hover:shadow-md transition-all h-full flex flex-col border-dashed border-2 hover:border-primary/50 group bg-primary/5">
+              <CardHeader>
+                <CardTitle className="text-xl font-heading group-hover:text-primary transition-colors">✨ Suggest More Tools</CardTitle>
+                <CardDescription>Can't find what you're looking for? Request a new tool or suggest improvements!</CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
         </div>
       </section>
     </div>
