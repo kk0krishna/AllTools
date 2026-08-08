@@ -3,39 +3,37 @@ import { BmiCalculator } from "./index";
 
 export const bmiCalculatorEntry: ToolEntry = {
   metadata: {
-    name: "Doctor-Oriented BMI Calculator",
-    description: "Calculate BMI with WHO classifications, Ideal Body Weight (Devine), and medical insights.",
+    name: "Advanced Clinical BMI Calculator",
+    description: "Calculate your Body Mass Index (BMI) with WHO classifications, discover your Ideal Body Weight, and explore personalized clinical insights.",
     category: "calculators",
     slug: "bmi-calculator",
-    keywords: ["bmi calculator", "body mass index", "ideal body weight", "ibw calculator", "medical bmi", "who guidelines"],
+    keywords: ["bmi calculator", "body mass index", "ideal body weight", "ibw calculator", "medical bmi", "who guidelines", "healthy weight range"],
   },
   component: BmiCalculator,
   content: () => (
     <>
-      <h2>Clinical BMI & IBW Assessment</h2>
+      <h2>Understanding Your BMI & Ideal Body Weight</h2>
       <p>
         This calculator provides Body Mass Index (BMI) computations along with clinical classifications 
-        based on the World Health Organization (WHO) guidelines. It also estimates Ideal Body Weight (IBW) 
-        using the Devine formula, which is commonly used in clinical practice for medication dosing 
-        (such as aminoglycosides and certain anesthetics).
+        based on the World Health Organization (WHO) guidelines. It is designed for both personal health tracking and clinical use. It also estimates Ideal Body Weight (IBW) 
+        using the Devine formula, which is commonly used in clinical practice for health assessment and medication dosing.
       </p>
       
       <h3>Interpretation of BMI</h3>
       <ul>
-        <li><strong>Underweight:</strong> &lt; 18.5 (May indicate malnutrition, eating disorders, or other health issues)</li>
-        <li><strong>Normal Weight:</strong> 18.5 - 24.9 (Associated with the lowest risk of comorbidities)</li>
-        <li><strong>Overweight:</strong> 25 - 29.9 (Increased risk for cardiovascular disease, Type 2 diabetes)</li>
-        <li><strong>Obese (Class I):</strong> 30 - 34.9</li>
-        <li><strong>Obese (Class II):</strong> 35 - 39.9</li>
-        <li><strong>Obese (Class III):</strong> &ge; 40 (Severe/Morbid obesity, very high risk of comorbidities)</li>
+        <li><strong>Underweight (&lt; 18.5):</strong> May indicate malnutrition, eating disorders, or other health issues. Consulting a healthcare provider is recommended.</li>
+        <li><strong>Normal Weight (18.5 - 24.9):</strong> Associated with the lowest risk of weight-related health issues.</li>
+        <li><strong>Overweight (25 - 29.9):</strong> Indicates an increased risk for cardiovascular disease and metabolic conditions.</li>
+        <li><strong>Obese Class I (30 - 34.9) & Class II (35 - 39.9):</strong> Higher risk for conditions like Type 2 diabetes and hypertension.</li>
+        <li><strong>Obese Class III (&ge; 40):</strong> Severe obesity, posing a very high risk of comorbidities. Medical guidance is strongly advised.</li>
       </ul>
 
-      <h3>Limitations</h3>
+      <h3>Important Limitations</h3>
       <p>
-        While BMI is a useful population-level screening tool, it has limitations at the individual level. 
-        It does not differentiate between fat mass and lean muscle mass, nor does it account for fat distribution 
-        (e.g., visceral adiposity). Clinical judgment should always supplement BMI calculations, and 
-        measurements like waist circumference may provide a more accurate risk assessment.
+        While BMI is a widely used and helpful screening tool, it has limitations. 
+        It does not differentiate between fat mass and lean muscle mass. For example, highly muscular athletes may have a high BMI without having high body fat. 
+        Furthermore, it does not account for fat distribution (like visceral fat). 
+        BMI should be used as a starting point, and measurements like waist circumference or body fat percentage can provide a more complete picture of your metabolic health.
       </p>
     </>
   ),
