@@ -39,7 +39,7 @@ export function NyhaHeartFailure({ metadata }: ToolComponentProps) {
             <HeartPulse className="w-5 h-5 text-primary" />
             Symptom Assessment
           </CardTitle>
-          <CardDescription>Select the statement that best describes the patient's symptoms.</CardDescription>
+          <CardDescription>Select the statement that best describes the patient&apos;s symptoms.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 pt-6">
           {CLASSES.map((item) => (

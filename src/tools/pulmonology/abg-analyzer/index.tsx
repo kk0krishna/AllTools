@@ -11,10 +11,15 @@ export function AbgAnalyzer({ metadata }: ToolComponentProps) {
   const [ph, setPh] = useState("7.40");
   const [pco2, setPco2] = useState("40");
   const [hco3, setHco3] = useState("24");
+  const [na, setNa] = useState("140");
+  const [cl, setCl] = useState("105");
 
   const vPh = parseFloat(ph);
   const vPco2 = parseFloat(pco2);
   const vHco3 = parseFloat(hco3);
+  const vNa = parseFloat(na);
+  const vCl = parseFloat(cl);
+
 
   let result = null;
 
@@ -22,18 +27,24 @@ export function AbgAnalyzer({ metadata }: ToolComponentProps) {
     let primary = "Normal";
     let expected = "";
     let compStatus = "No compensation needed";
+    let treatment = "";
+    let anionGap = null;
+    let agType = "";
+
+    if (!isNaN(vNa) && !isNaN(vCl)) {
+      anionGap = vNa - (vCl + vHco3);
+    }
 
     if (vPh < 7.35) {
       // Acidemia
       if (vPco2 > 45 && vHco3 >= 22) {
         primary = "Respiratory Acidosis";
-        // Expected HCO3 increases by 1 (acute) or 4 (chronic) for every 10 pCO2 increase
         expected = "Acute: HCO3 ≈ " + (24 + ((vPco2 - 40) / 10)).toFixed(1) + 
                    " | Chronic: HCO3 ≈ " + (24 + 4 * ((vPco2 - 40) / 10)).toFixed(1);
         compStatus = "Check if HCO3 matches expected values to determine compensation type.";
+        treatment = "Focus on improving ventilation. Treat underlying cause (e.g., bronchodilators for COPD, BiPAP, or intubation if severe).";
       } else if (vHco3 < 22 && vPco2 <= 45) {
         primary = "Metabolic Acidosis";
-        // Winter's Formula
         const expectedPco2 = (1.5 * vHco3) + 8;
         expected = "Expected pCO2: " + (expectedPco2 - 2).toFixed(1) + " to " + (expectedPco2 + 2).toFixed(1);
         if (vPco2 >= (expectedPco2 - 2) && vPco2 <= (expectedPco2 + 2)) {
@@ -43,9 +54,20 @@ export function AbgAnalyzer({ metadata }: ToolComponentProps) {
         } else {
           compStatus = "Mixed Metabolic Acidosis & Respiratory Alkalosis";
         }
+        
+        if (anionGap !== null) {
+          if (anionGap > 12) {
+            agType = "High Anion Gap (HAGMA)";
+            treatment = "Investigate MUDPILES: Methanol, Uremia, DKA, Propylene Glycol, Isoniazid/Iron, Lactic Acidosis, Ethylene Glycol, Salicylates.";
+          } else {
+            agType = "Normal Anion Gap (NAGMA)";
+            treatment = "Investigate HARDASS: Hyperalimentation, Addison's, RTA, Diarrhea, Acetazolamide, Spironolactone, Saline infusion.";
+          }
+        }
       } else {
         primary = "Mixed Acidosis";
         compStatus = "Both respiratory and metabolic components are acidotic.";
+        treatment = "Requires aggressive management of both ventilation and metabolic underlying causes.";
       }
     } else if (vPh > 7.45) {
       // Alkalemia
@@ -54,9 +76,10 @@ export function AbgAnalyzer({ metadata }: ToolComponentProps) {
         expected = "Acute: HCO3 ≈ " + (24 - 2 * ((40 - vPco2) / 10)).toFixed(1) + 
                    " | Chronic: HCO3 ≈ " + (24 - 5 * ((40 - vPco2) / 10)).toFixed(1);
         compStatus = "Check if HCO3 matches expected values to determine compensation type.";
+        treatment = "Treat underlying cause of hyperventilation (e.g., anxiety, pain, hypoxemia, fever, sepsis).";
       } else if (vHco3 > 26 && vPco2 >= 35) {
         primary = "Metabolic Alkalosis";
-        const expectedPco2 = (0.7 * vHco3) + 21; // roughly 0.7 * HCO3 + 21
+        const expectedPco2 = (0.7 * vHco3) + 21;
         expected = "Expected pCO2: " + (expectedPco2 - 2).toFixed(1) + " to " + (expectedPco2 + 2).toFixed(1);
         if (vPco2 >= (expectedPco2 - 2) && vPco2 <= (expectedPco2 + 2)) {
           compStatus = "Adequately Compensated";
@@ -65,6 +88,7 @@ export function AbgAnalyzer({ metadata }: ToolComponentProps) {
         } else {
           compStatus = "Mixed Metabolic Alkalosis & Respiratory Alkalosis";
         }
+        treatment = "Assess fluid status and urine chloride. Often saline-responsive (vomiting, diuretics) or saline-resistant (hyperaldosteronism).";
       } else {
         primary = "Mixed Alkalosis";
         compStatus = "Both respiratory and metabolic components are alkalotic.";
@@ -80,7 +104,7 @@ export function AbgAnalyzer({ metadata }: ToolComponentProps) {
       }
     }
 
-    result = { primary, compensation: compStatus, expected };
+    result = { primary, compensation: compStatus, expected, anionGap, agType, treatment };
   }
 
   return (
@@ -107,6 +131,14 @@ export function AbgAnalyzer({ metadata }: ToolComponentProps) {
               <Label className="text-base font-semibold">HCO₃ <span className="text-muted-foreground text-sm font-normal">(mEq/L)</span></Label>
               <Input type="number" step="1" value={hco3} onChange={e => setHco3(e.target.value)} className="w-24 text-right" />
             </div>
+            <div className="flex justify-between items-center border-t pt-4 mt-4">
+              <Label className="text-base font-semibold">Na⁺ <span className="text-muted-foreground text-sm font-normal">(mEq/L) - Optional</span></Label>
+              <Input type="number" step="1" value={na} onChange={e => setNa(e.target.value)} className="w-24 text-right" />
+            </div>
+            <div className="flex justify-between items-center">
+              <Label className="text-base font-semibold">Cl⁻ <span className="text-muted-foreground text-sm font-normal">(mEq/L) - Optional</span></Label>
+              <Input type="number" step="1" value={cl} onChange={e => setCl(e.target.value)} className="w-24 text-right" />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -128,14 +160,32 @@ export function AbgAnalyzer({ metadata }: ToolComponentProps) {
                 {result.primary !== "Normal" && (
                   <>
                     <div className="h-px bg-border my-4" />
-                    <div className="space-y-3">
+                    <div className="space-y-4">
+                      {result.anionGap !== null && result.primary.includes("Metabolic Acidosis") && (
+                        <div>
+                          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">Anion Gap</span>
+                          <p className="font-medium flex items-center gap-2">
+                            {result.anionGap.toFixed(1)} mEq/L
+                            <span className="text-xs bg-muted px-2 py-0.5 rounded-full">{result.agType}</span>
+                          </p>
+                        </div>
+                      )}
+                      
                       <div>
                         <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">Compensation Status</span>
                         <p className="font-medium">{result.compensation}</p>
                       </div>
+                      
                       {result.expected && (
-                        <div className="bg-muted p-3 rounded-lg border text-sm">
+                        <div className="bg-muted/50 p-3 rounded-lg border text-sm font-mono text-muted-foreground">
                           {result.expected}
+                        </div>
+                      )}
+
+                      {result.treatment && (
+                        <div className="bg-primary/5 p-4 rounded-xl border border-primary/10 mt-2">
+                          <span className="text-xs font-semibold uppercase tracking-wider text-primary block mb-1">Treatment Insights</span>
+                          <p className="text-sm">{result.treatment}</p>
                         </div>
                       )}
                     </div>
@@ -146,7 +196,7 @@ export function AbgAnalyzer({ metadata }: ToolComponentProps) {
               <div className="bg-muted p-4 rounded-xl flex gap-3 text-sm relative z-10">
                 <Info className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
                 <p className="text-muted-foreground leading-relaxed">
-                  <strong className="text-foreground">Reminder:</strong> Evaluate the Anion Gap (Na - (Cl + HCO3)) in all cases of metabolic acidosis to determine if it is gap or non-gap.
+                  <strong className="text-foreground">Reminder:</strong> Evaluate the Delta Ratio (ΔAG / ΔHCO3) in cases of HAGMA to identify hidden mixed metabolic disorders (e.g., concomitant NAGMA or Metabolic Alkalosis).
                 </p>
               </div>
             </CardContent>
