@@ -1,6 +1,9 @@
 {
+  "firestore": {
+    "rules": "firestore.rules"
+  },
   "hosting": {
-    "site": "alltools",
+    "site": "clinikkit",
     "public": "out",
     "cleanUrls": true,
     "ignore": [

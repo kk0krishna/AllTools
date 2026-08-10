@@ -108,7 +108,7 @@ export default async function ToolPage({ params }: Props) {
 
       {/* Tool Content (Docs, FAQs, How it works) */}
       {ToolContent && (
-        <article className="prose prose-slate dark:prose-invert max-w-none">
+        <article className="prose prose-slate dark:prose-invert prose-premium max-w-none bg-card/30 backdrop-blur-sm border rounded-2xl p-6 sm:p-10 shadow-sm mt-8">
           <ToolContent />
         </article>
       )}

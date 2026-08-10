@@ -1,0 +1,30 @@
+<svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Medical Cobalt Gradient -->
+    <linearGradient id="cobaltGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0066CC" />
+      <stop offset="100%" stop-color="#004C99" />
+    </linearGradient>
+    
+    <!-- Squircle Shadow -->
+    <filter id="squircleShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0066CC" flood-opacity="0.15" />
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.05" />
+    </filter>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect x="32" y="32" width="448" height="448" rx="112" fill="#FFFFFF" filter="url(#squircleShadow)" />
+
+  <!-- Code Brackets & Medical Cross -->
+  <g transform="translate(112, 112)">
+    <!-- Left Bracket < -->
+    <path d="M 90 60 L 40 144 L 90 228" stroke="url(#cobaltGradient)" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <!-- Right Bracket > -->
+    <path d="M 198 60 L 248 144 L 198 228" stroke="url(#cobaltGradient)" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <!-- Medical Cross + -->
+    <path d="M 144 94 L 144 194 M 94 144 L 194 144" stroke="url(#cobaltGradient)" stroke-width="36" stroke-linecap="round" />
+  </g>
+</svg>

@@ -20,63 +20,42 @@ interface BMIResult {
 }
 
 export function BmiCalculator({ metadata }: ToolComponentProps) {
-  const [unit, setUnit] = useState<UnitSystem>("metric");
+  const [heightUnit, setHeightUnit] = useState<"cm" | "in">("cm");
+  const [weightUnit, setWeightUnit] = useState<"kg" | "lbs">("kg");
   const [gender, setGender] = useState<"male" | "female">("male");
   
-  // Metric state
-  const [weightKg, setWeightKg] = useState("70");
-  const [heightCm, setHeightCm] = useState("170");
+  // State
+  const [weight, setWeight] = useState("70");
+  const [height, setHeight] = useState("170");
   
-  // Imperial state
-  const [weightLbs, setWeightLbs] = useState("154");
-  const [heightInches, setHeightInches] = useState("67");
-
   const [result, setResult] = useState<BMIResult | null>(null);
 
-  // Sync values when unit changes (approximate)
-  useEffect(() => {
-    if (unit === "metric") {
-      const kg = Math.round(parseFloat(weightLbs) * 0.453592);
-      const cm = Math.round(parseFloat(heightInches) * 2.54);
-      if (!isNaN(kg)) setWeightKg(kg.toString());
-      if (!isNaN(cm)) setHeightCm(cm.toString());
-    } else {
-      const lbs = Math.round(parseFloat(weightKg) / 0.453592);
-      const inches = Math.round(parseFloat(heightCm) / 2.54);
-      if (!isNaN(lbs)) setWeightLbs(lbs.toString());
-      if (!isNaN(inches)) setHeightInches(inches.toString());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unit]);
-
-  // Auto calculate when inputs change
-  useEffect(() => {
-    calculate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unit, gender, weightKg, heightCm, weightLbs, heightInches]);
-
   const calculate = () => {
-    let weight = 0; // in kg
-    let height = 0; // in cm
+    let weightKgCalc = 0; // in kg
+    let heightCmCalc = 0; // in cm
     let heightInchesTotal = 0;
 
-    if (unit === "metric") {
-      weight = parseFloat(weightKg);
-      height = parseFloat(heightCm);
-      heightInchesTotal = height / 2.54;
+    if (weightUnit === "kg") {
+      weightKgCalc = parseFloat(weight);
     } else {
-      weight = parseFloat(weightLbs) * 0.453592;
-      heightInchesTotal = parseFloat(heightInches);
-      height = heightInchesTotal * 2.54;
+      weightKgCalc = parseFloat(weight) * 0.453592;
     }
 
-    if (!weight || !height || height <= 0 || weight <= 0) {
+    if (heightUnit === "cm") {
+      heightCmCalc = parseFloat(height);
+      heightInchesTotal = heightCmCalc / 2.54;
+    } else {
+      heightInchesTotal = parseFloat(height);
+      heightCmCalc = heightInchesTotal * 2.54;
+    }
+
+    if (!weightKgCalc || !heightCmCalc || heightCmCalc <= 0 || weightKgCalc <= 0) {
       setResult(null);
       return;
     }
 
-    const heightM = height / 100;
-    const bmi = weight / (heightM * heightM);
+    const heightM = heightCmCalc / 100;
+    const bmi = weightKgCalc / (heightM * heightM);
     
     // Determine category (WHO Guidelines)
     let category = "";
@@ -127,7 +106,7 @@ export function BmiCalculator({ metadata }: ToolComponentProps) {
     const minHealthyWeight = 18.5 * (heightM * heightM);
     const maxHealthyWeight = 24.9 * (heightM * heightM);
     
-    const healthyRangeStr = unit === "metric" 
+    const healthyRangeStr = weightUnit === "kg" 
       ? `${minHealthyWeight.toFixed(1)} - ${maxHealthyWeight.toFixed(1)} kg`
       : `${(minHealthyWeight * 2.20462).toFixed(1)} - ${(maxHealthyWeight * 2.20462).toFixed(1)} lbs`;
 
@@ -142,14 +121,20 @@ export function BmiCalculator({ metadata }: ToolComponentProps) {
     });
   };
 
+  // Auto calculate when inputs change
+  useEffect(() => {
+    calculate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [heightUnit, weightUnit, gender, weight, height]);
+
   const formatWeight = (kg: number) => {
-    if (unit === "metric") return `${kg} kg`;
+    if (weightUnit === "kg") return `${kg} kg`;
     return `${(kg * 2.20462).toFixed(1)} lbs`;
   };
 
   // Convert total inches back to ft/in for display
   const getFtInDisplay = () => {
-    const totalInches = parseFloat(heightInches) || 0;
+    const totalInches = parseFloat(height) || 0;
     const ft = Math.floor(totalInches / 12);
     const inches = Math.round(totalInches % 12);
     return `${ft}' ${inches}"`;
@@ -167,49 +152,26 @@ export function BmiCalculator({ metadata }: ToolComponentProps) {
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
           
-          {/* Custom Toggle Controls */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">System</Label>
-              <div className="flex p-1 bg-muted rounded-xl border border-border/50">
-                <button
-                  onClick={() => setUnit("metric")}
-                  className={`flex-1 py-1.5 text-sm font-medium rounded-lg transition-all ${
-                    unit === "metric" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Metric
-                </button>
-                <button
-                  onClick={() => setUnit("imperial")}
-                  className={`flex-1 py-1.5 text-sm font-medium rounded-lg transition-all ${
-                    unit === "imperial" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Imperial
-                </button>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Biological Sex</Label>
-              <div className="flex p-1 bg-muted rounded-xl border border-border/50">
-                <button
-                  onClick={() => setGender("male")}
-                  className={`flex-1 py-1.5 text-sm font-medium rounded-lg transition-all ${
-                    gender === "male" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Male
-                </button>
-                <button
-                  onClick={() => setGender("female")}
-                  className={`flex-1 py-1.5 text-sm font-medium rounded-lg transition-all ${
-                    gender === "female" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Female
-                </button>
-              </div>
+          {/* Biological Sex Control */}
+          <div className="w-full sm:w-1/2 md:w-1/3">
+            <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 block">Biological Sex</Label>
+            <div className="flex p-1 bg-muted rounded-xl border border-border/50">
+              <button
+                onClick={() => setGender("male")}
+                className={`flex-1 py-1.5 text-sm font-medium rounded-lg transition-all ${
+                  gender === "male" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Male ♂
+              </button>
+              <button
+                onClick={() => setGender("female")}
+                className={`flex-1 py-1.5 text-sm font-medium rounded-lg transition-all ${
+                  gender === "female" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Female ♀
+              </button>
             </div>
           </div>
 
@@ -224,24 +186,38 @@ export function BmiCalculator({ metadata }: ToolComponentProps) {
                 <div className="flex items-center gap-2">
                   <Input 
                     type="number" 
-                    value={unit === "metric" ? heightCm : heightInches} 
-                    onChange={(e) => unit === "metric" ? setHeightCm(e.target.value) : setHeightInches(e.target.value)} 
-                    className="w-20 h-8 text-right font-semibold"
+                    value={height} 
+                    onChange={(e) => setHeight(e.target.value)} 
+                    className="w-20 h-9 text-right font-semibold rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
-                  <span className="text-sm font-medium text-muted-foreground w-6">
-                    {unit === "metric" ? "cm" : "in"}
-                  </span>
+                  <select
+                    value={heightUnit}
+                    onChange={(e) => {
+                      const newUnit = e.target.value as "cm" | "in";
+                      if (newUnit !== heightUnit) {
+                        setHeightUnit(newUnit);
+                        const val = newUnit === "cm" 
+                          ? Math.round(parseFloat(height) * 2.54)
+                          : Math.round(parseFloat(height) / 2.54);
+                        if (!isNaN(val)) setHeight(val.toString());
+                      }
+                    }}
+                    className="h-9 px-2 bg-muted border border-input rounded-r-md text-sm font-medium text-foreground outline-none focus:ring-1 focus:ring-ring"
+                  >
+                    <option value="cm">cm</option>
+                    <option value="in">in</option>
+                  </select>
                 </div>
               </div>
               <input 
                 type="range" 
-                min={unit === "metric" ? "100" : "40"} 
-                max={unit === "metric" ? "230" : "90"} 
-                value={unit === "metric" ? heightCm : heightInches}
-                onChange={(e) => unit === "metric" ? setHeightCm(e.target.value) : setHeightInches(e.target.value)}
+                min={heightUnit === "cm" ? "100" : "40"} 
+                max={heightUnit === "cm" ? "230" : "90"} 
+                value={height}
+                onChange={(e) => setHeight(e.target.value)}
                 className="w-full accent-primary"
               />
-              {unit === "imperial" && (
+              {heightUnit === "in" && (
                 <div className="text-right text-xs text-muted-foreground font-medium">
                   Equals: {getFtInDisplay()}
                 </div>
@@ -258,21 +234,35 @@ export function BmiCalculator({ metadata }: ToolComponentProps) {
                 <div className="flex items-center gap-2">
                   <Input 
                     type="number" 
-                    value={unit === "metric" ? weightKg : weightLbs} 
-                    onChange={(e) => unit === "metric" ? setWeightKg(e.target.value) : setWeightLbs(e.target.value)} 
-                    className="w-20 h-8 text-right font-semibold"
+                    value={weight} 
+                    onChange={(e) => setWeight(e.target.value)} 
+                    className="w-20 h-9 text-right font-semibold rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
-                  <span className="text-sm font-medium text-muted-foreground w-6">
-                    {unit === "metric" ? "kg" : "lbs"}
-                  </span>
+                  <select
+                    value={weightUnit}
+                    onChange={(e) => {
+                      const newUnit = e.target.value as "kg" | "lbs";
+                      if (newUnit !== weightUnit) {
+                        setWeightUnit(newUnit);
+                        const val = newUnit === "kg"
+                          ? Math.round(parseFloat(weight) / 2.20462)
+                          : Math.round(parseFloat(weight) * 2.20462);
+                        if (!isNaN(val)) setWeight(val.toString());
+                      }
+                    }}
+                    className="h-9 px-2 bg-muted border border-input rounded-r-md text-sm font-medium text-foreground outline-none focus:ring-1 focus:ring-ring"
+                  >
+                    <option value="kg">kg</option>
+                    <option value="lbs">lbs</option>
+                  </select>
                 </div>
               </div>
               <input 
                 type="range" 
-                min={unit === "metric" ? "30" : "65"} 
-                max={unit === "metric" ? "200" : "450"} 
-                value={unit === "metric" ? weightKg : weightLbs}
-                onChange={(e) => unit === "metric" ? setWeightKg(e.target.value) : setWeightLbs(e.target.value)}
+                min={weightUnit === "kg" ? "30" : "65"} 
+                max={weightUnit === "kg" ? "200" : "450"} 
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
                 className="w-full accent-primary"
               />
             </div>

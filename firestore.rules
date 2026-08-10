@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow anyone to read stats
+    match /toolStats/{document} {
+      allow read: if true;
+      allow update: if true; // In production, restrict this to only increment operations if possible
+      allow create: if true;
+    }
+    // Allow write-only for pageViews
+    match /pageViews/{document} {
+      allow create: if true;
+      allow read: if false; // Keep raw logs private
+    }
+  }
+}
