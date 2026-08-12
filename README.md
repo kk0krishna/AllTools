@@ -1,15 +1,15 @@
 <div align="center">
-  <img src="./public/logo.png" alt="AllTools Logo" width="80" height="80" style="border-radius: 12px; margin-bottom: 20px;" />
+  <img src="./public/logo.svg" alt="Clinikkit Logo" width="80" height="80" style="border-radius: 12px; margin-bottom: 20px;" />
   
-  # AllTools – Every Tool. One Place.
+  # Clinikkit – Every Tool. One Place.
   
-  **A scalable, lightning-fast, and open-source platform hosting practical online utilities, calculators, converters, and developer tools.**
+  **A scalable, lightning-fast, privacy-first platform offering clinical medical calculators, advanced developer utilities, and everyday tools.**
 
   [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
   [![Firebase](https://img.shields.io/badge/Firebase-Hosting-FFCA28?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
   
-  <img src="./public/promo.png" alt="AllTools Promo" style="border-radius: 12px; margin-top: 20px; max-width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.1);" />
+  <img src="./public/images/opengraph-image.png" alt="Clinikkit Promo" style="border-radius: 12px; margin-top: 20px; max-width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.1);" />
 </div>
 
 ## ✨ Features
@@ -125,9 +125,11 @@ Because this project uses Next.js Static Export, it is perfectly compatible with
 
 ## 👨‍💻 Developer & Maintainer
 
-**Krishna**
+**Krishna KK**
 - **GitHub**: [@kk0krishna](https://github.com/kk0krishna)
 - **Project Link**: [https://github.com/kk0krishna/AllTools](https://github.com/kk0krishna/AllTools)
+
+Clinikkit was developed by Krishna KK with a passion for delivering fast, high-performance applications. Designed as a reliable alternative to online tools that often feature intrusive ads, paywalls, or slow server-side processing, this platform reflects a commitment to clean engineering and clinical precision.
 
 Contributions, issues, and feature requests are always welcome! Feel free to check the [issues page](https://github.com/kk0krishna/AllTools/issues) if you want to contribute.
 
