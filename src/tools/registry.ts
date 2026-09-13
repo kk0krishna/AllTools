@@ -23,6 +23,8 @@ import { bmiCalculatorEntry } from "./calculators/bmi-calculator/metadata";
 import { jsonFormatterEntry } from "./developer/json-formatter/metadata";
 import { faviconGeneratorEntry } from "./developer/favicon-generator/metadata";
 import { qrCodeGeneratorEntry } from "./everyday/qr-code-generator/metadata";
+import { barcodeGeneratorEntry } from "./everyday/barcode-generator/metadata";
+import { imageConverterEntry } from "./everyday/image-converter/metadata";
 import { audioSpectrumAnalyzerEntry } from "./audio/audio-spectrum-analyzer/metadata";
 import { pregnancyCalculatorEntry } from "./obstetrics/pregnancy-calculator/metadata";
 import { pregnancyTimelineEntry } from "./obstetrics/pregnancy-timeline/metadata";
@@ -59,6 +61,8 @@ export const toolsRegistry: ToolEntry[] = [
   jsonFormatterEntry,
   faviconGeneratorEntry,
   qrCodeGeneratorEntry,
+  barcodeGeneratorEntry,
+  imageConverterEntry,
   audioSpectrumAnalyzerEntry,
   pregnancyCalculatorEntry,
   pregnancyTimelineEntry,
