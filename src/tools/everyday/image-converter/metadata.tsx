@@ -4,18 +4,19 @@ import { ImageConverterTool } from ".";
 
 export const imageConverterEntry: ToolEntry = {
   metadata: {
-    name: "UploadReady: Image Requirements Solver",
-    description: "Tell us what the form requires, and we'll make your image fit. Precise KB compression, dimension resizing, and format conversion.",
+    name: "Upload Ready: Image Requirements Solver",
+    description: "Precise KB compression, dimension resizing, and format conversion.",
     category: "everyday",
     slug: "image-converter",
     keywords: ["image requirements", "compress image to 50kb", "passport photo size", "signature resizer", "photo under 20kb", "form photo"],
+    hideHeader: true,
   },
   component: ImageConverterTool,
   content: () => (
     <>
-      <h2>UploadReady: The Image Requirements Solver</h2>
+      <h2>UploadReady: Image Requirements Solver</h2>
       <p>
-        Don't waste time trying to manually figure out pixels, quality sliders, and formats. Just tell us what the portal, application, or form requires, and <strong>UploadReady</strong> will generate a file that perfectly matches those specifications.
+        Tell us what the form requires, and we'll make your image fit. Precise KB compression, dimension resizing, and format conversion.
       </p>
       <h3>Features</h3>
       <ul>
