@@ -1,5 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import ReactCrop, { type Crop, type PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css'; // CRITICAL: Fixes missing crop handles and preview
 import { useRef, useState, useEffect } from "react";
@@ -10,10 +12,13 @@ interface CropEditorProps {
   selectedFile: ImageFile;
   req: Requirement;
   manualCropData?: ImageCropData;
+  showApplyToAll?: boolean;
+  applyToAll?: boolean;
+  onToggleApplyToAll?: () => void;
   onUpdateCrop: (cropData: ImageCropData | undefined) => void;
 }
 
-export function CropEditor({ selectedFile, req, manualCropData, onUpdateCrop }: CropEditorProps) {
+export function CropEditor({ selectedFile, req, manualCropData, showApplyToAll, applyToAll, onToggleApplyToAll, onUpdateCrop }: CropEditorProps) {
   const [tempCrop, setTempCrop] = useState<Crop>();
   const imgRef = useRef<HTMLImageElement>(null);
 
@@ -46,8 +51,20 @@ export function CropEditor({ selectedFile, req, manualCropData, onUpdateCrop }: 
 
   return (
     <Card className="border-2 shadow-sm overflow-hidden border-border/50 animate-in fade-in">
-      <div className="bg-muted/30 px-4 sm:px-6 py-4 border-b flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-        <h3 className="text-base sm:text-lg font-bold">2. Adjust Crop (Optional)</h3>
+      <div className="bg-muted/30 px-4 sm:px-6 py-4 border-b flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <h3 className="text-base sm:text-lg font-bold">2. Adjust Crop (Optional)</h3>
+          {showApplyToAll && (
+            <div className="flex items-center space-x-2 sm:border-l sm:pl-4">
+              <Switch 
+                id="apply-all" 
+                checked={applyToAll} 
+                onCheckedChange={onToggleApplyToAll}
+              />
+              <Label htmlFor="apply-all" className="text-sm cursor-pointer">Apply to all images</Label>
+            </div>
+          )}
+        </div>
         <Button variant="outline" size="sm" onClick={() => { setTempCrop(undefined); onUpdateCrop(undefined); }} className="h-7 text-xs w-fit">
           Clear Custom Crop
         </Button>

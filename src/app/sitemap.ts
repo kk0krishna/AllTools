@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { toolsRegistry } from '@/tools/registry';
+import { imageConverterSeoPages } from '@/lib/seo-configs/image-converter';
 
 export const dynamic = 'force-static';
 
@@ -33,5 +34,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   } as const));
 
-  return [...routes, ...categoryRoutes, ...toolRoutes];
+  // SEO routes
+  const seoRoutes = imageConverterSeoPages.map((page) => ({
+    url: `${baseUrl}/${page.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  } as const));
+
+  return [...routes, ...categoryRoutes, ...toolRoutes, ...seoRoutes];
 }

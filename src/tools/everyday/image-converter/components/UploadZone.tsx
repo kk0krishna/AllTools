@@ -22,12 +22,14 @@ export function UploadZone({ files, selectedFileId, onFileChange, onSelectFile, 
           <p className="text-base sm:text-xl text-muted-foreground font-medium px-4">Make any file fit the requirement.</p>
         </div>
 
-        <Label className="flex flex-col items-center justify-center w-full h-40 sm:h-48 border-4 border-dashed border-primary/20 rounded-2xl bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer group shadow-sm">
-          <Upload className="w-10 h-10 sm:w-12 sm:h-12 text-primary/60 mb-2 sm:mb-4 group-hover:text-primary transition-colors" />
-          <span className="text-base sm:text-lg font-semibold text-foreground">Drop files here</span>
-          <span className="text-xs sm:text-sm text-muted-foreground mt-1">or click to browse</span>
-          <input type="file" multiple accept="image/*" className="hidden" onChange={onFileChange} />
-        </Label>
+        {files.length === 0 && (
+          <Label className="flex flex-col items-center justify-center w-full h-40 sm:h-48 border-4 border-dashed border-primary/20 rounded-2xl bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer group shadow-sm">
+            <Upload className="w-10 h-10 sm:w-12 sm:h-12 text-primary/60 mb-2 sm:mb-4 group-hover:text-primary transition-colors" />
+            <span className="text-base sm:text-lg font-semibold text-foreground">Drop files here</span>
+            <span className="text-xs sm:text-sm text-muted-foreground mt-1">or click to browse</span>
+            <input type="file" multiple accept="image/*,.pdf,.heic,.heif,.avif,.webp,.tiff,.bmp,.ico" className="hidden" onChange={onFileChange} />
+          </Label>
+        )}
         
         <p className="text-xs text-muted-foreground font-medium flex justify-center items-center gap-1">
           🔒 Private by design · Processed securely in your browser
@@ -54,7 +56,7 @@ export function UploadZone({ files, selectedFileId, onFileChange, onSelectFile, 
           
           <Label className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground">
             <ImagePlus className="w-5 h-5 sm:w-6 sm:h-6" />
-            <input type="file" multiple accept="image/*" className="hidden" onChange={onFileChange} />
+            <input type="file" multiple accept="image/*,.pdf,.heic,.heif,.avif,.webp,.tiff,.bmp,.ico" className="hidden" onChange={onFileChange} />
           </Label>
         </div>
       )}

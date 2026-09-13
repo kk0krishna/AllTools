@@ -1,4 +1,3 @@
-import jsPDF from "jspdf";
 import { Requirement } from './presets';
 
 export interface ImageFile {
@@ -17,17 +16,18 @@ export interface ValidationCheck {
 
 export interface ProcessResult {
   id: string;
-  blob: Blob;
-  sizeKb: number;
-  width: number;
-  height: number;
-  format: string;
-  downloadName: string;
-  validation: {
+  blob?: Blob;
+  sizeKb?: number;
+  width?: number;
+  height?: number;
+  format?: string;
+  downloadName?: string;
+  validation?: {
     valid: boolean;
     checks: ValidationCheck[];
   };
-  fallbackUsed: boolean;
+  fallbackUsed?: boolean;
+  error?: string;
 }
 
 export interface ImageCropData {
@@ -111,37 +111,94 @@ export const processImage = async (
   req: Requirement,
   manualCrop?: ImageCropData
 ): Promise<ProcessResult> => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = async () => {
-      
-      let sx = 0, sy = 0, sWidth = img.naturalWidth, sHeight = img.naturalHeight;
-      
-      if (manualCrop && manualCrop.width > 0 && manualCrop.height > 0) {
-         // UI provided explicit absolute image crop coordinates
-         sx = manualCrop.x;
-         sy = manualCrop.y;
-         sWidth = manualCrop.width;
-         sHeight = manualCrop.height;
-      } 
-      else if (req.width && req.height) {
-        // AUTO CROP-TO-FIT
-        const targetW = req.width;
-        const targetH = req.height;
-        const targetAspect = targetW / targetH;
-        const imgAspect = img.naturalWidth / img.naturalHeight;
+  return new Promise(async (resolve, reject) => {
+    let img: ImageBitmap | HTMLImageElement | HTMLCanvasElement;
+    try {
+      let sourceFile = imgFile.file;
+      const fileType = sourceFile.type.toLowerCase();
+      const fileName = sourceFile.name.toLowerCase();
 
-        if (imgAspect > targetAspect) {
-          sHeight = img.naturalHeight;
-          sWidth = sHeight * targetAspect;
-          sx = (img.naturalWidth - sWidth) / 2;
-        } else {
-          sWidth = img.naturalWidth;
-          sHeight = sWidth / targetAspect;
-          sy = (img.naturalHeight - sHeight) / 2;
-        }
+      // 1. Lazy load HEIC decoder if needed
+      if (fileType === 'image/heic' || fileType === 'image/heif' || fileName.endsWith('.heic') || fileName.endsWith('.heif')) {
+        const heic2any = (await import('heic2any')).default;
+        const converted = await heic2any({
+          blob: sourceFile,
+          toType: 'image/jpeg',
+          quality: 0.9
+        });
+        sourceFile = (Array.isArray(converted) ? converted[0] : converted) as File;
       }
+
+      // 2. Lazy load PDF rasterizer if needed
+      if (fileType === 'application/pdf' || fileName.endsWith('.pdf')) {
+        const pdfjsLib = await import('pdfjs-dist');
+        if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+          pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+        }
+        const url = URL.createObjectURL(sourceFile);
+        const pdf = await pdfjsLib.getDocument({ url }).promise;
+        const page = await pdf.getPage(1); // Only process first page
+        const viewport = page.getViewport({ scale: 2.0 }); // 2x scale for crispness
+        URL.revokeObjectURL(url);
+        
+        const pdfCanvas = document.createElement('canvas');
+        pdfCanvas.width = viewport.width;
+        pdfCanvas.height = viewport.height;
+        const pdfCtx = pdfCanvas.getContext('2d');
+        await page.render({ canvasContext: pdfCtx!, viewport } as any).promise;
+        
+        img = pdfCanvas;
+      } else {
+        // Guaranteed EXIF normalization in modern browsers for standard images
+        img = await createImageBitmap(sourceFile, { imageOrientation: 'from-image' });
+      }
+    } catch (e) {
+      // Fallback for formats not supported by createImageBitmap (e.g. SVG in some browsers)
+      try {
+        img = await new Promise<HTMLImageElement>((res, rej) => {
+          const i = new Image();
+          i.crossOrigin = 'anonymous';
+          i.onload = () => res(i);
+          i.onerror = rej;
+          i.src = imgFile.previewUrl;
+        });
+      } catch (err) {
+        return resolve({
+          id: imgFile.id,
+          error: "Failed to process image. It may be corrupt or an unsupported format."
+        });
+      }
+    }
+
+    const imgWidth = img instanceof HTMLImageElement ? img.naturalWidth : img.width;
+    const imgHeight = img instanceof HTMLImageElement ? img.naturalHeight : img.height;
+    
+    let sx = 0, sy = 0, sWidth = imgWidth, sHeight = imgHeight;
+    
+    if (manualCrop && manualCrop.width > 0 && manualCrop.height > 0) {
+       // UI provided explicit absolute image crop coordinates
+       sx = manualCrop.x;
+       sy = manualCrop.y;
+       sWidth = manualCrop.width;
+       sHeight = manualCrop.height;
+    } 
+    else if (req.width && req.height) {
+      // AUTO CROP-TO-FIT
+      const targetW = req.width;
+      const targetH = req.height;
+      const targetAspect = targetW / targetH;
+      const imgAspect = imgWidth / imgHeight;
+
+      if (imgAspect > targetAspect) {
+        sHeight = imgHeight;
+        sWidth = sHeight * targetAspect;
+        sx = (imgWidth - sWidth) / 2;
+      } else {
+        sWidth = imgWidth;
+        sHeight = sWidth / targetAspect;
+        sy = (imgHeight - sHeight) / 2;
+      }
+    }
 
       // Determine Destination Size
       let dWidth = req.width ? req.width : sWidth;
@@ -169,6 +226,7 @@ export const processImage = async (
       let fallbackUsed = false;
 
       if (req.format === 'application/pdf') {
+        const jsPDF = (await import('jspdf')).default;
         const pdf = new jsPDF({
           orientation: dWidth > dHeight ? 'landscape' : 'portrait',
           unit: 'px',
@@ -241,8 +299,19 @@ export const processImage = async (
       }
 
       const ext = req.format === 'application/pdf' ? 'pdf' : req.format.split('/')[1];
-      const originalName = imgFile.file.name.replace(/\.[^/.]+$/, "");
-      const newName = `ready_${originalName}.${ext}`;
+      const originalNameWithoutExt = imgFile.file.name.replace(/\.[^/.]+$/, "");
+      const originalNameFull = imgFile.file.name;
+      
+      let newName = `ready_${originalNameWithoutExt}.${ext}`;
+      
+      if (req.filenamePattern) {
+        newName = req.filenamePattern
+          .replace(/{name}/g, originalNameWithoutExt)
+          .replace(/{original}/g, originalNameFull)
+          .replace(/{width}/g, String(finalW))
+          .replace(/{height}/g, String(finalH))
+          .replace(/{format}/g, ext);
+      }
 
       const validation = validateResult(finalBlob!, finalW, finalH, req.format, req);
 
@@ -257,8 +326,5 @@ export const processImage = async (
         validation,
         fallbackUsed
       });
-    };
-    img.onerror = reject;
-    img.src = imgFile.previewUrl;
   });
 };

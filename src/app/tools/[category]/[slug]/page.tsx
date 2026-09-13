@@ -92,14 +92,16 @@ export default async function ToolPage({ params }: Props) {
       </nav>
 
       {/* Header - Tighter spacing on mobile */}
-      <header className="mb-6 sm:mb-10">
-        <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-heading mb-2 sm:mb-3 text-foreground tracking-tight">
-          {metadata.name}
-        </h1>
-        <p className="text-sm sm:text-lg text-muted-foreground leading-relaxed">
-          {metadata.description}
-        </p>
-      </header>
+      {!metadata.hideHeader && (
+        <header className="mb-6 sm:mb-10">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-heading mb-2 sm:mb-3 text-foreground tracking-tight">
+            {metadata.name}
+          </h1>
+          <p className="text-sm sm:text-lg text-muted-foreground leading-relaxed">
+            {metadata.description}
+          </p>
+        </header>
+      )}
 
       {/* Main Tool Component */}
       <div className="mb-16">
