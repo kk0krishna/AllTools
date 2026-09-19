@@ -81,14 +81,17 @@ export function IshiharaTest({ metadata }: ToolComponentProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-8 pt-8 flex flex-col items-center">
-              <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full overflow-hidden shadow-inner border-4 border-muted">
-                <Image 
-                  src={PLATES[currentPlate].src} 
-                  alt={`Ishihara Plate ${PLATES[currentPlate].id}`} 
-                  fill
-                  className="object-cover"
-                  priority={currentPlate === 0}
-                />
+              <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full overflow-hidden shadow-inner border-4 border-muted bg-muted/30">
+                {PLATES.map((plate, index) => (
+                  <Image 
+                    key={plate.id}
+                    src={plate.src} 
+                    alt={`Ishihara Plate ${plate.id}`} 
+                    fill
+                    className={`object-cover transition-opacity duration-300 ease-in-out ${index === currentPlate ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+                    priority={true}
+                  />
+                ))}
               </div>
 
               <div className="flex flex-col items-center w-full max-w-sm space-y-4">
