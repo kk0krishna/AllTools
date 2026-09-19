@@ -89,7 +89,7 @@ export function IshiharaTest({ metadata }: ToolComponentProps) {
                     alt={`Ishihara Plate ${plate.id}`} 
                     fill
                     className={`object-cover transition-opacity duration-300 ease-in-out ${index === currentPlate ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
-                    priority={true}
+                    priority={index === 0}
                   />
                 ))}
               </div>
