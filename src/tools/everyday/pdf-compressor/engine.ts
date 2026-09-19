@@ -1,8 +1,4 @@
-import * as pdfjsLib from 'pdfjs-dist';
 import jsPDF from 'jspdf';
-
-// Set worker source for pdfjs
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.mjs`;
 
 export interface PDFFile {
   id: string;
@@ -29,6 +25,11 @@ export const processPDF = async (
   req: PDFRequirement
 ): Promise<PDFProcessResult> => {
   try {
+    const pdfjsLib = await import('pdfjs-dist');
+    if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.mjs`;
+    }
+
     const arrayBuffer = await pdfFile.file.arrayBuffer();
     const pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     const numPages = pdfDocument.numPages;
