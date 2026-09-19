@@ -7,7 +7,7 @@ import { Activity, Syringe, Calendar, CheckCircle2, Circle } from "lucide-react"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const SCHEDULE = [
+const CDC_SCHEDULE = [
   { age: "Birth", months: 0, vaccines: ["HepB (1st dose)"] },
   { age: "2 Months", months: 2, vaccines: ["HepB (2nd dose)", "RV", "DTaP", "Hib", "PCV15", "IPV"] },
   { age: "4 Months", months: 4, vaccines: ["RV", "DTaP", "Hib", "PCV15", "IPV"] },
@@ -19,8 +19,42 @@ const SCHEDULE = [
   { age: "16 Years", months: 192, vaccines: ["MenACWY (Booster)"] },
 ];
 
+const IAP_SCHEDULE = [
+  { age: "Birth", months: 0, vaccines: ["BCG", "OPV 0", "Hep B 1"] },
+  { age: "6 Weeks", months: 1.5, vaccines: ["DTwP 1", "IPV 1", "Hep B 2", "Hib 1", "Rotavirus 1", "PCV 1"] },
+  { age: "10 Weeks", months: 2.5, vaccines: ["DTwP 2", "IPV 2", "Hib 2", "Rotavirus 2", "PCV 2"] },
+  { age: "14 Weeks", months: 3.5, vaccines: ["DTwP 3", "IPV 3", "Hib 3", "Rotavirus 3", "PCV 3"] },
+  { age: "6 Months", months: 6, vaccines: ["Hep B 3", "OPV 1", "Tybar (Typhoid)"] },
+  { age: "9 Months", months: 9, vaccines: ["MMR 1", "MCV (Meningococcal)"] },
+  { age: "12 Months", months: 12, vaccines: ["Hep A 1"] },
+  { age: "15 Months", months: 15, vaccines: ["MMR 2", "Varicella 1", "PCV Booster"] },
+  { age: "16-18 Months", months: 16, vaccines: ["DTwP B1", "IPV B1", "Hib B1"] },
+  { age: "18-19 Months", months: 18, vaccines: ["Hep A 2", "Varicella 2"] },
+  { age: "4.5-5 Years", months: 54, vaccines: ["DTwP B2", "IPV B2", "MMR 3"] },
+  { age: "10-12 Years", months: 120, vaccines: ["Tdap", "HPV", "Tybar"] },
+];
+
+const NIP_INDIA_SCHEDULE = [
+  { age: "Birth", months: 0, vaccines: ["BCG", "OPV 0", "Hep-B (Birth Dose)"] },
+  { age: "6 Weeks", months: 1.5, vaccines: ["OPV 1", "Pentavalent 1", "Rotavirus 1", "fIPV 1", "PCV 1"] },
+  { age: "10 Weeks", months: 2.5, vaccines: ["OPV 2", "Pentavalent 2", "Rotavirus 2"] },
+  { age: "14 Weeks", months: 3.5, vaccines: ["OPV 3", "Pentavalent 3", "Rotavirus 3", "fIPV 2", "PCV 2"] },
+  { age: "9-12 Months", months: 9, vaccines: ["MR 1", "JE 1 (Endemic areas)", "PCV Booster"] },
+  { age: "16-24 Months", months: 16, vaccines: ["MR 2", "JE 2", "DPT Booster 1", "OPV Booster"] },
+  { age: "5-6 Years", months: 60, vaccines: ["DPT Booster 2"] },
+  { age: "10 Years", months: 120, vaccines: ["Td"] },
+  { age: "16 Years", months: 192, vaccines: ["Td"] },
+];
+
+const GUIDELINES = {
+  CDC: { name: "CDC (USA)", schedule: CDC_SCHEDULE },
+  IAP: { name: "IAP (Indian Academy of Pediatrics)", schedule: IAP_SCHEDULE },
+  NIP: { name: "India National Immunization Program (NIP)", schedule: NIP_INDIA_SCHEDULE },
+};
+
 export function ImmunizationSchedule({ metadata }: ToolComponentProps) {
   const [dob, setDob] = useState<string>("");
+  const [guideline, setGuideline] = useState<keyof typeof GUIDELINES>("NIP");
   const [checkedVaccines, setCheckedVaccines] = useState<Record<string, boolean>>({});
 
   const toggleVaccine = (id: string) => {
@@ -31,10 +65,12 @@ export function ImmunizationSchedule({ metadata }: ToolComponentProps) {
     if (!dob) return [];
     const birthDate = new Date(dob);
     if (isNaN(birthDate.getTime())) return [];
+    
+    const activeSchedule = GUIDELINES[guideline].schedule;
 
-    return SCHEDULE.map(milestone => {
+    return activeSchedule.map(milestone => {
       const milestoneDate = new Date(birthDate);
-      milestoneDate.setMonth(birthDate.getMonth() + milestone.months);
+      milestoneDate.setDate(birthDate.getDate() + Math.round(milestone.months * 30.44));
       
       const isPast = milestoneDate < new Date();
       
@@ -44,7 +80,7 @@ export function ImmunizationSchedule({ metadata }: ToolComponentProps) {
         isPast
       };
     });
-  }, [dob]);
+  }, [dob, guideline]);
 
   return (
     <div className="grid md:grid-cols-12 gap-8 items-start">
@@ -54,9 +90,24 @@ export function ImmunizationSchedule({ metadata }: ToolComponentProps) {
             <Calendar className="w-5 h-5 text-primary" />
             Patient Info
           </CardTitle>
-          <CardDescription>Enter Date of Birth to generate a personalized timeline.</CardDescription>
+          <CardDescription>Enter details to generate a personalized timeline.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
+          <div className="space-y-2">
+            <Label>Guideline</Label>
+            <select
+              className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              value={guideline}
+              onChange={e => {
+                setGuideline(e.target.value as keyof typeof GUIDELINES);
+                setCheckedVaccines({});
+              }}
+            >
+              {Object.entries(GUIDELINES).map(([key, value]) => (
+                <option key={key} value={key}>{value.name}</option>
+              ))}
+            </select>
+          </div>
           <div className="space-y-2">
             <Label>Date of Birth</Label>
             <Input 
@@ -73,7 +124,7 @@ export function ImmunizationSchedule({ metadata }: ToolComponentProps) {
           <Card className="h-full border-primary/20 shadow-lg relative overflow-hidden bg-gradient-to-br from-background to-muted/20">
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
             <CardHeader className="pb-2">
-              <CardTitle className="text-xl">Personalized Timeline</CardTitle>
+              <CardTitle className="text-xl">Personalized Timeline - {GUIDELINES[guideline].name}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6 pt-4">
               <div className="space-y-6 relative z-10">
@@ -104,7 +155,7 @@ export function ImmunizationSchedule({ metadata }: ToolComponentProps) {
               </div>
               
               <div className="text-xs text-muted-foreground p-4 bg-muted rounded-xl relative z-10">
-                <strong>Disclaimer:</strong> This timeline is a simplified educational tool based on the standard CDC childhood schedule. It does not replace clinical judgment, nor does it account for complex catch-up schedules, high-risk conditions, annual influenza, COVID-19 vaccines, or RSV monoclonal antibodies. Always consult the official CDC/AAP schedule.
+                <strong>Disclaimer:</strong> This timeline is a simplified educational tool based on standard schedules. It does not replace clinical judgment, nor does it account for complex catch-up schedules or high-risk conditions. Always consult the official guidelines.
               </div>
             </CardContent>
           </Card>

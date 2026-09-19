@@ -94,8 +94,15 @@ function ImageConverterContent({ initialReq }: ImageConverterProps) {
         if (nameLower.endsWith('.heic') || nameLower.endsWith('.heif')) {
           try {
             const heic2any = (await import('heic2any')).default;
+            
+            // Convert File to a fresh Blob to avoid issues in heic2any with browser File objects
+            const objectUrl = URL.createObjectURL(f);
+            const res = await fetch(objectUrl);
+            const freshBlob = await res.blob();
+            URL.revokeObjectURL(objectUrl);
+            
             const converted = await heic2any({
-              blob: f,
+              blob: freshBlob,
               toType: "image/jpeg",
               quality: 0.9
             });

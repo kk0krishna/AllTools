@@ -12,17 +12,17 @@ import Image from "next/image";
 
 // Using the actual images extracted from reference files.
 const PLATES = [
-  { id: 1, src: "/images/ishihara/ishihara12_By9C.png", correct: "12", deficient: "12", desc: "Plate 1 (Control): Both normal and color-deficient individuals should see 12." },
-  { id: 2, src: "/images/ishihara/ishihara8_By9C.png", correct: "8", deficient: "3", desc: "Plate 2: Normal sees 8. Red-green deficiency sees 3." },
-  { id: 3, src: "/images/ishihara/ishihara29_By9C.png", correct: "29", deficient: "70", desc: "Plate 3: Normal sees 29. Red-green deficiency sees 70." },
-  { id: 4, src: "/images/ishihara/ishihara5_By9C.png", correct: "5", deficient: "2", desc: "Plate 4: Normal sees 5. Red-green deficiency sees 2." },
-  { id: 5, src: "/images/ishihara/ishihara74_By9C.png", correct: "74", deficient: "21", desc: "Plate 5: Normal sees 74. Red-green deficiency sees 21." },
-  { id: 6, src: "/images/ishihara/ishihara7_By9C.png", correct: "7", deficient: "Nothing", desc: "Plate 6: Normal sees 7. Color deficient sees nothing." },
-  { id: 7, src: "/images/ishihara/ishihara45_By9C.png", correct: "45", deficient: "Nothing", desc: "Plate 7: Normal sees 45. Color deficient sees nothing." },
-  { id: 8, src: "/images/ishihara/ishihara2_By9C.png", correct: "2", deficient: "Nothing", desc: "Plate 8: Normal sees 2. Color deficient sees nothing." },
-  { id: 9, src: "/images/ishihara/ishihara16_By9C.png", correct: "16", deficient: "Nothing", desc: "Plate 9: Normal sees 16. Color deficient sees nothing." },
-  { id: 10, src: "/images/ishihara/ishihara35_By9C.png", correct: "35", deficient: "5", desc: "Plate 10: Normal sees 35. Protanopia sees 5, Deuteranopia sees 3." },
-  { id: 11, src: "/images/ishihara/ishihara96_By9C.png", correct: "96", deficient: "6", desc: "Plate 11: Normal sees 96. Protanopia sees 6, Deuteranopia sees 9." },
+  { id: 1, src: "/images/ishihara/ishihara12_By9C.webp", correct: "12", deficient: "12", desc: "Plate 1 (Control): Both normal and color-deficient individuals should see 12." },
+  { id: 2, src: "/images/ishihara/ishihara8_By9C.webp", correct: "8", deficient: "3", desc: "Plate 2: Normal sees 8. Red-green deficiency sees 3." },
+  { id: 3, src: "/images/ishihara/ishihara29_By9C.webp", correct: "29", deficient: "70", desc: "Plate 3: Normal sees 29. Red-green deficiency sees 70." },
+  { id: 4, src: "/images/ishihara/ishihara5_By9C.webp", correct: "5", deficient: "2", desc: "Plate 4: Normal sees 5. Red-green deficiency sees 2." },
+  { id: 5, src: "/images/ishihara/ishihara74_By9C.webp", correct: "74", deficient: "21", desc: "Plate 5: Normal sees 74. Red-green deficiency sees 21." },
+  { id: 6, src: "/images/ishihara/ishihara7_By9C.webp", correct: "7", deficient: "Nothing", desc: "Plate 6: Normal sees 7. Color deficient sees nothing." },
+  { id: 7, src: "/images/ishihara/ishihara45_By9C.webp", correct: "45", deficient: "Nothing", desc: "Plate 7: Normal sees 45. Color deficient sees nothing." },
+  { id: 8, src: "/images/ishihara/ishihara2_By9C.webp", correct: "2", deficient: "Nothing", desc: "Plate 8: Normal sees 2. Color deficient sees nothing." },
+  { id: 9, src: "/images/ishihara/ishihara16_By9C.webp", correct: "16", deficient: "Nothing", desc: "Plate 9: Normal sees 16. Color deficient sees nothing." },
+  { id: 10, src: "/images/ishihara/ishihara35_By9C.webp", correct: "35", deficient: "5", desc: "Plate 10: Normal sees 35. Protanopia sees 5, Deuteranopia sees 3." },
+  { id: 11, src: "/images/ishihara/ishihara96_By9C.webp", correct: "96", deficient: "6", desc: "Plate 11: Normal sees 96. Protanopia sees 6, Deuteranopia sees 9." },
 ];
 
 export function IshiharaTest({ metadata }: ToolComponentProps) {
