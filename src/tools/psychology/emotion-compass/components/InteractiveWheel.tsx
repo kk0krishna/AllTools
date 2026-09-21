@@ -29,6 +29,8 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
 
   // Rotation state
   const [rotation, setRotation] = useState(0);
+  const rotationRef = useRef(0);
+  const wheelGroupRef = useRef<SVGGElement>(null);
   const isDragging = useRef(false);
   const pointerIsDown = useRef(false);
   const lastAngle = useRef(0);
@@ -108,6 +110,7 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
     pointerIsDown.current = true;
     isDragging.current = false; // Reset drag state on touch/click start
     lastAngle.current = getAngle(e.clientX, e.clientY);
+    rotationRef.current = rotation;
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
@@ -126,18 +129,26 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
     
     if (!isDragging.current) return;
     
-    setRotation(prev => prev + delta);
+    rotationRef.current += delta;
+    if (wheelGroupRef.current) {
+      // Direct DOM manipulation to bypass React render loop for 60fps performance on mobile
+      wheelGroupRef.current.style.transform = `translate(${radius}px, ${radius}px) rotate(${rotationRef.current}deg)`;
+    }
     lastAngle.current = currentAngle;
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
     pointerIsDown.current = false;
+    // Commit the rotation to state to re-evaluate text uprightness on drag end
+    if (isDragging.current) {
+      setRotation(rotationRef.current);
+    }
     // We do NOT reset isDragging.current here yet.
     // It stays true so that the onClick event knows a drag just occurred.
   };
 
   return (
-    <div className="w-full relative flex items-center justify-start overflow-hidden h-[200vw] sm:h-auto sm:aspect-square max-h-[800px] touch-none">
+    <div className="w-full relative flex items-center justify-start overflow-hidden h-[200vw] sm:h-auto sm:aspect-square max-h-[800px]">
       {/* 
         On mobile, the container height is 200vw to fit the 200vw diameter wheel without severe clipping.
         The wheel is 200vw width, pushed left by 100vw (-left-[100vw]).
@@ -151,14 +162,18 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
           viewBox={`0 0 ${size} ${size}`}
           className="max-w-full h-auto select-none outline-none cursor-grab active:cursor-grabbing"
           aria-label="Feelings Wheel"
-          style={{ overflow: "visible", touchAction: "none" }}
+          style={{ overflow: "visible", pointerEvents: "none" }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
         >
           {/* Rotate the entire wheel based on the drag state */}
-          <g transform={`translate(${radius},${radius}) rotate(${rotation})`}>
+          <g 
+            ref={wheelGroupRef}
+            transform={`translate(${radius},${radius}) rotate(${rotation})`}
+            style={{ pointerEvents: "auto", touchAction: "none" }}
+          >
             {root.descendants().filter(d => d.depth > 0).map((node, i) => {
               const isSelected = selectedEmotions.includes(node.data.name);
               const isHovered = hoveredNode === node.data.name && !isDragging.current;
