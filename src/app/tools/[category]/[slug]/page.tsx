@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { getAllTools, getToolBySlug } from "@/tools/registry";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { Suspense } from "react";
 
 type Props = {
   params: Promise<{ category: string; slug: string }>;
@@ -105,7 +106,9 @@ export default async function ToolPage({ params }: Props) {
 
       {/* Main Tool Component */}
       <div className="mb-16">
-        <ToolComponent metadata={metadata} />
+        <Suspense fallback={<div className="h-32 w-full animate-pulse bg-muted rounded-xl" />}>
+          <ToolComponent metadata={metadata} />
+        </Suspense>
       </div>
 
       {/* Tool Content (Docs, FAQs, How it works) */}
