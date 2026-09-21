@@ -1,16 +1,12 @@
 "use client";
 
-import Image from "next/image";
-
-import { Search, Calculator, Code, Bot, Headphones, Stethoscope, HeartPulse, Wind, Brain, Activity, Baby, Eye, ArrowRight, Sparkles, X } from "lucide-react";
+import { Search, Calculator, Code, Bot, Headphones, Stethoscope, HeartPulse, Wind, Brain, Activity, Baby, Eye, ArrowRight, X, Heart } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { toolsRegistry } from "@/tools/registry";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-
 const CATEGORIES = [
   { name: "Calculators", icon: Calculator, color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20", href: "/categories/calculators", examples: "BMI, Age, Date Diff" },
   { name: "Developer", icon: Code, color: "text-purple-500", bg: "bg-purple-500/10", border: "border-purple-500/20", href: "/categories/developer", examples: "JSON Formatter, Base64" },
@@ -23,6 +19,7 @@ const CATEGORIES = [
   { name: "Oncology", icon: Activity, color: "text-orange-500", bg: "bg-orange-500/10", border: "border-orange-500/20", href: "/categories/oncology", examples: "BSA, TNM Staging" },
   { name: "Pediatrics", icon: Baby, color: "text-teal-500", bg: "bg-teal-500/10", border: "border-teal-500/20", href: "/categories/pediatrics", examples: "Immunization Sched" },
   { name: "Ophthalmology", icon: Eye, color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20", href: "/categories/ophthalmology", examples: "Ishihara Color Test" },
+  { name: "Psychology", icon: Heart, color: "text-violet-500", bg: "bg-violet-500/10", border: "border-violet-500/20", href: "/categories/psychology", examples: "Emotion Compass" },
 ];
 
 import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
@@ -33,6 +30,88 @@ const DEFAULT_TRENDING = [
   ...toolsRegistry.filter((t) => t.metadata.category === "obstetrics").slice(0, 2),
   ...toolsRegistry.filter((t) => t.metadata.category !== "obstetrics").slice(0, 3), // Keep 5 tools + 1 request card = 6 items
 ];
+
+// --- 3D Braided Mesh Generator ---
+const generateMeshPath = (index: number, total: number) => {
+  const segments = 6;
+  const width = 2400; 
+  const xStep = width / segments;
+  
+  // Spacing and phase to create a 3D cylindrical braid
+  const phase = (index / total) * Math.PI * 12; 
+  // Add some chaotic tangling to mimic natural fiber bundles
+  const tangle = Math.sin(index * 4.73) * 22 + Math.cos(index * 2.17) * 10; 
+  
+  let d = "";
+  for(let s=1; s<=segments; s++) {
+    const xStart = (s-1) * xStep;
+    const xEnd = s * xStep;
+    
+    // Creating the bottleneck/envelope effect (pinched in the middle, spreading at edges)
+    const normStart = (xStart - width/2) / (width/2);
+    const normEnd = (xEnd - width/2) / (width/2);
+    const normMid = ((xStart + xEnd)/2 - width/2) / (width/2);
+    
+    // Broad flowing envelope:
+    // tighter around the center, increasingly loose toward edges.
+    const edgeStart = Math.pow(Math.abs(normStart), 1.55);
+    const edgeEnd = Math.pow(Math.abs(normEnd), 1.55);
+    const edgeMid = Math.pow(Math.abs(normMid), 1.55);
+
+    const envStart = 105 + 300 * edgeStart;
+    const envEnd = 105 + 300 * edgeEnd;
+    const envMid = 105 + 300 * edgeMid;
+    
+    const yStart = 500 + Math.sin(phase + s) * envStart + tangle;
+    const yEnd = 500 + Math.sin(phase + s + 1.5) * envEnd - tangle;
+    
+    const c1x = xStart + xStep * 0.4;
+    const c1y = 500 + Math.sin(phase + s + 0.5) * envMid + tangle * 1.5;
+    
+    const c2x = xStart + xStep * 0.6;
+    const c2y = 500 + Math.sin(phase + s + 1.0) * envMid - tangle * 1.5;
+    
+    if (s === 1) {
+      d = `M 0,${yStart}`;
+    }
+    
+    d += ` C ${c1x},${c1y} ${c2x},${c2y} ${xEnd},${yEnd}`;
+  }
+  return d;
+};
+
+// --- Lightweight flowing fiber background ---
+const FIBER_COUNT = 32;
+
+const FIBERS = Array.from({ length: FIBER_COUNT }, (_, i) => {
+  const wave = Math.sin(i * 3.71);
+  const depth = Math.abs(Math.sin(i * 5.13));
+
+  return {
+    path: generateMeshPath(i, FIBER_COUNT),
+
+    // Most strands are thin; a few become prominent ribbons
+    width:
+      i % 9 === 0
+        ? 3.2
+        : i % 5 === 0
+          ? 1.8
+          : 0.65 + depth * 1.15,
+
+    opacity:
+      i % 9 === 0
+        ? 0.42
+        : 0.10 + depth * 0.30,
+
+    duration: 12 + Math.abs(wave) * 10,
+
+    // Slightly different starting points
+    delay: -(Math.abs(Math.cos(i * 5.17)) * 18),
+
+    // Long dash = almost continuous strand
+    dash: 700 + depth * 700,
+  };
+});
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -91,33 +170,174 @@ export default function Home() {
     <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Ultra-Minimalist Hero */}
       <section className="relative w-full min-h-[75vh] flex flex-col items-center justify-center overflow-hidden">
-        {/* Animated Macro Fiber Background */}
+        {/* Lightweight flowing fiber background */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-          <motion.div
-            animate={{
-              scale: [1.1, 1.25, 1.1],
-              rotate: [0, 4, -4, 0],
-              x: ["0%", "3%", "-3%", "0%"],
-              y: ["0%", "-3%", "3%", "0%"]
-            }}
-            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-0 opacity-90"
-          >
-            <Image
-              src={siteConfig.assets.heroBg}
-              alt="Clinikkit Fiber Art Background"
-              fill
-              priority
-              className="object-cover"
-            />
-          </motion.div>
-          {/* Subtle gradient overlay to fade smoothly into the content below, leaving the top fully visible */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
+
+          {/* Soft atmospheric background */}
+          <div className="absolute inset-0 bg-background" />
+
+          {/* Very subtle pastel atmosphere */}
+          <div
+            className="
+              absolute inset-[-15%]
+              opacity-50
+              blur-2xl
+              bg-[radial-gradient(
+                ellipse_at_65%_45%,
+                rgba(45,212,191,0.09),
+                transparent_35%
+              ),
+              radial-gradient(
+                ellipse_at_35%_60%,
+                rgba(236,72,153,0.07),
+                transparent_38%
+              ),
+              radial-gradient(
+                ellipse_at_75%_20%,
+                rgba(129,140,248,0.07),
+                transparent_35%
+              )]
+            "
+          />
+
+          {/* Main fiber field */}
+          <div className="absolute inset-[-15%] animate-fiber-drift">
+            <svg
+              className="w-full h-full"
+              viewBox="0 0 2400 1000"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <defs>
+                {/* Cool pastel silk */}
+                <linearGradient
+                  id="fiberGradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
+                  <stop offset="0%" stopColor="#67e8f9" />
+                  <stop offset="24%" stopColor="#2dd4bf" />
+                  <stop offset="45%" stopColor="#818cf8" />
+                  <stop offset="67%" stopColor="#ec4899" />
+                  <stop offset="84%" stopColor="#f9a8d4" />
+                  <stop offset="100%" stopColor="#67e8f9" />
+                </linearGradient>
+
+                {/* Warm accent strands */}
+                <linearGradient
+                  id="fiberWarm"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
+                  <stop offset="0%" stopColor="#f9a8d4" />
+                  <stop offset="30%" stopColor="#fb7185" />
+                  <stop offset="52%" stopColor="#f9a8d4" />
+                  <stop offset="76%" stopColor="#a78bfa" />
+                  <stop offset="100%" stopColor="#67e8f9" />
+                </linearGradient>
+
+                {/* Tiny amount of glow */}
+                <filter
+                  id="fiberGlow"
+                  x="-20%"
+                  y="-20%"
+                  width="140%"
+                  height="140%"
+                >
+                  <feGaussianBlur stdDeviation="4" />
+                </filter>
+              </defs>
+
+              {/* ==================================================
+                  SOFT DEPTH LAYER
+                  ================================================== */}
+              <g
+                fill="none"
+                stroke="url(#fiberGradient)"
+                filter="url(#fiberGlow)"
+                opacity="0.055"
+              >
+                {FIBERS.slice(0, 8).map((fiber, i) => (
+                  <path
+                    key={`glow-${i}`}
+                    d={fiber.path}
+                    strokeWidth={fiber.width * 5}
+                  />
+                ))}
+              </g>
+
+              {/* ==================================================
+                  MAIN SILK STRANDS
+                  ================================================== */}
+              <g fill="none">
+                {FIBERS.map((fiber, i) => (
+                  <path
+                    key={i}
+                    d={fiber.path}
+                    stroke={
+                      i % 7 === 0
+                        ? "url(#fiberWarm)"
+                        : "url(#fiberGradient)"
+                    }
+                    strokeWidth={fiber.width}
+                    strokeLinecap="round"
+                    opacity={fiber.opacity}
+                    strokeDasharray={`${fiber.dash} ${fiber.dash * 0.35}`}
+                    className="fiber-line"
+                    style={{
+                      animationDuration: `${fiber.duration}s`,
+                      animationDelay: `${fiber.delay}s`,
+                    }}
+                  />
+                ))}
+              </g>
+            </svg>
+          </div>
+
+          {/* Fade everything toward the bottom */}
+          <div
+            className="
+              absolute inset-0
+              bg-gradient-to-b
+              from-transparent
+              via-background/10
+              to-background
+            "
+          />
+
+          {/* Keep center behind the hero relatively clean */}
+          <div
+            className="
+              absolute inset-0
+              bg-[radial-gradient(
+                ellipse_at_center,
+                transparent_15%,
+                hsl(var(--background)/0.18)_55%,
+                hsl(var(--background)/0.72)_100%
+              )]
+            "
+          />
+
         </div>
 
         <div className="relative z-10 container mx-auto px-4 flex flex-col items-center text-center">
-
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter mb-8 font-heading animate-in fade-in slide-in-from-bottom-6 duration-1000 leading-none flex justify-center items-center">
+          
+          <h1
+            className="
+              text-6xl md:text-8xl lg:text-9xl
+              font-bold tracking-tighter
+              mb-8 font-heading
+              animate-in fade-in slide-in-from-bottom-6
+              duration-1000
+              leading-none
+              flex justify-center items-center
+              drop-shadow-2xl
+            "
+          >
             <span className="text-foreground">
               {siteConfig.hero.titlePrefix.slice(0, -1)}
               <span className="underline decoration-primary decoration-4 underline-offset-8">{siteConfig.hero.titlePrefix.slice(-1)}</span>

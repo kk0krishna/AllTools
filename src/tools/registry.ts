@@ -35,6 +35,9 @@ import { gestationalAgeCalculatorEntry } from "./obstetrics/gestational-age-calc
 import { bishopScoreEntry } from "./obstetrics/bishop-score/metadata";
 import { preeclampsiaRiskEntry } from "./obstetrics/preeclampsia-risk/metadata";
 
+// Psychology
+import { emotionCompassEntry } from "./psychology/emotion-compass/metadata";
+
 // Pulmonology
 import { packYearsCalculatorEntry } from "./pulmonology/pack-years-calculator/metadata";
 import { mmrcDyspneaScaleEntry } from "./pulmonology/mmrc-dyspnea-scale/metadata";
@@ -73,6 +76,7 @@ export const toolsRegistry: ToolEntry[] = [
   gestationalAgeCalculatorEntry,
   bishopScoreEntry,
   preeclampsiaRiskEntry,
+  emotionCompassEntry,
   packYearsCalculatorEntry,
   mmrcDyspneaScaleEntry,
   lightsCriteriaEntry,

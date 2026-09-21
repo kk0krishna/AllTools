@@ -169,3 +169,67 @@
     background-position: 200% center;
   }
 }
+
+/* ============================================
+   FLOWING FIBERS
+   ============================================ */
+
+@keyframes fiber-flow {
+  from {
+    stroke-dashoffset: 0;
+  }
+
+  to {
+    stroke-dashoffset: -1800px;
+  }
+}
+
+.fiber-line {
+  animation-name: fiber-flow;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: stroke-dashoffset;
+}
+
+/* ============================================
+   LARGE ORGANIC MOVEMENT
+   ============================================ */
+
+@keyframes fiber-drift {
+  0% {
+    transform:
+      translate3d(-1.2%, 0.4%, 0)
+      scale(1.035)
+      rotate(-0.4deg);
+  }
+
+  50% {
+    transform:
+      translate3d(1.2%, -0.6%, 0)
+      scale(1.055)
+      rotate(0.4deg);
+  }
+
+  100% {
+    transform:
+      translate3d(-1.2%, 0.4%, 0)
+      scale(1.035)
+      rotate(-0.4deg);
+  }
+}
+
+.animate-fiber-drift {
+  animation: fiber-drift 34s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ============================================
+   ACCESSIBILITY / PERFORMANCE
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .fiber-line,
+  .animate-fiber-drift {
+    animation: none !important;
+  }
+}

@@ -12,5 +12,9 @@ service cloud.firestore {
       allow create: if true;
       allow read: if false; // Keep raw logs private
     }
+    // Allow authenticated users to manage their own mood logs within their user document
+    match /users/{userId}/mood_logs/{document} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
   }
 }

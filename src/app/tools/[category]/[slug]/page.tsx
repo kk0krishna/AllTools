@@ -51,7 +51,7 @@ export default async function ToolPage({ params }: Props) {
   const { metadata, component: ToolComponent, content: ToolContent } = tool;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className={`container mx-auto px-4 py-8 ${metadata.hideHeader ? "max-w-6xl" : "max-w-4xl"}`}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

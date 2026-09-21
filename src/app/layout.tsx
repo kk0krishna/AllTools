@@ -61,6 +61,7 @@ export const metadata: Metadata = {
 };
 
 import { AnalyticsProvider } from "@/components/AnalyticsProvider";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 
 export default function RootLayout({
   children,
@@ -73,13 +74,15 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        <AnalyticsProvider>
-          <Header />
-          <main className="flex-1 flex flex-col">
-            {children}
-          </main>
-          <Footer />
-        </AnalyticsProvider>
+        <AuthProvider>
+          <AnalyticsProvider>
+            <Header />
+            <main className="flex-1 flex flex-col">
+              {children}
+            </main>
+            <Footer />
+          </AnalyticsProvider>
+        </AuthProvider>
       </body>
     </html>
   );

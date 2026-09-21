@@ -1,0 +1,348 @@
+"use client";
+
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { InteractiveWheel } from "./components/InteractiveWheel";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  Share2, CheckCircle2, Copy, Trash2, List, Maximize2, Minimize2,
+  MessageCircleHeart, ChevronDown, ChevronUp,
+} from "lucide-react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { emotionWheelData, EmotionNode } from "./data/emotions";
+import { translations } from "./data/translations";
+import { MoodTrackerPanel } from "./components/MoodTrackerPanel";
+
+const LANGUAGES = {
+  en: "English",
+  es: "Español",
+  fr: "Français",
+  de: "Deutsch",
+  it: "Italiano",
+  cs: "Čeština",
+  fi: "Suomi",
+  hu: "Magyar",
+  pl: "Polski",
+  tr: "Türkçe",
+  uk: "Українська"
+};
+
+/* ─── Compact URL encoding ─── */
+// Use short codes: emotions → indexes, so URL stays clean
+function encodeStatus(emotions: string[], name: string, context: string): string {
+  // Just use emotion names joined by pipe, then name|context
+  const parts = [emotions.join(","), name, context].map(s => s || "");
+  return btoa(parts.join("|")).replace(/=+$/, ""); // strip trailing = padding
+}
+
+function decodeStatus(encoded: string): { emotions: string[]; name: string; context: string } | null {
+  try {
+    // Re-add padding
+    const padded = encoded + "=".repeat((4 - (encoded.length % 4)) % 4);
+    const decoded = atob(padded);
+    const [emotionsStr, name, context] = decoded.split("|");
+    const emotions = emotionsStr ? emotionsStr.split(",").filter(Boolean) : [];
+    return { emotions, name: name || "", context: context || "" };
+  } catch {
+    return null;
+  }
+}
+
+interface SharedStatus {
+  name: string;
+  context: string;
+  emotions: string[];
+}
+
+export function EmotionCompassTool() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const [selectedEmotions, setSelectedEmotions] = useState<string[]>([]);
+  const [userName, setUserName] = useState("");
+  const [contextMsg, setContextMsg] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [sharedStatus, setSharedStatus] = useState<SharedStatus | null>(null);
+  const [shareCollapsed, setShareCollapsed] = useState(false);
+  const [language, setLanguage] = useState<string>("en");
+
+  // Parse shared status on mount
+  useEffect(() => {
+    const statusParam = searchParams.get("s") || searchParams.get("status");
+    if (statusParam) {
+      const decoded = decodeStatus(statusParam);
+      if (decoded && decoded.emotions.length > 0) {
+        setSharedStatus(decoded);
+        setSelectedEmotions(decoded.emotions);
+        setUserName(decoded.name);
+        setContextMsg(decoded.context);
+      }
+    }
+  }, [searchParams]);
+
+  const toggleEmotion = useCallback((emotion: string) => {
+    setSelectedEmotions(prev =>
+      prev.includes(emotion)
+        ? prev.filter(e => e !== emotion)
+        : [...prev, emotion]
+    );
+    if (sharedStatus) setSharedStatus(null);
+  }, [sharedStatus]);
+
+  const handleShare = async () => {
+    const encoded = encodeStatus(selectedEmotions, userName, contextMsg);
+    const shareUrl = `${window.location.origin}${pathname}?s=${encoded}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "My Emotion Compass",
+          text: `${userName ? userName + " is" : "I am"} feeling ${selectedEmotions.join(", ")}.`,
+          url: shareUrl,
+        });
+        return;
+      } catch { /* user cancelled */ }
+    }
+
+    navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleClear = () => {
+    setSelectedEmotions([]);
+    setUserName("");
+    setContextMsg("");
+    setSharedStatus(null);
+    router.replace(pathname);
+  };
+
+  // Build a flat map of all emotions and their descriptions
+  const emotionMap = useMemo(() => {
+    const map = new Map<string, string>();
+    const traverse = (node: EmotionNode) => {
+      if (node.name && node.description) {
+        map.set(node.name, node.description);
+      }
+      if (node.children) node.children.forEach(traverse);
+    };
+    traverse(emotionWheelData);
+    return map;
+  }, []);
+
+  // Fullscreen
+  const wheelContainerRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      wheelContainerRef.current?.requestFullscreen().catch(() => { });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  useEffect(() => {
+    const handler = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", handler);
+    return () => document.removeEventListener("fullscreenchange", handler);
+  }, []);
+
+  return (
+    <div className="w-full">
+
+      {/* Shared Status Banner */}
+      {sharedStatus && (
+        <Card className="mb-6 border-primary/20 shadow-lg overflow-hidden relative">
+          <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center text-lg">
+              <MessageCircleHeart className="w-5 h-5 mr-2 text-primary" />
+              {sharedStatus.name ? `${sharedStatus.name}'s Status` : "Shared Emotion Status"}
+            </CardTitle>
+            {sharedStatus.context && (
+              <CardDescription className="italic">&ldquo;{sharedStatus.context}&rdquo;</CardDescription>
+            )}
+          </CardHeader>
+          <CardContent className="pb-3">
+            <div className="flex flex-wrap gap-1.5">
+              {sharedStatus.emotions.map(e => (
+                <Badge key={e} variant="default" className="px-2.5 py-0.5 text-xs">{e}</Badge>
+              ))}
+            </div>
+          </CardContent>
+          <CardFooter className="pt-0">
+            <Button variant="outline" size="sm" onClick={handleClear}>Create My Own</Button>
+          </CardFooter>
+        </Card>
+      )}
+
+      {/* Main Layout: Wheel-first, large, with compact sidebar */}
+      <div className="flex flex-col xl:flex-row gap-6 items-start">
+
+        {/* ─── LEFT: LARGE WHEEL ─── */}
+        <div
+          ref={wheelContainerRef}
+          className={`flex-1 w-full min-w-0 relative ${isFullscreen ? "bg-background flex items-center justify-center h-screen" : ""}`}
+        >
+          <div className={`w-full mx-auto ${isFullscreen ? "max-h-[92vh] max-w-[92vh]" : "max-w-[780px]"}`}>
+            <InteractiveWheel
+              size={700}
+              selectedEmotions={selectedEmotions}
+              language={language}
+              onEmotionToggle={toggleEmotion}
+            />
+          </div>
+
+          {/* Fullscreen Button */}
+          <div className={`flex justify-center mt-3 ${isFullscreen ? "absolute bottom-5 left-1/2 -translate-x-1/2" : ""}`}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleFullscreen}
+              className="text-muted-foreground hover:text-foreground text-xs h-8"
+            >
+              {isFullscreen
+                ? <><Minimize2 className="w-3.5 h-3.5 mr-1.5" /> Exit Fullscreen</>
+                : <><Maximize2 className="w-3.5 h-3.5 mr-1.5" /> Fullscreen</>
+              }
+            </Button>
+          </div>
+        </div>
+
+        {/* ─── RIGHT: COMPACT SIDEBAR ─── */}
+        <div className="w-full xl:w-[360px] flex-shrink-0 flex flex-col gap-4">
+
+          {/* Selected Feelings */}
+          <Card className="shadow-sm overflow-hidden">
+            <CardHeader className="py-3 px-4 border-b">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                    <List className="w-3 h-3 text-primary" />
+                  </div>
+                  Selected Feelings
+                  {selectedEmotions.length > 0 && (
+                    <Badge variant="secondary" className="ml-1 text-[10px] h-5 px-1.5">{selectedEmotions.length}</Badge>
+                  )}
+                </CardTitle>
+                <div className="flex items-center gap-2">
+                  <select
+                    className="h-7 text-xs bg-muted/50 border border-border rounded-md px-1.5 py-0 focus:outline-none focus:ring-1 focus:ring-primary text-muted-foreground hover:text-foreground cursor-pointer"
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                    title="Change language"
+                  >
+                    {Object.entries(LANGUAGES).map(([code, name]) => (
+                      <option key={code} value={code}>{name}</option>
+                    ))}
+                  </select>
+                  <Button
+                    variant="ghost" size="sm"
+                    className="h-7 text-[11px] px-2 hidden sm:flex"
+                    onClick={() => navigator.clipboard.writeText(selectedEmotions.join(", "))}
+                    disabled={selectedEmotions.length === 0}
+                  >
+                    <Copy className="w-3 h-3 mr-1" /> Copy
+                  </Button>
+                  <Button
+                    variant="ghost" size="sm"
+                    className="h-7 w-7 p-0 hover:text-destructive"
+                    onClick={handleClear}
+                    disabled={selectedEmotions.length === 0}
+                    title="Clear All"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="max-h-[320px] overflow-y-auto">
+                {selectedEmotions.length === 0 ? (
+                  <div className="py-10 text-center text-muted-foreground/40 px-4">
+                    <p className="text-xs">Click on the wheel to select feelings.</p>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-border/60">
+                    {selectedEmotions.map(emotion => (
+                      <div
+                        key={emotion}
+                        className="px-4 py-2.5 hover:bg-muted/40 cursor-pointer transition-colors group"
+                        onClick={() => toggleEmotion(emotion)}
+                        title="Click to remove"
+                      >
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-medium text-foreground text-sm">
+                            {language === "en" ? emotion : (translations[emotion]?.[language]?.name || emotion)}
+                          </h4>
+                          <span className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity text-xs flex-shrink-0 ml-2">✕</span>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1 leading-relaxed">
+                          {language === "en"
+                            ? (emotionMap.get(emotion) || `Feeling a sense of ${emotion.toLowerCase()}.`)
+                            : (translations[emotion]?.[language]?.description || emotionMap.get(emotion) || `Feeling a sense of ${emotion.toLowerCase()}.`)
+                          }
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <MoodTrackerPanel
+            selectedEmotions={selectedEmotions}
+            onClear={handleClear}
+          />
+
+          {/* Quick Share Link Section */}
+          <Card className="shadow-sm overflow-hidden">
+            <CardHeader
+              className="py-3 px-4 cursor-pointer select-none"
+              onClick={() => setShareCollapsed(!shareCollapsed)}
+            >
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <Share2 className="w-3.5 h-3.5 text-primary" /> Share Status
+                </CardTitle>
+                {shareCollapsed ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronUp className="w-4 h-4 text-muted-foreground" />}
+              </div>
+            </CardHeader>
+            {!shareCollapsed && (
+              <>
+                <CardContent className="px-4 pb-3 pt-0 space-y-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="userName" className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Your Name (Optional)</Label>
+                    <Input id="userName" placeholder="e.g. Alex" className="h-8 text-sm" value={userName} onChange={e => setUserName(e.target.value)} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="contextMsg" className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Context (Optional)</Label>
+                    <Input id="contextMsg" placeholder="What's going on?" className="h-8 text-sm" value={contextMsg} onChange={e => setContextMsg(e.target.value)} />
+                  </div>
+                </CardContent>
+                <CardFooter className="px-4 pb-3 pt-0">
+                  <Button
+                    className="w-full h-9 text-sm"
+                    onClick={handleShare}
+                    disabled={selectedEmotions.length === 0}
+                  >
+                    {copied
+                      ? <><CheckCircle2 className="w-3.5 h-3.5 mr-1.5" /> Copied!</>
+                      : <>Share your emotions</>
+                    }
+                  </Button>
+                </CardFooter>
+              </>
+            )}
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
