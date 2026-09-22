@@ -5,7 +5,7 @@ import { imageConverterSeoPages } from '@/lib/seo-configs/image-converter';
 export const dynamic = 'force-static';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://alltools.web.app';
+  const baseUrl = 'https://clinikkit.web.app';
 
   // Base routes
   const routes = [
