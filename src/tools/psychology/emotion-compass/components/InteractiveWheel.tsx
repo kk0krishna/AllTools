@@ -119,8 +119,9 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
     if (rafId.current !== null) {
       cancelAnimationFrame(rafId.current);
       rafId.current = null;
+      // Sync React state if grabbed mid-spin so text reorients correctly
+      setRotation(rotationRef.current);
     }
-    rotationRef.current = rotation;
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
