@@ -216,7 +216,7 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
           width="100%"
           height="100%"
           viewBox={`0 0 ${size} ${size}`}
-          className="max-w-full h-auto select-none outline-none cursor-grab active:cursor-grabbing"
+          className="w-full h-full max-w-full max-h-full select-none outline-none cursor-grab active:cursor-grabbing"
           aria-label="Feelings Wheel"
           style={{ overflow: "visible", pointerEvents: "none", transform: `scale(${zoomLevel})`, transition: "transform 0.2s ease" }}
           onPointerDown={handlePointerDown}
