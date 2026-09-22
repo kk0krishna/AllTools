@@ -45,16 +45,17 @@ export const metadata: Metadata = {
     type: "website",
   },
   icons: {
-    icon: siteConfig.assets.favicon,
-    apple: siteConfig.assets.favicon,
+    icon: "/logo/favicon.ico",
+    shortcut: "/logo/favicon-32x32.png",
+    apple: "/logo/apple-touch-icon.png",
   },
+  manifest: "/logo/site.webmanifest",
   twitter: {
     card: "summary_large_image",
     title: `${siteConfig.name} | Professional Online Tools`,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
   },
-  manifest: "/manifest.json",
   verification: {
     google: "4IpyiZCA8UUzZEiR-TJvvfVHj-FhZKEnTeHfWHok_ZQ",
   },

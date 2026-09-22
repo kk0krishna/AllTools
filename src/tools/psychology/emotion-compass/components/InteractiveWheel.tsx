@@ -10,6 +10,7 @@ interface InteractiveWheelProps {
   size?: number;
   selectedEmotions: string[];
   language?: string;
+  zoomLevel?: number;
   onEmotionToggle: (emotion: string) => void;
 }
 
@@ -23,17 +24,20 @@ function lightenHex(hex: string, amount: number): string {
   return `#${nr.toString(16).padStart(2, "0")}${ng.toString(16).padStart(2, "0")}${nb.toString(16).padStart(2, "0")}`;
 }
 
-export function InteractiveWheel({ size = 700, selectedEmotions, language = "en", onEmotionToggle }: InteractiveWheelProps) {
+export function InteractiveWheel({ size = 700, selectedEmotions, language = "en", zoomLevel = 1, onEmotionToggle }: InteractiveWheelProps) {
   const radius = size / 2;
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
-  // Rotation state
+  // Rotation and Physics state
   const [rotation, setRotation] = useState(0);
   const rotationRef = useRef(0);
   const wheelGroupRef = useRef<SVGGElement>(null);
   const isDragging = useRef(false);
   const pointerIsDown = useRef(false);
   const lastAngle = useRef(0);
+  const lastTime = useRef(0);
+  const velocity = useRef(0);
+  const rafId = useRef<number | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
   const root = useMemo(() => {
@@ -110,6 +114,12 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
     pointerIsDown.current = true;
     isDragging.current = false; // Reset drag state on touch/click start
     lastAngle.current = getAngle(e.clientX, e.clientY);
+    lastTime.current = performance.now();
+    velocity.current = 0;
+    if (rafId.current !== null) {
+      cancelAnimationFrame(rafId.current);
+      rafId.current = null;
+    }
     rotationRef.current = rotation;
   };
 
@@ -117,6 +127,7 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
     if (!pointerIsDown.current) return;
     
     const currentAngle = getAngle(e.clientX, e.clientY);
+    const currentTime = performance.now();
     let delta = currentAngle - lastAngle.current;
     
     if (delta > 180) delta -= 360;
@@ -129,32 +140,57 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
     
     if (!isDragging.current) return;
     
+    const dt = currentTime - lastTime.current;
+    if (dt > 0) {
+      // average out velocity to prevent wild spikes
+      velocity.current = (velocity.current * 0.4) + ((delta / dt) * 0.6);
+    }
+    
     rotationRef.current += delta;
     if (wheelGroupRef.current) {
       // Direct DOM manipulation to bypass React render loop for 60fps performance on mobile
       wheelGroupRef.current.style.transform = `translate(${radius}px, ${radius}px) rotate(${rotationRef.current}deg)`;
     }
     lastAngle.current = currentAngle;
+    lastTime.current = currentTime;
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
     pointerIsDown.current = false;
-    // Commit the rotation to state to re-evaluate text uprightness on drag end
+    
     if (isDragging.current) {
-      setRotation(rotationRef.current);
+      const applyMomentum = () => {
+        if (pointerIsDown.current) return; // Stop if grabbed again
+        
+        velocity.current *= 0.94; // friction
+        
+        if (Math.abs(velocity.current) < 0.02) {
+          // Stop completely and update state to re-evaluate text orientation
+          setRotation(rotationRef.current);
+          rafId.current = null;
+          return;
+        }
+        
+        rotationRef.current += velocity.current * 16; // approx 16ms per frame
+        if (wheelGroupRef.current) {
+          wheelGroupRef.current.style.transform = `translate(${radius}px, ${radius}px) rotate(${rotationRef.current}deg)`;
+        }
+        
+        rafId.current = requestAnimationFrame(applyMomentum);
+      };
+      
+      rafId.current = requestAnimationFrame(applyMomentum);
     }
-    // We do NOT reset isDragging.current here yet.
-    // It stays true so that the onClick event knows a drag just occurred.
   };
 
   return (
-    <div className="w-full relative flex items-center justify-start overflow-hidden h-[200vw] sm:h-auto sm:aspect-square max-h-[800px]">
+    <div className="w-full relative flex items-center justify-start overflow-hidden h-[200vw] sm:h-auto sm:aspect-square max-h-[800px] print:max-h-none print:h-full print:w-full print:mx-auto">
       {/* 
         On mobile, the container height is 200vw to fit the 200vw diameter wheel without severe clipping.
         The wheel is 200vw width, pushed left by 100vw (-left-[100vw]).
         This displays the perfect right-half of the wheel.
       */}
-      <div className="absolute w-[200vw] h-[200vw] -left-[100vw] sm:relative sm:w-full sm:h-full sm:left-0 sm:max-w-[800px] flex-shrink-0">
+      <div className="absolute w-[200vw] h-[200vw] -left-[100vw] sm:relative sm:w-full sm:h-full sm:left-0 sm:max-w-[800px] print:max-w-none flex-shrink-0">
         <svg
           ref={svgRef}
           width="100%"
@@ -162,7 +198,7 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
           viewBox={`0 0 ${size} ${size}`}
           className="max-w-full h-auto select-none outline-none cursor-grab active:cursor-grabbing"
           aria-label="Feelings Wheel"
-          style={{ overflow: "visible", pointerEvents: "none" }}
+          style={{ overflow: "visible", pointerEvents: "none", transform: `scale(${zoomLevel})`, transition: "transform 0.2s ease" }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
@@ -180,12 +216,16 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
               const pathData = arcGenerator(node);
               if (!pathData) return null;
 
-              const [cx, cy] = arcGenerator.centroid(node);
+              const centroid = arcGenerator.centroid(node);
+              // Round centroid coordinates to prevent SSR hydration mismatches
+              const cx = Number(centroid[0].toFixed(4));
+              const cy = Number(centroid[1].toFixed(4));
 
               // Text rotation logic (keeps text readable relative to its own angle, 
               // but doesn't automatically right itself during rotation to avoid jerky updates)
               // Calculate text rotation keeping it upright relative to the screen
-              const angleDeg = ((node.x0 + node.x1) / 2) * (180 / Math.PI);
+              const rawAngleDeg = ((node.x0 + node.x1) / 2) * (180 / Math.PI);
+              const angleDeg = Number(rawAngleDeg.toFixed(4));
               
               // absolute rotation on screen = angle + global rotation
               let absRot = (angleDeg - 90 + rotation) % 360;
@@ -197,6 +237,9 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
               if (absRot > 90 || absRot < -90) {
                 textRotate += 180;
               }
+              
+              // Round rotations to prevent SSR hydration mismatches
+              textRotate = Number(textRotate.toFixed(4));
 
               const baseColor = getColor(node);
               const fill = isSelected ? "#6366f1" : baseColor;

@@ -33,6 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${tool.metadata.name} | AllTools`,
     description: tool.metadata.description,
     keywords: tool.metadata.keywords.join(", "),
+    manifest: `/api/manifest?category=${resolvedParams.category}&slug=${resolvedParams.slug}`,
     openGraph: {
       title: tool.metadata.name,
       description: tool.metadata.description,

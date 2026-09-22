@@ -19,125 +19,108 @@ export const emotionCompassEntry: ToolEntry = {
   component: EmotionCompassTool,
   content: () => (
     <>
-      <div className="text-center mb-10">
-        <h2 className="text-3xl font-extrabold mb-4">Understanding Your Emotions: A Guide to the Feelings Wheel</h2>
+      <div className="text-center mb-10 no-print">
+        <h2 className="text-3xl font-extrabold mb-4">Navigating Your Inner World: The Interactive Emotion Compass</h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Take a moment to connect with yourself and find calm by exploring the interactive Feelings Wheel, also known as the Emotion Wheel.
-          It&apos;s a simple yet powerful mental health tool designed to help you identify and understand your emotions better.
+          Pause and tune into your emotional landscape using our dynamic Emotion Compass. This visual guide is crafted to help you name, process, and ultimately understand what you&apos;re truly experiencing at any given moment.
         </p>
       </div>
 
-      <hr className="my-8" />
+      <hr className="my-8 no-print" />
 
-      <div className="grid md:grid-cols-2 gap-8 items-start">
+      <div className="grid md:grid-cols-2 gap-8 items-start no-print">
         <div>
-          <h3>The Feelings Wheel Explained</h3>
+          <h3>Demystifying the Emotion Compass</h3>
           <p>
-            Emotions are powerful forces that shape our lives. But sometimes, pinpointing exactly how we feel can be tricky. 
-            The Feelings Wheel is designed to help you navigate the complex world of emotions and gain a deeper understanding of yourself.
+            Our feelings dictate much of how we experience life, yet identifying them can often feel overwhelming. This compass serves as a map for your internal world, helping you trace vague sensations back to their roots.
           </p>
           <p>
-            The Feelings Wheel is a powerful visual tool shaped like a wheel, typically divided into several sections to help you better identify and understand your emotions. 
-            It categorizes emotions into different levels, starting with core emotions at the center and branching out to more nuanced feelings on the periphery. 
-            This progression helps explore the full spectrum of emotions, going beyond basic feelings to uncover more nuanced states.
+            Structured like a color-coded wheel, it categorizes feelings into layers. You start with broad, primary emotions at the center and work your way outward to discover more specific, nuanced emotional states.
           </p>
         </div>
         <div>
-          <h3>How Does the Feelings Wheel Work?</h3>
-          <p>The Feelings Wheel typically works in three layers:</p>
+          <h3>How to Use This Tool</h3>
+          <p>The compass is divided into three distinct layers:</p>
           <ul>
-            <li><strong>Center:</strong> This core layer contains the basic emotions: happiness, sadness, anger, fear, surprise, disgust and bad. These are considered fundamental building blocks of our emotional experience.</li>
-            <li><strong>Middle Layer:</strong> Expanding on the core emotions, this section offers more specific terms that branch out from each core emotion. For example, sadness might be further defined as loneliness, vulnerability, or despair.</li>
-            <li><strong>Outer Layer:</strong> The outermost layer contains even more nuanced emotions, offering a rich vocabulary to describe subtle variations in how you feel. For instance, anger could be further categorized as resentment, fury, or indignation.</li>
+            <li><strong>The Core:</strong> The innermost circle holds your primary emotions—like joy, sadness, anger, fear, and disgust. These are the fundamental foundations of how we feel.</li>
+            <li><strong>The Middle Ring:</strong> Moving outward, you&apos;ll find more defined feelings that stem from the core. For example, sadness branches out into feelings like loneliness or vulnerability.</li>
+            <li><strong>The Outer Edge:</strong> The final layer provides a highly specific emotional vocabulary. It allows you to pinpoint exactly what you&apos;re experiencing, turning a general feeling of &apos;anger&apos; into &apos;resentment&apos; or &apos;indignation&apos;.</li>
           </ul>
         </div>
       </div>
 
-      <div className="my-10 p-6 bg-primary/5 rounded-2xl border border-primary/10">
-        <h3>Why the Feelings Wheel is Essential</h3>
+      <div className="my-10 p-6 bg-primary/5 rounded-2xl border border-primary/10 no-print">
+        <h3>The Benefits of Emotional Mapping</h3>
         <ul className="space-y-3">
-          <li><strong>Improved Emotional Awareness:</strong> Identifying your emotions with greater precision is the first step towards managing them effectively.</li>
-          <li><strong>Better Communication:</strong> By having a wider vocabulary of emotions, you can communicate your feelings more clearly to others, fostering stronger relationships.</li>
-          <li><strong>Emotional Regulation:</strong> Understanding your emotions allows you to manage them in healthy ways. The Feelings Wheel can help you identify triggers and develop coping mechanisms.</li>
-          <li><strong>Increased Self-Compassion:</strong> Recognizing the full spectrum of your emotions, both positive and negative, can lead to greater self-acceptance.</li>
+          <li><strong>Enhanced Clarity:</strong> Naming an emotion accurately is the first critical step toward processing it effectively.</li>
+          <li><strong>Stronger Connections:</strong> With a richer emotional vocabulary, you can express your needs to others much more clearly, building healthier relationships.</li>
+          <li><strong>Self-Regulation:</strong> Recognizing your feelings in real-time helps you manage your reactions and build constructive coping strategies.</li>
+          <li><strong>Deepened Empathy:</strong> Acknowledging your entire spectrum of feelings fosters a kinder, more accepting relationship with yourself.</li>
         </ul>
       </div>
 
-      <hr className="my-8" />
+      <hr className="my-8 no-print" />
 
-      <div className="space-y-8">
-        <h2 className="text-center">A Step-by-Step Tutorial</h2>
+      <div className="space-y-8 no-print">
+        <h2 className="text-center">A Practical Guide to Processing Emotions</h2>
 
         <div className="grid md:grid-cols-2 gap-8">
           <div>
-            <h4>Step One: Identify What You Are Really Feeling</h4>
+            <h4>Step 1: Name the Feeling</h4>
             <p>
-              Reduce the Emotional Intensity. Identify how you are feeling by beginning in the middle of the wheel and working your way to the edge. 
-              Especially with negative emotions, by clearly identifying and articulating how you feel you can reduce the intensity of the experience.
-              Expressing yourself with a deep emotional vocabulary helps to reengage your neocortex instead of being carried away by your emotions.
+              Start from the center and move outward to find the exact word for your current state. Simply putting a name to a feeling can immediately lessen its overwhelming grip on your mind, bringing your rational brain back online.
             </p>
             <div className="mt-4 p-4 bg-muted rounded-xl text-sm border-l-4 border-l-primary">
-              <strong>Amygdala Hijack</strong>
+              <strong>The Brain&apos;s Alarm System</strong>
               <p className="mt-2 mb-0 text-muted-foreground">
-                When your brain perceives it is under threat your amygdala reacts much faster than your rational, conscious mind.
-                In what Daniel Goleman describes as an &quot;amygdala hijack&quot; you experience the classic &quot;freeze, flight, fight&quot; response and the chemical rush that follows is part of what we call emotions (Goleman, 1996).
-                This heightened state of mind can be very useful if you are under an imminent physical threat but more likely it will make you less able to respond in a rational and considered way to relational challenges and complex problems.
+                When threatened, your brain&apos;s emotional center (the amygdala) reacts faster than your logical mind, triggering a sudden &apos;fight, flight, or freeze&apos; response. Actively naming your feelings helps bypass this alarm, re-engaging your logical thought processes so you can respond calmly to complex challenges.
               </p>
             </div>
           </div>
 
           <div>
-            <h4>Step Two: Acknowledge and Appreciate</h4>
+            <h4>Step 2: Accept Without Judgment</h4>
             <p>
-              You never want to make your emotions wrong. The idea that anything you feel is &quot;wrong&quot; is a great way to destroy honest communication with yourself as well as with others.
-              Be thankful that there&apos;s a part of your brain that is sending you a signal of support, a call to action to make a change in either your perception of some aspect of your life or in your actions.
+              There are no &quot;wrong&quot; feelings. Every emotion is simply data—a signal from your brain alerting you that something in your environment or perception needs attention. Welcome them as helpful messengers rather than trying to suppress them.
             </p>
 
-            <h4 className="mt-6">Step Three: Get Curious</h4>
+            <h4 className="mt-6">Step 3: Ask the Right Questions</h4>
             <ul className="list-disc ml-4 space-y-1 text-muted-foreground">
-              <li>What would I have to believe in order to feel the way I&apos;ve been feeling?</li>
-              <li>What am I willing to do to create a solution and handle this right now?</li>
-              <li>What do I really want to feel?</li>
-              <li>What can I learn from this?</li>
+              <li>What underlying belief is triggering this feeling?</li>
+              <li>What steps can I take right now to address this?</li>
+              <li>How do I actually want to feel instead?</li>
+              <li>What lesson is this emotion trying to teach me?</li>
             </ul>
           </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 pt-4">
           <div className="bg-card p-5 rounded-xl shadow-sm border border-border">
-            <h4 className="text-primary mt-0">Step Four: Get Confident</h4>
+            <h4 className="text-primary mt-0">Step 4: Draw on Past Resilience</h4>
             <p className="text-sm">
-              Get confident that you can handle this emotion immediately. The quickest, simplest, and most powerful way I know to handle any emotion is to remember a time when you felt a similar emotion and realize that you&apos;ve successfully handled this emotion before.
+              Remind yourself of previous times you successfully navigated similar feelings. You have a track record of surviving difficult emotions. What coping strategies worked for you back then? Lean on your own history of resilience.
             </p>
-            <p className="text-xs italic text-muted-foreground">- Tony Robbins</p>
-            <ul className="text-xs text-muted-foreground mt-3 space-y-1">
-              <li>What strategies have I used in the past to deal with this emotion?</li>
-              <li>Do I know someone who is great at dealing with this? What strategies do they use?</li>
-            </ul>
           </div>
 
           <div className="bg-card p-5 rounded-xl shadow-sm border border-border">
-            <h4 className="text-primary mt-0">Step Five: Get Certain</h4>
+            <h4 className="text-primary mt-0">Step 5: Prepare for the Future</h4>
             <p className="text-sm">
-              You want to feel certain that you can handle this emotion easily in the future by having a great plan to do so.
-              One way to do this is to simply remember the ways you&apos;ve handled it in the past and rehearse handling situations where this emotion would come up in the future.
-              See, hear, and feel yourself handling the situation easily.
+              Create a mental toolkit. Visualize yourself handling this emotion gracefully the next time it arises. Rehearsing your response builds confidence, ensuring you won&apos;t be caught off guard when these feelings inevitably return.
             </p>
-            <p className="text-xs italic text-muted-foreground">- Tony Robbins</p>
           </div>
 
           <div className="bg-card p-5 rounded-xl shadow-sm border border-border flex flex-col justify-between">
             <div>
-              <h4 className="text-primary mt-0">Step Six: Take Action</h4>
+              <h4 className="text-primary mt-0">Step 6: Move Forward</h4>
               <p className="text-sm">
-                Get excited, and take action! Now go and do something! 🚀
+                With clarity and a plan in place, channel your energy into positive action. Take the next right step and let your emotions propel you forward! 🚀
               </p>
             </div>
           </div>
         </div>
       </div>
       
-      <hr className="my-10" />
+      <hr className="my-10 no-print" />
     </>
   ),
 };

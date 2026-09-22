@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
   Share2, CheckCircle2, Copy, Trash2, List, Maximize2, Minimize2,
-  MessageCircleHeart, ChevronDown, ChevronUp,
+  MessageCircleHeart, ChevronDown, ChevronUp, ZoomIn, ZoomOut, RotateCcw, Printer
 } from "lucide-react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { emotionWheelData, EmotionNode } from "./data/emotions";
@@ -134,9 +134,10 @@ export function EmotionCompassTool() {
     return map;
   }, []);
 
-  // Fullscreen
+  // Fullscreen & Zoom
   const wheelContainerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -144,6 +145,15 @@ export function EmotionCompassTool() {
     } else {
       document.exitFullscreen();
     }
+  };
+
+  const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.2, 3));
+  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.2, 0.4));
+  const handleResetZoom = () => setZoomLevel(1);
+  const handlePrint = () => {
+    // Reset zoom before printing to ensure it fits the page
+    setZoomLevel(1);
+    setTimeout(() => window.print(), 100);
   };
 
   useEffect(() => {
@@ -154,6 +164,25 @@ export function EmotionCompassTool() {
 
   return (
     <div className="w-full">
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          @page { size: portrait; margin: 10mm; }
+          body * { visibility: hidden; }
+          .print-area, .print-area * { visibility: visible; }
+          .print-area { position: absolute; left: 0; top: 0; width: 100%; min-height: 95vh; display: flex; flex-direction: column; }
+          .print-header { flex-shrink: 0; }
+          .print-content { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 50vh; }
+          .print-emotions { margin-top: 1rem; width: 100%; text-align: center; }
+          .print-emotions ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 1rem; }
+          .print-emotions li { background: #f3f4f6; padding: 0.4rem 0.8rem; border-radius: 9999px; font-size: 0.875rem; border: 1px solid #e5e7eb; }
+          .no-print { display: none !important; }
+        }
+      `}} />
+
+      <div className="mb-6 text-center max-w-2xl mx-auto no-print">
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-2">How are you feeling today?</h2>
+        <p className="text-muted-foreground">Click and turn the interactive Feelings Wheel to explore your emotions.</p>
+      </div>
 
       {/* Shared Status Banner */}
       {sharedStatus && (
@@ -187,24 +216,79 @@ export function EmotionCompassTool() {
         {/* ─── LEFT: LARGE WHEEL ─── */}
         <div
           ref={wheelContainerRef}
-          className={`flex-1 w-full min-w-0 relative ${isFullscreen ? "bg-background flex items-center justify-center h-screen" : ""}`}
+          className={`flex-1 w-full min-w-0 relative print-area ${isFullscreen ? "bg-background flex flex-col items-center justify-center h-screen" : ""}`}
         >
-          <div className={`w-full mx-auto ${isFullscreen ? "max-h-[92vh] max-w-[92vh]" : "max-w-[780px]"}`}>
-            <InteractiveWheel
-              size={700}
-              selectedEmotions={selectedEmotions}
-              language={language}
-              onEmotionToggle={toggleEmotion}
-            />
+          {/* Controls Bar for Zoom and Print */}
+          <div className="absolute top-2 right-2 z-10 flex flex-col gap-2 no-print">
+            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full shadow-md" onClick={handleZoomIn} title="Zoom In">
+              <ZoomIn className="h-4 w-4" />
+            </Button>
+            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full shadow-md" onClick={handleZoomOut} title="Zoom Out">
+              <ZoomOut className="h-4 w-4" />
+            </Button>
+            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full shadow-md" onClick={handleResetZoom} title="Reset Zoom">
+              <RotateCcw className="h-4 w-4" />
+            </Button>
+            <Button variant="default" size="icon" className="h-8 w-8 rounded-full shadow-md mt-2" onClick={handlePrint} title="Download Printable PDF">
+              <Printer className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Print Branding Header (Visible only in print) */}
+          <div className="hidden print:flex print-header flex-col items-center w-full mb-4 pb-2 border-b-2 border-gray-100">
+            <img src="/logo/android-chrome-192x192.png" alt="CliniKKit" className="w-12 h-12 mb-1 rounded-xl" />
+            <h1 className="text-2xl font-bold text-emerald-600 mb-0">CliniKKit Feelings Wheel</h1>
+            <p className="text-gray-500 text-xs">Explore your emotions step-by-step from the core outward.</p>
+          </div>
+
+          {/* Fullscreen Action Buttons (Visible only in fullscreen) */}
+          {isFullscreen && (
+            <div className="absolute bottom-4 right-4 z-10 flex flex-col gap-3 no-print bg-background/80 backdrop-blur-md p-3 rounded-2xl border shadow-lg">
+              <Button variant="ghost" size="sm" onClick={() => navigator.clipboard.writeText(selectedEmotions.join(", "))} disabled={selectedEmotions.length === 0} title="Copy Selected (Save)" className="justify-start">
+                <Copy className="h-4 w-4 mr-2" /> Save
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleShare} disabled={selectedEmotions.length === 0} title="Share Emotions" className="justify-start">
+                <Share2 className="h-4 w-4 mr-2" /> Share
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleClear} disabled={selectedEmotions.length === 0} className="text-destructive hover:bg-destructive/10 hover:text-destructive justify-start" title="Reset All">
+                <Trash2 className="h-4 w-4 mr-2" /> Reset
+              </Button>
+            </div>
+          )}
+
+          <div className="print-content">
+            <div className={`w-full mx-auto flex items-center justify-center ${isFullscreen ? "max-h-[92vh] max-w-[92vh] flex-1" : "max-w-[780px]"} print:w-full print:h-full print:max-w-none print:max-h-none`}>
+              <InteractiveWheel
+                size={700}
+                selectedEmotions={selectedEmotions}
+                language={language}
+                zoomLevel={zoomLevel}
+                onEmotionToggle={toggleEmotion}
+              />
+            </div>
+
+            {/* Print Selected Emotions (Visible only in print) */}
+            {selectedEmotions.length > 0 && (
+              <div className="hidden print:block print-emotions">
+                <h3 className="font-bold text-gray-700 text-lg">My Selected Feelings:</h3>
+                <ul>
+                  {selectedEmotions.map(emotion => (
+                    <li key={emotion}>
+                      {language === "en" ? emotion : (translations[emotion]?.[language]?.name || emotion)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           {/* Fullscreen Button */}
-          <div className={`flex justify-center mt-3 ${isFullscreen ? "absolute bottom-5 left-1/2 -translate-x-1/2" : ""}`}>
+          <div className={`flex justify-center mt-3 no-print ${isFullscreen ? "absolute bottom-5 left-1/2 -translate-x-1/2" : ""}`}>
             <Button
               variant="outline"
               size="sm"
               onClick={toggleFullscreen}
-              className="text-muted-foreground hover:text-foreground text-xs h-8"
+              className="text-muted-foreground hover:text-foreground text-xs h-8 bg-background/80 backdrop-blur"
             >
               {isFullscreen
                 ? <><Minimize2 className="w-3.5 h-3.5 mr-1.5" /> Exit Fullscreen</>
@@ -212,10 +296,16 @@ export function EmotionCompassTool() {
               }
             </Button>
           </div>
+
+          {/* Print Footer Leads (Visible only in print) */}
+          <div className="hidden print:flex flex-col items-center w-full text-center pt-4 border-t-2 border-gray-100 text-gray-600 text-[13px] mt-auto">
+            <p>Access hundreds of free medical calculators and developer utilities at <strong>https://clinikkit.web.app</strong></p>
+            <p className="mt-1">Try the interactive compass online: <strong>https://clinikkit.web.app/tools/psychology/emotion-compass</strong></p>
+          </div>
         </div>
 
         {/* ─── RIGHT: COMPACT SIDEBAR ─── */}
-        <div className="w-full xl:w-[360px] flex-shrink-0 flex flex-col gap-4">
+        <div className="w-full xl:w-[360px] flex-shrink-0 flex flex-col gap-4 no-print">
 
           {/* Selected Feelings */}
           <Card className="shadow-sm overflow-hidden">

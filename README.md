@@ -1,20 +1,21 @@
 <div align="center">
-  <img src="./public/logo.svg" alt="Clinikkit Logo" width="80" height="80" style="border-radius: 12px; margin-bottom: 20px;" />
+  <img src="./public/logo.svg" alt="CliniKKit Logo" width="80" height="80" style="border-radius: 12px; margin-bottom: 20px;" />
   
-  # Clinikkit – Every Tool. One Place.
+  # CliniKKit – Suite & Online Tools
   
-  **A scalable, lightning-fast, privacy-first platform offering clinical medical calculators, advanced developer utilities, and everyday tools.**
+  **World's best FREE web-based Obstetric & Pregnancy Clinical Calculator Suite and practical utilities. Extremely fast, offline-first PWA with zero login required.**
 
   [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
   [![Firebase](https://img.shields.io/badge/Firebase-Hosting-FFCA28?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
   
-  <img src="./public/images/opengraph-image.png" alt="Clinikkit Promo" style="border-radius: 12px; margin-top: 20px; max-width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.1);" />
+  <img src="./public/images/opengraph-image.png" alt="CliniKKit Promo" style="border-radius: 12px; margin-top: 20px; max-width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.1);" />
 </div>
 
 ## ✨ Features
 
 - ⚡ **Blazing Fast**: Uses Next.js `output: export` to compile the entire site into pure static HTML, CSS, and JS. Zero server delays.
+- 📱 **Progressive Web App (PWA)**: Installable on iOS/Android. Every single tool features its own unique custom app icon and name when added to the home screen!
 - 🔍 **Perfect SEO**: Dynamic routing automatically injects Metadata (Title, Description, Keywords, OpenGraph) generated dynamically at build time for every single tool.
 - 🧩 **Modular Tool Architecture**: A highly scalable registry pattern. Adding a new tool takes only a few minutes and keeps the codebase incredibly organized.
 - 🎨 **Beautiful UI**: Built with `shadcn/ui` and Tailwind CSS. Modern, dark-mode ready, premium styling out of the box.
@@ -129,7 +130,7 @@ Because this project uses Next.js Static Export, it is perfectly compatible with
 - **GitHub**: [@kk0krishna](https://github.com/kk0krishna)
 - **Project Link**: [https://github.com/kk0krishna/AllTools](https://github.com/kk0krishna/AllTools)
 
-Clinikkit was developed by Krishna KK with a passion for delivering fast, high-performance applications. Designed as a reliable alternative to online tools that often feature intrusive ads, paywalls, or slow server-side processing, this platform reflects a commitment to clean engineering and clinical precision.
+CliniKKit was developed by Krishna KK with a passion for delivering fast, high-performance applications. Designed as a reliable alternative to online tools that often feature intrusive ads, paywalls, or slow server-side processing, this platform reflects a commitment to clean engineering and clinical precision.
 
 Contributions, issues, and feature requests are always welcome! Feel free to check the [issues page](https://github.com/kk0krishna/AllTools/issues) if you want to contribute.
 

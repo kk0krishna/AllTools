@@ -10,7 +10,7 @@ export const emotionWheelData: EmotionNode = {
   children: [
     {
       name: "Bad",
-      color: "#68c4af", // Teal Mint (from original)
+      color: "#64748b", // Slate (Uneasy)
       children: [
         {
           name: "Bored",
@@ -44,7 +44,7 @@ export const emotionWheelData: EmotionNode = {
     },
     {
       name: "Fearful",
-      color: "#39a7c1", // Cerulean Blue (from original)
+      color: "#a855f7", // Purple (Fear)
       children: [
         {
           name: "Scared",
@@ -92,7 +92,7 @@ export const emotionWheelData: EmotionNode = {
     },
     {
       name: "Angry",
-      color: "#9c75b7", // Lavender Purple (from original)
+      color: "#ef4444", // Red (Anger)
       children: [
         {
           name: "Let down",
@@ -154,7 +154,7 @@ export const emotionWheelData: EmotionNode = {
     },
     {
       name: "Disgusted",
-      color: "#ab7274", // Dusty Rose (from original)
+      color: "#22c55e", // Green (Disgust)
       children: [
         {
           name: "Disapproving",
@@ -188,7 +188,7 @@ export const emotionWheelData: EmotionNode = {
     },
     {
       name: "Sad",
-      color: "#ec8c74", // Salmon Coral (from original)
+      color: "#3b82f6", // Blue (Sadness)
       children: [
         {
           name: "Hurt",
@@ -236,7 +236,7 @@ export const emotionWheelData: EmotionNode = {
     },
     {
       name: "Happy",
-      color: "#e76f51", // Terracotta (from original)
+      color: "#facc15", // Yellow (Joy)
       children: [
         {
           name: "Optimistic",
@@ -305,7 +305,7 @@ export const emotionWheelData: EmotionNode = {
     },
     {
       name: "Surprised",
-      color: "#f4a261", // Sunset Orange (from original)
+      color: "#f97316", // Orange (Surprise)
       children: [
         {
           name: "Excited",
