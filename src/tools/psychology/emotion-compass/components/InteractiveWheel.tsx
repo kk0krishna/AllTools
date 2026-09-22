@@ -184,13 +184,8 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
   };
 
   return (
-    <div className="w-full relative flex items-center justify-start overflow-hidden h-[200vw] sm:h-auto sm:aspect-square max-h-[800px] print:max-h-none print:h-full print:w-full print:mx-auto">
-      {/* 
-        On mobile, the container height is 200vw to fit the 200vw diameter wheel without severe clipping.
-        The wheel is 200vw width, pushed left by 100vw (-left-[100vw]).
-        This displays the perfect right-half of the wheel.
-      */}
-      <div className="absolute w-[200vw] h-[200vw] -left-[100vw] sm:relative sm:w-full sm:h-full sm:left-0 sm:max-w-[800px] print:max-w-none flex-shrink-0">
+    <div className="w-full relative flex items-center justify-center overflow-hidden aspect-square max-h-[800px] print:max-h-none print:h-full print:w-full print:mx-auto">
+      <div className="w-full h-full max-w-[800px] print:max-w-none flex-shrink-0">
         <svg
           ref={svgRef}
           width="100%"

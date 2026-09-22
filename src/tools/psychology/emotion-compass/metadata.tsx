@@ -121,6 +121,12 @@ export const emotionCompassEntry: ToolEntry = {
       </div>
       
       <hr className="my-10 no-print" />
+
+      <div className="flex justify-center mb-10 no-print">
+        <Button asChild size="lg" className="rounded-full shadow-md font-semibold px-8 hover:scale-105 transition-transform">
+          <a href="#emotion-wheel">↑ Go Back to Interactive Compass</a>
+        </Button>
+      </div>
     </>
   ),
 };

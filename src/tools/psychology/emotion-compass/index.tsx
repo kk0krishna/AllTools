@@ -1,7 +1,22 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
-import { InteractiveWheel } from "./components/InteractiveWheel";
+import dynamic from "next/dynamic";
+import { Loader2 } from "lucide-react";
+
+// Dynamically import the heavy D3 wheel to speed up initial page load
+const InteractiveWheel = dynamic(
+  () => import("./components/InteractiveWheel").then((mod) => mod.InteractiveWheel),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full aspect-square max-h-[800px] flex flex-col items-center justify-center bg-muted/20 rounded-full animate-pulse border border-border">
+        <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
+        <span className="text-sm text-muted-foreground font-medium">Loading Compass...</span>
+      </div>
+    )
+  }
+);
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -215,6 +230,7 @@ export function EmotionCompassTool() {
 
         {/* ─── LEFT: LARGE WHEEL ─── */}
         <div
+          id="emotion-wheel"
           ref={wheelContainerRef}
           className={`flex-1 w-full min-w-0 relative print-area ${isFullscreen ? "bg-background flex flex-col items-center justify-center h-screen" : ""}`}
         >
