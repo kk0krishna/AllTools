@@ -1,0 +1,31 @@
+{
+  "name": "NYHA Heart Failure Classification",
+  "short_name": "NYHA Heart F",
+  "description": "Stratify the severity of heart failure based on functional capacity.",
+  "start_url": "/tools/cardiology/nyha-heart-failure",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/tools-icons/nyha-heart-failure/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools-icons/nyha-heart-failure/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Feelings Wheel",
+  "short_name": "Feelings Whe",
+  "description": "Navigate your feelings with an interactive emotion wheel. Identify what you are really feeling and connect with yourself.",
+  "start_url": "/tools/psychology/emotion-compass",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/tools-icons/emotion-compass/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools-icons/emotion-compass/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

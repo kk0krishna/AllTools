@@ -1,0 +1,31 @@
+{
+  "name": "Light",
+  "short_name": "Light",
+  "description": "Differentiate between exudative and transudative pleural effusions using fluid and serum markers.",
+  "start_url": "/tools/pulmonology/lights-criteria",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/tools-icons/lights-criteria/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools-icons/lights-criteria/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

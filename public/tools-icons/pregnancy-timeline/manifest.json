@@ -1,0 +1,31 @@
+{
+  "name": "Interactive Gestational Timeline & Protocol Guide",
+  "short_name": "Interactive ",
+  "description": "Week-by-week clinical milestone tracker detailing required ultrasound scans, laboratory screening tests, vaccinations, and patient counselling guidelines from Week 4 to 42.",
+  "start_url": "/tools/obstetrics/pregnancy-timeline",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/tools-icons/pregnancy-timeline/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools-icons/pregnancy-timeline/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Preeclampsia Risk Assessment",
+  "short_name": "Preeclampsia",
+  "description": "ACOG Practice Bulletin 222-based preeclampsia risk stratification with low-dose aspirin recommendation for high-risk patients.",
+  "start_url": "/tools/obstetrics/preeclampsia-risk",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/tools-icons/preeclampsia-risk/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools-icons/preeclampsia-risk/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

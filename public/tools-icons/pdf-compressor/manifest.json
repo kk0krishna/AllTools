@@ -1,0 +1,31 @@
+{
+  "name": "PDF Compressor",
+  "short_name": "PDF Compress",
+  "description": "Compress PDFs to specific size limits by optimizing and rasterizing pages.",
+  "start_url": "/tools/everyday/pdf-compressor",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/tools-icons/pdf-compressor/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools-icons/pdf-compressor/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

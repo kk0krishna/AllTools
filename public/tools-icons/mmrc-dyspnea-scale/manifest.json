@@ -1,0 +1,31 @@
+{
+  "name": "mMRC Dyspnea Scale",
+  "short_name": "mMRC Dyspnea",
+  "description": "Assess the baseline functional severity of breathlessness (dyspnea) in respiratory diseases like COPD.",
+  "start_url": "/tools/pulmonology/mmrc-dyspnea-scale",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/tools-icons/mmrc-dyspnea-scale/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools-icons/mmrc-dyspnea-scale/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

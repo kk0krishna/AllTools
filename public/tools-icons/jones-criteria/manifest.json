@@ -1,0 +1,31 @@
+{
+  "name": "Jones Criteria for ARF",
+  "short_name": "Jones Criter",
+  "description": "Diagnose Acute Rheumatic Fever (ARF) based on major and minor criteria.",
+  "start_url": "/tools/cardiology/jones-criteria",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/tools-icons/jones-criteria/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools-icons/jones-criteria/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

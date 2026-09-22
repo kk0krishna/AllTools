@@ -1,0 +1,31 @@
+{
+  "name": "ABG Analyzer",
+  "short_name": "ABG Analyzer",
+  "description": "Interpret Arterial Blood Gas (ABG) results to determine primary acid-base disorders and compensation.",
+  "start_url": "/tools/pulmonology/abg-analyzer",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/tools-icons/abg-analyzer/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools-icons/abg-analyzer/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

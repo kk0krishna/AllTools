@@ -1,0 +1,31 @@
+{
+  "name": "Audio Spectrum Analyzer & Lossless Track Verifier",
+  "short_name": "Audio Spectr",
+  "description": "Verify if your audio tracks are truly lossless (FLAC/WAV) or fake transcoded 320 kbps MP3s. Full-track FFT spectrograms, dynamic range audits, and frequency cutoff analysis rendered 100% locally in your browser with zero file uploads.",
+  "start_url": "/tools/audio/audio-spectrum-analyzer",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/tools-icons/audio-spectrum-analyzer/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools-icons/audio-spectrum-analyzer/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

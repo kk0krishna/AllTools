@@ -1,0 +1,31 @@
+{
+  "name": "Instant QR Code Generator",
+  "short_name": "Instant QR C",
+  "description": "Generate high-quality QR codes for URLs, text, or contacts instantly.",
+  "start_url": "/tools/everyday/qr-code-generator",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/tools-icons/qr-code-generator/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools-icons/qr-code-generator/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
