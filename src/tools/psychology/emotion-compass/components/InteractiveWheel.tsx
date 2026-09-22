@@ -208,7 +208,9 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
     ? "w-full relative flex items-center justify-start sm:justify-center overflow-hidden h-[200vw] sm:h-full sm:aspect-square max-h-none print:max-h-none print:h-full print:w-full print:mx-auto"
     : "w-full relative flex items-center justify-start sm:justify-center overflow-hidden h-[200vw] sm:h-auto sm:aspect-square max-h-[800px] print:max-h-none print:h-full print:w-full print:mx-auto";
 
-  const innerClasses = "absolute w-[200vw] h-[200vw] -left-[100vw] sm:relative sm:w-full sm:h-full sm:left-0 sm:max-w-[800px] print:max-w-none flex-shrink-0";
+  const innerClasses = isFullscreen
+    ? "absolute w-[200vw] h-[200vw] -left-[100vw] sm:relative sm:w-full sm:h-full sm:left-0 print:max-w-none flex-shrink-0"
+    : "absolute w-[200vw] h-[200vw] -left-[100vw] sm:relative sm:w-full sm:h-full sm:left-0 sm:max-w-[800px] print:max-w-none flex-shrink-0";
 
   return (
     <div className={containerClasses}>

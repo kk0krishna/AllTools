@@ -248,7 +248,10 @@ export function EmotionCompassTool() {
             <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full shadow-md" onClick={handleResetZoom} title="Reset Zoom">
               <RotateCcw className="h-4 w-4" />
             </Button>
-            <Button variant="default" size="icon" className="h-8 w-8 rounded-full shadow-md mt-2" onClick={handlePrint} title="Download Printable PDF">
+            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full shadow-md text-destructive hover:text-destructive hover:bg-destructive/10 mt-2" onClick={handleClear} title="Clear Selections" disabled={selectedEmotions.length === 0}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
+            <Button variant="default" size="icon" className="h-8 w-8 rounded-full shadow-md" onClick={handlePrint} title="Download Printable PDF">
               <Printer className="h-4 w-4" />
             </Button>
           </div>
