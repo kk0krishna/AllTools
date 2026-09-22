@@ -1,9 +1,9 @@
 <div align="center">
   <img src="./public/logo.svg" alt="CliniKKit Logo" width="80" height="80" style="border-radius: 12px; margin-bottom: 20px;" />
   
-  # CliniKKit – Suite & Online Tools
+  # CliniKKit — Clinical Tools & Medical Utilities
   
-  **World's best FREE web-based Obstetric & Pregnancy Clinical Calculator Suite and practical utilities. Extremely fast, offline-first PWA with zero login required.**
+  **A free, fast, privacy-conscious collection of browser-based clinical calculators, medical utilities and practical tools for students and healthcare professionals.**
 
   [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
