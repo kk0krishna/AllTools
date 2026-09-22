@@ -278,8 +278,8 @@ export function EmotionCompassTool() {
             </div>
           )}
 
-          <div className="print-content">
-            <div className={`w-full mx-auto flex items-center justify-center ${isFullscreen ? "max-h-[92vh] max-w-[92vh] flex-1" : "max-w-[780px]"} print:w-full print:h-full print:max-w-none print:max-h-none`}>
+          <div className="print-content flex-1 w-full flex flex-col items-center justify-center min-h-0">
+            <div className={`w-full mx-auto flex items-center justify-center ${isFullscreen ? "flex-1 max-w-none max-h-none h-full" : "max-w-[780px] aspect-[1/2] sm:aspect-square max-h-[160vw] sm:max-h-[80vh]"} print:w-full print:h-full print:max-w-none print:max-h-none`}>
               <InteractiveWheel
                 size={700}
                 selectedEmotions={selectedEmotions}
