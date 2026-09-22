@@ -12,6 +12,7 @@ interface InteractiveWheelProps {
   language?: string;
   zoomLevel?: number;
   onEmotionToggle: (emotion: string) => void;
+  isFullscreen?: boolean;
 }
 
 function lightenHex(hex: string, amount: number): string {
@@ -24,7 +25,7 @@ function lightenHex(hex: string, amount: number): string {
   return `#${nr.toString(16).padStart(2, "0")}${ng.toString(16).padStart(2, "0")}${nb.toString(16).padStart(2, "0")}`;
 }
 
-export function InteractiveWheel({ size = 700, selectedEmotions, language = "en", zoomLevel = 1, onEmotionToggle }: InteractiveWheelProps) {
+export function InteractiveWheel({ size = 700, selectedEmotions, language = "en", zoomLevel = 1, onEmotionToggle, isFullscreen = false }: InteractiveWheelProps) {
   const radius = size / 2;
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
@@ -111,6 +112,9 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
+    // Only capture if it's the primary pointer (prevents multi-touch glitches)
+    if (!e.isPrimary) return;
+    
     pointerIsDown.current = true;
     isDragging.current = false; // Reset drag state on touch/click start
     lastAngle.current = getAngle(e.clientX, e.clientY);
@@ -184,9 +188,33 @@ export function InteractiveWheel({ size = 700, selectedEmotions, language = "en"
     }
   };
 
+  // Prevent browser scroll & pull-to-refresh when actively rotating the wheel
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    
+    const preventScroll = (e: TouchEvent) => {
+      if (pointerIsDown.current) {
+        e.preventDefault(); // Blocks vertical scroll and pull-to-refresh
+      }
+    };
+    
+    // { passive: false } is required to allow e.preventDefault() on touch events
+    svg.addEventListener('touchmove', preventScroll, { passive: false });
+    return () => svg.removeEventListener('touchmove', preventScroll);
+  }, []);
+
+  const containerClasses = isFullscreen
+    ? "w-full relative flex items-center justify-center overflow-hidden aspect-square h-full max-h-none print:max-h-none print:h-full print:w-full print:mx-auto"
+    : "w-full relative flex items-center justify-start overflow-hidden h-[200vw] sm:h-auto sm:aspect-square max-h-[800px] print:max-h-none print:h-full print:w-full print:mx-auto";
+
+  const innerClasses = isFullscreen
+    ? "w-full h-full max-w-[800px] print:max-w-none flex-shrink-0"
+    : "absolute w-[200vw] h-[200vw] -left-[100vw] sm:relative sm:w-full sm:h-full sm:left-0 sm:max-w-[800px] print:max-w-none flex-shrink-0";
+
   return (
-    <div className="w-full relative flex items-center justify-center overflow-hidden aspect-square max-h-[800px] print:max-h-none print:h-full print:w-full print:mx-auto">
-      <div className="w-full h-full max-w-[800px] print:max-w-none flex-shrink-0">
+    <div className={containerClasses}>
+      <div className={innerClasses}>
         <svg
           ref={svgRef}
           width="100%"

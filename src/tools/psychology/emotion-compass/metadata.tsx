@@ -122,9 +122,12 @@ export const emotionCompassEntry: ToolEntry = {
       
       <hr className="my-10 no-print" />
 
-      <div className="flex justify-center mb-10 no-print">
-        <a href="#emotion-wheel" className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8 shadow-md font-semibold hover:scale-105 transition-transform">
-          ↑ Go Back to Interactive Compass
+      <div className="flex flex-col items-center justify-center mb-12 mt-6 p-8 bg-gradient-to-br from-primary/10 to-primary/5 rounded-3xl border border-primary/20 no-print shadow-sm text-center">
+        <h3 className="text-xl font-bold mb-3 text-foreground mt-0">Ready to map your emotions?</h3>
+        <p className="text-muted-foreground mb-6 text-sm max-w-sm">Jump back up to the interactive compass and start exploring your inner world.</p>
+        <a href="#emotion-wheel" className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 px-10 shadow-lg font-bold hover:scale-105 transition-all duration-300 hover:shadow-primary/30">
+          <svg className="w-5 h-5 mr-2 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+          Explore the Compass
         </a>
       </div>
     </>

@@ -280,6 +280,7 @@ export function EmotionCompassTool() {
                 language={language}
                 zoomLevel={zoomLevel}
                 onEmotionToggle={toggleEmotion}
+                isFullscreen={isFullscreen}
               />
             </div>
 
