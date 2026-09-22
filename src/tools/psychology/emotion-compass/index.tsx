@@ -10,9 +10,12 @@ const InteractiveWheel = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full aspect-square max-h-[800px] flex flex-col items-center justify-center bg-muted/20 rounded-full animate-pulse border border-border">
-        <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
-        <span className="text-sm text-muted-foreground font-medium">Loading Compass...</span>
+      <div className="w-full relative flex items-center justify-center overflow-hidden h-[200vw] sm:h-auto sm:aspect-square max-h-[800px] bg-muted/5 rounded-3xl sm:rounded-full border border-primary/10 animate-pulse">
+        <div className="flex flex-col items-center justify-center text-center p-6">
+          <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+          <span className="text-base text-primary font-bold">Initializing Compass...</span>
+          <span className="text-xs text-muted-foreground mt-2">Loading interactive graphics</span>
+        </div>
       </div>
     )
   }
