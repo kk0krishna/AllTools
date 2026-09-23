@@ -23,6 +23,7 @@ import { ageCalculatorEntry } from "./calculators/age-calculator/metadata";
 import { bmiCalculatorEntry } from "./calculators/bmi-calculator/metadata";
 import { jsonFormatterEntry } from "./developer/json-formatter/metadata";
 import { faviconGeneratorEntry } from "./developer/favicon-generator/metadata";
+import { youtubeTranscriptToolEntry } from "./developer/youtube-transcript/metadata";
 import { qrCodeGeneratorEntry } from "./everyday/qr-code-generator/metadata";
 import { barcodeGeneratorEntry } from "./everyday/barcode-generator/metadata";
 import { imageConverterEntry } from "./everyday/image-converter/metadata";
@@ -65,6 +66,7 @@ export const toolsRegistry: ToolEntry[] = [
   bmiCalculatorEntry,
   jsonFormatterEntry,
   faviconGeneratorEntry,
+  youtubeTranscriptToolEntry,
   qrCodeGeneratorEntry,
   barcodeGeneratorEntry,
   imageConverterEntry,

@@ -1,0 +1,11 @@
+{
+  "name": "vercel-transcript-backend",
+  "version": "1.0.0",
+  "description": "YouTube Transcript API for ToolVerse",
+  "main": "api/transcript.js",
+  "type": "module",
+  "dependencies": {
+    "youtube-transcript": "^1.2.1",
+    "youtubei.js": "^18.1.0"
+  }
+}
