@@ -597,7 +597,7 @@ export async function generateDemoAudio(): Promise<{ file: File; result: AudioAn
   // Convert buffer to WAV Blob to simulate File
   const wavBytes = bufferToWav(audioBuffer);
   const blob = new Blob([wavBytes], { type: "audio/wav" });
-  const file = new File([blob], "ToolVerse_Reference_Master_16bit_44k.wav", { type: "audio/wav" });
+  const file = new File([blob], "Clinikkit_Reference_Master_16bit_44k.wav", { type: "audio/wav" });
 
   const result = await analyzeAudioFile(file);
   result.format = "Lossless CD (WAV / FLAC)";
@@ -610,8 +610,8 @@ export async function generateDemoAudio(): Promise<{ file: File; result: AudioAn
   result.detectedAs = "Genuine Lossless Studio Reference";
   result.cutoffFreq = 21850;
   result.metadata = {
-    title: "ToolVerse Acoustic Forensics Benchmark",
-    artist: "ToolVerse Audio Lab",
+    title: "Clinikkit Acoustic Forensics Benchmark",
+    artist: "Clinikkit Audio Lab",
     album: "Diagnostic Reference Suite (16-Bit / 44.1 kHz)",
     year: "2026",
     genre: "Electronic / Acoustic Reference",

@@ -3,7 +3,7 @@ export const siteConfig = {
   nameShort: "Clinik",
   nameHighlight: "kit",
   description:
-    "Clinikkit is a lightning-fast, privacy-first platform offering clinical medical calculators, advanced developer utilities, and everyday tools. Crafted by Krishna KK.",
+    "Clinikkit (formerly ToolVerse) is a lightning-fast, privacy-first platform offering clinical medical calculators, advanced developer utilities, and everyday tools. Crafted by Krishna KK.",
   url: "https://clinikkit.web.app",
   ogImage: "/images/opengraph-image.png",
   author: {

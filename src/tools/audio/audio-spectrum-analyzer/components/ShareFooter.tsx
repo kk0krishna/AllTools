@@ -10,13 +10,13 @@ interface ShareFooterProps {
 }
 
 export function ShareFooter({ result, generateBrandedImageBlob }: ShareFooterProps) {
-  const shareText = `🏆 TOOLVERSE AUDIO AUDIT REPORT 🏆\n\n🎵 Track: ${result.metadata?.title || result.fileName}\n👤 Artist: ${result.metadata?.artist || "Unknown"}\n⭐ Quality Grade: GRADE ${result.qualityGrade} (${result.qualityGradeLabel})\n\n📊 TECHNICAL FORENSICS:\n📈 Cutoff Ceiling: ${(result.cutoffFreq / 1000).toFixed(1)} kHz\n🔊 Dynamic Range: DR${result.dynamicRangeScore || 10} (${(result.rmsDbFS || 0).toFixed(1)} dBFS RMS)\n🛡️ Clipping Status: ${result.isClipped ? "⚠️ Clipped / Limited" : "Clean / Bit-Perfect"}\n⚙️ Rip / Encoder: ${result.metadata?.encoder || "Standard / Untagged"}\n\n💡 Engineering Verdict: ${result.assessmentReport?.summary || result.verdictText}\n\n🔍 Verify your music collection free & locally in browser (no uploads needed):\n👉 https://alltools.web.app/tools/audio/audio-spectrum-analyzer`;
+  const shareText = `🏆 Clinikkit AUDIO AUDIT REPORT 🏆\n\n🎵 Track: ${result.metadata?.title || result.fileName}\n👤 Artist: ${result.metadata?.artist || "Unknown"}\n⭐ Quality Grade: GRADE ${result.qualityGrade} (${result.qualityGradeLabel})\n\n📊 TECHNICAL FORENSICS:\n📈 Cutoff Ceiling: ${(result.cutoffFreq / 1000).toFixed(1)} kHz\n🔊 Dynamic Range: DR${result.dynamicRangeScore || 10} (${(result.rmsDbFS || 0).toFixed(1)} dBFS RMS)\n🛡️ Clipping Status: ${result.isClipped ? "⚠️ Clipped / Limited" : "Clean / Bit-Perfect"}\n⚙️ Rip / Encoder: ${result.metadata?.encoder || "Standard / Untagged"}\n\n💡 Engineering Verdict: ${result.assessmentReport?.summary || result.verdictText}\n\n🔍 Verify your music collection free & locally in browser (no uploads needed):\n👉 https://alltools.web.app/tools/audio/audio-spectrum-analyzer`;
 
   const handleShare = async () => {
     if (navigator.share) {
       const blob = await generateBrandedImageBlob();
       if (blob) {
-        const file = new File([blob], `ToolVerse_Audit_${result.fileName.replace(/[^a-zA-Z0-9]/g, "_")}.png`, { type: "image/png" });
+        const file = new File([blob], `Clinikkit_Audit_${result.fileName.replace(/[^a-zA-Z0-9]/g, "_")}.png`, { type: "image/png" });
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
             await navigator.share({
@@ -48,7 +48,7 @@ export function ShareFooter({ result, generateBrandedImageBlob }: ShareFooterPro
     if (blob) {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.download = `ToolVerse_Audit_${result.fileName.replace(/[^a-zA-Z0-9]/g, "_")}.png`;
+      link.download = `Clinikkit_Audit_${result.fileName.replace(/[^a-zA-Z0-9]/g, "_")}.png`;
       link.href = url;
       link.click();
     }
@@ -60,7 +60,7 @@ export function ShareFooter({ result, generateBrandedImageBlob }: ShareFooterPro
     if (!blob) return;
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.download = `ToolVerse_Audit_${result.fileName.replace(/[^a-zA-Z0-9]/g, "_")}.png`;
+    link.download = `Clinikkit_Audit_${result.fileName.replace(/[^a-zA-Z0-9]/g, "_")}.png`;
     link.href = url;
     link.click();
   };
@@ -125,7 +125,7 @@ export function ShareFooter({ result, generateBrandedImageBlob }: ShareFooterPro
             variant="outline"
             className="border-border/60 hover:border-[#1da1f2] hover:text-[#1da1f2] hover:bg-[#1da1f2]/5 gap-1.5 text-xs font-semibold h-7 px-2.5 rounded-lg shrink-0 transition-colors"
             onClick={() => {
-              const text = `🏆 TOOLVERSE AUDIO QUALITY AUDIT 🏆\n🎵 Track: ${result.metadata?.title || result.fileName}\n⭐ Quality Grade: GRADE ${result.qualityGrade} (${result.qualityGradeLabel})\n📈 Cutoff: ${(result.cutoffFreq / 1000).toFixed(1)} kHz | Dynamics: DR${result.dynamicRangeScore || 10}\n\nVerify yours free in browser:\nhttps://alltools.web.app/tools/audio/audio-spectrum-analyzer`;
+              const text = `🏆 Clinikkit AUDIO QUALITY AUDIT 🏆\n🎵 Track: ${result.metadata?.title || result.fileName}\n⭐ Quality Grade: GRADE ${result.qualityGrade} (${result.qualityGradeLabel})\n📈 Cutoff: ${(result.cutoffFreq / 1000).toFixed(1)} kHz | Dynamics: DR${result.dynamicRangeScore || 10}\n\nVerify yours free in browser:\nhttps://alltools.web.app/tools/audio/audio-spectrum-analyzer`;
               window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, "_blank");
             }}
           >
@@ -140,7 +140,7 @@ export function ShareFooter({ result, generateBrandedImageBlob }: ShareFooterPro
             variant="outline"
             className="border-border/60 hover:border-emerald-500 hover:text-emerald-500 hover:bg-emerald-500/5 gap-1.5 text-xs font-semibold h-7 px-2.5 rounded-lg shrink-0 transition-colors"
             onClick={() => {
-              const text = `🏆 TOOLVERSE AUDIO AUDIT 🏆\n🎵 Track: ${result.metadata?.title || result.fileName}\n⭐ Grade: GRADE ${result.qualityGrade} (${result.qualityGradeLabel})\n📈 Cutoff: ${(result.cutoffFreq / 1000).toFixed(1)} kHz | DR${result.dynamicRangeScore || 10}\n\nVerify free in browser: https://alltools.web.app/tools/audio/audio-spectrum-analyzer`;
+              const text = `🏆 Clinikkit AUDIO AUDIT 🏆\n🎵 Track: ${result.metadata?.title || result.fileName}\n⭐ Grade: GRADE ${result.qualityGrade} (${result.qualityGradeLabel})\n📈 Cutoff: ${(result.cutoffFreq / 1000).toFixed(1)} kHz | DR${result.dynamicRangeScore || 10}\n\nVerify free in browser: https://alltools.web.app/tools/audio/audio-spectrum-analyzer`;
               window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, "_blank");
             }}
           >

@@ -66,7 +66,7 @@ export function ClinicalResultCard({
         text += `${r.label}: ${r.value}${r.helper ? ` (${r.helper})` : ""}\n`;
       });
     }
-    text += `\nCalculated via ToolVerse Obstetric Clinical Suite (OCS)`;
+    text += `\nCalculated via Clinikkit Obstetric Clinical Suite (OCS)`;
     return text;
   };
 

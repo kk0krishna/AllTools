@@ -12,9 +12,7 @@ import { TranscriptViewer } from "./components/TranscriptViewer";
 import { DownloadMenu } from "./components/DownloadMenu";
 import { saveAs } from "file-saver";
 import TurndownService from "turndown";
-import { ToolLayout } from '@/components/tools/ToolLayout';
 import { VercelTranscriptProvider } from './lib/providers/vercel-transcript-provider';
-import type { TranscriptEntry } from './lib/providers/types';
 
 // NOTE: Using the user's deployed Vercel URL
 const provider = new VercelTranscriptProvider("https://vercel-transcript-backend.vercel.app");

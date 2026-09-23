@@ -90,7 +90,7 @@ export function SpectrogramCard({ result, palette, onDelete }: SpectrogramCardPr
     // 2. Header Box
     ctx.fillStyle = "#38bdf8";
     ctx.font = "bold 15px sans-serif";
-    ctx.fillText("🎵 TOOLVERSE AUDIOPHILE QUALITY AUDIT REPORT", 20, 32);
+    ctx.fillText("🎵 Clinikkit AUDIOPHILE QUALITY AUDIT REPORT", 20, 32);
 
     ctx.fillStyle = "#f8fafc";
     ctx.font = "bold 22px sans-serif";
@@ -178,7 +178,7 @@ export function SpectrogramCard({ result, palette, onDelete }: SpectrogramCardPr
     );
     ctx.fillStyle = "#38bdf8";
     ctx.font = "12px monospace";
-    ctx.fillText("🔍 Verified 100% locally on device • ToolVerse Audio Spectrum Analyzer", 20, headerH + h + 46);
+    ctx.fillText("🔍 Verified 100% locally on device • Clinikkit Audio Spectrum Analyzer", 20, headerH + h + 46);
 
     return new Promise((resolve) => {
       outCanvas.toBlob((blob) => resolve(blob), "image/png", 0.95);

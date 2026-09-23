@@ -1,4 +1,4 @@
-import { TranscriptProvider, TranscriptEntry, VideoMetadata, TranscriptTrackInfo, TranscriptTrack } from './types';
+import { TranscriptProvider, TranscriptSegment, VideoMetadata, TranscriptTrackInfo, TranscriptTrack } from './types';
 
 export class VercelTranscriptProvider implements TranscriptProvider {
   private vercelUrl: string;

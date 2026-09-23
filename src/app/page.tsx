@@ -468,15 +468,15 @@ export default function Home() {
       {/* SEO Content Section for Google Indexing */}
       <section className="relative z-10 container mx-auto px-4 py-16 mb-8 border-t border-border/50">
         <div className="max-w-4xl mx-auto prose prose-slate dark:prose-invert">
-          <h2 className="text-xl md:text-2xl font-bold font-heading mb-4">About ToolVerse: The Ultimate Collection of Professional Web Tools</h2>
+          <h2 className="text-xl md:text-2xl font-bold font-heading mb-4">About Clinikkit: The Ultimate Collection of Professional Web Tools</h2>
           <p className="text-muted-foreground mb-4">
-            ToolVerse is a comprehensive, privacy-first platform offering a vast suite of free online tools designed specifically for developers, medical professionals, designers, and everyday users. Our mission is to provide lightning-fast, secure, and accurate web utilities directly in your browser.
+            Clinikkit (formerly ToolVerse) is a comprehensive, privacy-first platform offering a vast suite of free online tools designed specifically for developers, medical professionals, designers, and everyday users. Our mission is to provide lightning-fast, secure, and accurate web utilities directly in your browser.
           </p>
           <p className="text-muted-foreground mb-4">
-            Whether you are a developer looking for an instant <strong>JSON formatter</strong>, a physician needing reliable <strong>clinical calculators</strong> like the ABG Analyzer and Bishop Score, or a creator searching for image conversion utilities, ToolVerse has you covered. All of our tools run instantly without requiring you to download any software or create an account.
+            Whether you are a developer looking for an instant <strong>JSON formatter</strong>, a physician needing reliable <strong>clinical calculators</strong> like the ABG Analyzer and Bishop Score, or a creator searching for image conversion utilities, Clinikkit has you covered. All of our tools run instantly without requiring you to download any software or create an account.
           </p>
           <p className="text-muted-foreground">
-            Explore our curated categories above to discover powerful calculators, formatters, and analyzers tailored to streamline your daily workflow. Built with modern web technologies, ToolVerse ensures that your data remains secure while delivering a seamless, premium user experience.
+            Explore our curated categories above to discover powerful calculators, formatters, and analyzers tailored to streamline your daily workflow. Built with modern web technologies, Clinikkit ensures that your data remains secure while delivering a seamless, premium user experience.
           </p>
         </div>
       </section>

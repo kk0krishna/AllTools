@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "Privacy policy for ToolVerse.",
+  description: "Privacy policy for Clinikkit.",
 };
 
 export default function PrivacyPage() {
@@ -13,10 +13,10 @@ export default function PrivacyPage() {
         <p className="text-muted-foreground mb-8">Last updated: August 2026</p>
         
         <h2>1. Introduction</h2>
-        <p>At ToolVerse, we respect your privacy and are committed to protecting it. This Privacy Policy explains our practices regarding the collection, use, and disclosure of information that you may provide via our website.</p>
+        <p>At Clinikkit, we respect your privacy and are committed to protecting it. This Privacy Policy explains our practices regarding the collection, use, and disclosure of information that you may provide via our website.</p>
 
         <h2>2. Data Collection and Usage</h2>
-        <p><strong>Offline Functionality:</strong> ToolVerse is designed primarily as a client-side application. The vast majority of our tools, including all clinical calculators, process data locally on your device. We do not transmit or store patient data, medical metrics, or personal health information on our servers.</p>
+        <p><strong>Offline Functionality:</strong> Clinikkit is designed primarily as a client-side application. The vast majority of our tools, including all clinical calculators, process data locally on your device. We do not transmit or store patient data, medical metrics, or personal health information on our servers.</p>
         <p><strong>Analytics & Telemetry:</strong> To improve our services, we use Google Firebase Analytics and Firestore to collect anonymous, non-personally identifiable telemetry data. This includes page views, feature usage frequency, browser types, and timestamp information. This data helps us understand which tools are most valuable to our community and informs our development priorities.</p>
 
         <h2>3. Cookies</h2>
