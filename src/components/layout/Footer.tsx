@@ -26,21 +26,35 @@ export function Footer() {
           <span className="text-xs text-muted-foreground font-medium">© {new Date().getFullYear()}</span>
         </div>
         
-        {/* Crisp Links */}
-        <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-xs font-medium text-muted-foreground">
-          <Link href="/about" className="hover:text-primary transition-colors">About</Link>
-          <Link href="/#categories" className="hover:text-primary transition-colors">Categories</Link>
-          <Link href="/contact" className="hover:text-primary transition-colors">Suggest or Request More Tools</Link>
-          <Link href="/terms" className="hover:text-primary transition-colors">Terms</Link>
-          <Link href="/privacy" className="hover:text-primary transition-colors">Privacy</Link>
+        {/* Crisp Links & Internal Category Linking */}
+        <div className="flex flex-col md:flex-row justify-center items-center gap-x-6 gap-y-4">
           
-          <div className="flex items-center space-x-1.5 ml-2 border-l pl-6 border-primary/10">
-            <span>Crafted with</span>
-            <span className="text-rose-500 animate-pulse">❤️</span>
-            <span>by</span>
-            <a href={siteConfig.author.github} target="_blank" rel="noopener noreferrer" className="font-bold text-foreground hover:text-primary transition-colors font-mono">
-              {siteConfig.author.name}
-            </a>
+          {/* SEO Internal Links */}
+          <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-xs font-medium text-muted-foreground">
+            <span className="font-semibold text-foreground mr-1 hidden sm:inline">Tools:</span>
+            <Link href="/categories/calculators" className="hover:text-primary transition-colors">Calculators</Link>
+            <Link href="/categories/developer" className="hover:text-primary transition-colors">Developer</Link>
+            <Link href="/categories/everyday" className="hover:text-primary transition-colors">Everyday</Link>
+            <Link href="/categories/obstetrics" className="hover:text-primary transition-colors">Obstetrics</Link>
+          </div>
+
+          <span className="hidden md:inline text-muted-foreground/30">|</span>
+
+          {/* Legal & Info */}
+          <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-xs font-medium text-muted-foreground">
+            <Link href="/about" className="hover:text-primary transition-colors">About</Link>
+            <Link href="/contact" className="hover:text-primary transition-colors">Suggest Tool</Link>
+            <Link href="/terms" className="hover:text-primary transition-colors">Terms</Link>
+            <Link href="/privacy" className="hover:text-primary transition-colors">Privacy</Link>
+            
+            <div className="flex items-center space-x-1.5 ml-2 border-l pl-4 border-primary/10">
+              <span>Crafted with</span>
+              <span className="text-rose-500 animate-pulse">❤️</span>
+              <span>by</span>
+              <a href={siteConfig.author.github} target="_blank" rel="noopener noreferrer" className="font-bold text-foreground hover:text-primary transition-colors font-mono">
+                {siteConfig.author.name}
+              </a>
+            </div>
           </div>
         </div>
         

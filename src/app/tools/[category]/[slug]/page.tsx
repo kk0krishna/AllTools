@@ -25,12 +25,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!tool) {
     return {
-      title: "Tool Not Found | AllTools",
+      title: "Tool Not Found | Clinikkit",
     };
   }
 
   return {
-    title: `${tool.metadata.name} | AllTools`,
+    title: `${tool.metadata.name} | Clinikkit`,
     description: tool.metadata.description,
     keywords: tool.metadata.keywords.join(", "),
     manifest: `/tools-icons/${resolvedParams.slug}/manifest.json`,
