@@ -80,8 +80,8 @@ export function DetailsDrawer({ movie, prefs, mediaType, onClose, onSave, onWatc
           <Button onClick={onSave} disabled={prefs.interactions[`${mediaType}:${movie.id}`] === "interested"} className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white font-bold rounded-xl h-14">
             <Bookmark className="w-5 h-5 mr-2" /> {prefs.interactions[`${mediaType}:${movie.id}`] === "interested" ? "Saved" : "Save to Shelf"}
           </Button>
-          <Button onClick={onWatched} disabled={prefs.interactions[`${mediaType}:${movie.id}`] === "watched"} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-xl h-14">
-            <Eye className="w-5 h-5 mr-2" /> {prefs.interactions[`${mediaType}:${movie.id}`] === "watched" ? "Watched" : "Mark Watched"}
+          <Button onClick={onWatched} disabled={["watched", "loved", "disliked"].includes(prefs.interactions[`${mediaType}:${movie.id}`])} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-xl h-14">
+            <Eye className="w-5 h-5 mr-2" /> {["watched", "loved", "disliked"].includes(prefs.interactions[`${mediaType}:${movie.id}`]) ? "Watched" : "Mark Watched"}
           </Button>
         </div>
       </div>

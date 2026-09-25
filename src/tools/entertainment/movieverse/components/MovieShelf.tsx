@@ -16,7 +16,7 @@ interface MovieShelfProps {
 const shelfCache: Record<string, any> = {};
 
 export function MovieShelf({ prefs, onRemove, onDetails }: MovieShelfProps) {
-  const [tab, setTab] = React.useState<"interested" | "loved" | "watched">("interested");
+  const [tab, setTab] = React.useState<InteractionState>("interested");
   const [movies, setMovies] = React.useState<Movie[]>([]);
   const [loading, setLoading] = React.useState(false);
 
@@ -24,7 +24,10 @@ export function MovieShelf({ prefs, onRemove, onDetails }: MovieShelfProps) {
     const fetchShelf = async () => {
       setLoading(true);
       const items = Object.entries(prefs.interactions || {})
-        .filter(([_, state]) => state === tab)
+        .filter(([_, state]) => {
+          if (tab === "watched") return state === "watched" || state === "loved" || state === "disliked";
+          return state === tab;
+        })
         .map(([key, _]) => {
           const [mediaType, idStr] = key.split(":");
           return { mediaType, id: Number(idStr), key };
@@ -62,10 +65,12 @@ export function MovieShelf({ prefs, onRemove, onDetails }: MovieShelfProps) {
     <div className="p-5 sm:p-8 max-w-5xl mx-auto pb-32">
       <h2 className="text-2xl font-black tracking-tight mb-4">Your Cinema Shelf</h2>
       
-      <div className="flex gap-2 p-1.5 bg-black/40 border border-white/10 rounded-2xl mb-8 overflow-x-auto">
-        <button onClick={() => setTab("interested")} className={`flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all ${tab === "interested" ? "bg-white text-black shadow-lg" : "text-white/60 hover:text-white"}`}>For Later</button>
-        <button onClick={() => setTab("loved")} className={`flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all ${tab === "loved" ? "bg-pink-500 text-white shadow-lg" : "text-white/60 hover:text-white hover:text-pink-400"}`}>Loved</button>
-        <button onClick={() => setTab("watched")} className={`flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all ${tab === "watched" ? "bg-blue-500 text-white shadow-lg" : "text-white/60 hover:text-white hover:text-blue-400"}`}>Watched</button>
+      <div className="flex gap-2 p-1.5 bg-black/40 border border-white/10 rounded-2xl mb-8 overflow-x-auto snap-x [&::-webkit-scrollbar]:hidden">
+        <button onClick={() => setTab("interested")} className={`shrink-0 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all snap-center ${tab === "interested" ? "bg-white text-black shadow-lg" : "text-white/60 hover:text-white"}`}>For Later</button>
+        <button onClick={() => setTab("loved")} className={`shrink-0 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all snap-center ${tab === "loved" ? "bg-pink-500 text-white shadow-lg" : "text-white/60 hover:text-white hover:text-pink-400"}`}>Loved</button>
+        <button onClick={() => setTab("watched")} className={`shrink-0 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all snap-center ${tab === "watched" ? "bg-blue-500 text-white shadow-lg" : "text-white/60 hover:text-white hover:text-blue-400"}`}>Watched</button>
+        <button onClick={() => setTab("disliked")} className={`shrink-0 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all snap-center ${tab === "disliked" ? "bg-red-500 text-white shadow-lg" : "text-white/60 hover:text-white hover:text-red-400"}`}>Disliked</button>
+        <button onClick={() => setTab("skipped")} className={`shrink-0 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all snap-center ${tab === "skipped" ? "bg-zinc-600 text-white shadow-lg" : "text-white/60 hover:text-white hover:text-zinc-400"}`}>Skipped</button>
       </div>
 
       {loading ? (
