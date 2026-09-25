@@ -36,14 +36,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
+      const isMobile = typeof window !== "undefined" && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobile) {
+        const { signInWithRedirect } = await import("firebase/auth");
+        await signInWithRedirect(auth, googleProvider);
+        return null;
+      }
+      
       const result = await signInWithPopup(auth, googleProvider);
       return result.user;
     } catch (error: any) {
       console.error("Error signing in with popup, falling back to redirect:", error);
       // Fallback for mobile browsers or popup blockers (e.g., Firefox Android)
-      import("firebase/auth").then(({ signInWithRedirect }) => {
-        signInWithRedirect(auth, googleProvider);
-      });
+      const { signInWithRedirect } = await import("firebase/auth");
+      await signInWithRedirect(auth, googleProvider);
       return null;
     }
   };
