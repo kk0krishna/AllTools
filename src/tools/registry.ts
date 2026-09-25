@@ -61,6 +61,9 @@ import { immunizationScheduleEntry } from "./pediatrics/immunization-schedule/me
 // Ophthalmology
 import { ishiharaTestEntry } from "./ophthalmology/ishihara-test/metadata";
 
+// Entertainment
+import { movieverseEntry } from "./entertainment/movieverse/metadata";
+
 export const toolsRegistry: ToolEntry[] = [
   ageCalculatorEntry,
   bmiCalculatorEntry,
@@ -89,6 +92,7 @@ export const toolsRegistry: ToolEntry[] = [
   gleasonScoreEntry,
   immunizationScheduleEntry,
   ishiharaTestEntry,
+  movieverseEntry,
 ];
 
 export function getToolBySlug(category: string, slug: string): ToolEntry | undefined {
