@@ -472,13 +472,13 @@ export default function Home() {
         <div className="max-w-4xl mx-auto prose prose-slate dark:prose-invert">
           <h2 className="text-xl md:text-2xl font-bold font-heading mb-4">About Clinikkit: The Ultimate Collection of Professional Web Tools</h2>
           <p className="text-muted-foreground mb-4">
-            Clinikkit (formerly ToolVerse) is a comprehensive, privacy-first platform offering a vast suite of free online tools designed specifically for developers, medical professionals, designers, and everyday users. Our mission is to provide lightning-fast, secure, and accurate web utilities directly in your browser.
+            Clinikkit is a comprehensive, privacy-first platform offering a vast suite of free online tools designed specifically for medical professionals, developers, designers, and everyday users. Our mission is to provide lightning-fast, secure, and accurate web utilities directly in your browser.
           </p>
           <p className="text-muted-foreground mb-4">
-            Whether you are a developer looking for an instant <strong>JSON formatter</strong>, a physician needing reliable <strong>clinical calculators</strong> like the ABG Analyzer and Bishop Score, or a creator searching for image conversion utilities, Clinikkit has you covered. All of our tools run instantly without requiring you to download any software or create an account.
+            Our platform features an extensive library of specialized utilities. For healthcare professionals, we offer clinical-grade calculators including the <strong>ABG Analyzer</strong>, <strong>BMI Calculator</strong>, <strong>Child Immunization Schedule</strong>, comprehensive <strong>Obstetrics Tools</strong>, and the <strong>Ishihara Color Blindness Test</strong>. For developers and creators, our suite includes the powerful <strong>Favicon Generator</strong>, <strong>Upload Ready Image Converter</strong>, and a lossless <strong>Audio Spectrum Analyzer</strong>. We also cater to mental health and lifestyle with the <strong>Feelings Wheel</strong> and our immersive <strong>MovieVerse Suggestor</strong>.
           </p>
           <p className="text-muted-foreground">
-            Explore our curated categories above to discover powerful calculators, formatters, and analyzers tailored to streamline your daily workflow. Built with modern web technologies, Clinikkit ensures that your data remains secure while delivering a seamless, premium user experience.
+            Explore our curated categories above to discover powerful calculators, formatters, and analyzers tailored to streamline your daily workflow. Built with modern web technologies, Clinikkit ensures that your data remains secure while delivering a seamless, premium user experience—all without requiring you to download any software or create an account.
           </p>
         </div>
       </section>

@@ -88,15 +88,20 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
         <div className="max-w-4xl prose prose-slate dark:prose-invert">
           <h2 className="text-xl md:text-2xl font-bold font-heading mb-4">About {categoryName} Tools on Clinikkit</h2>
           <p className="text-muted-foreground mb-4">
-            Welcome to the <strong>{categoryName}</strong> category on Clinikkit. This section is specifically curated to provide a comprehensive suite of powerful, privacy-first web utilities designed to streamline your workflow.
+            Welcome to the <strong>{categoryName}</strong> category on Clinikkit. Whether you are seeking clinical precision, creative utilities, or everyday productivity, this collection has been meticulously curated to streamline your workflow with lightning-fast, privacy-first web tools.
           </p>
           <p className="text-muted-foreground mb-4">
-            Currently, this category features {categoryTools.length} highly optimized tools, including: 
-            {categoryTools.slice(0, 5).map(t => ` ${t.metadata.name}`).join(", ")}
-            {categoryTools.length > 5 ? ", and more." : "."} Each tool is engineered to run seamlessly directly in your browser without requiring server-side processing, ensuring that your data remains 100% private and secure on your local device.
+            Our {categoryName.toLowerCase()} library currently features {categoryTools.length} highly optimized tools designed to operate entirely in your browser. This includes standout utilities like 
+            {categoryTools.slice(0, 3).map((t, i, arr) => (
+              <span key={t.metadata.slug}>
+                <strong> {t.metadata.name}</strong>
+                {i < arr.length - 1 ? ", " : ""}
+              </span>
+            ))}
+            {categoryTools.length > 3 ? ", and many more." : "."} By leveraging client-side processing, we guarantee that your sensitive data and personal inputs remain 100% private and secure on your local device, never touching our servers.
           </p>
           <p className="text-muted-foreground">
-            Whether you need quick calculations, data formatting, or specialized utilities, our {categoryName.toLowerCase()} tools provide instant results. Click on any of the tools above to launch them immediately. No downloads, no sign-ups—just professional-grade tools when you need them.
+            Click on any of the {categoryName.toLowerCase()} tools above to launch them instantly. There are no paywalls, no software downloads, and no sign-ups required—just professional-grade, reliable tools available whenever you need them.
           </p>
         </div>
       </section>
