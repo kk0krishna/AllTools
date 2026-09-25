@@ -1,491 +1,352 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { Button } from "@/components/ui/button";
-import { Heart, X, Check, Info, ChevronLeft, ChevronRight, Bookmark, Star } from "lucide-react";
+import { db } from "@/lib/firebase";
 import { ToolComponentProps } from "@/tools/registry";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
-const BASE_URL = "https://api.themoviedb.org/3";
-const IMAGE_BASE = "https://image.tmdb.org/t/p/original";
-const POSTER_BASE = "https://image.tmdb.org/t/p/w500";
+// UI Components
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, Heart, Bookmark, Users, Sparkles, LogIn, ChevronLeft, Tv, Film, SkipForward, X, Eye, Popcorn } from "lucide-react";
 
-interface Movie {
-  id: number;
-  title: string;
-  name?: string;
-  overview: string;
-  backdrop_path: string;
-  poster_path: string;
-  media_type: string;
-  vote_average: number;
-  release_date?: string;
-  first_air_date?: string;
-}
+// MovieVerse Components & Lib
+import { Movie, UserProfile, MOODS, InteractionState } from "./lib/types";
+import { MovieEngine } from "./lib/engine";
+import { useMoviePreferences } from "./hooks/useMoviePreferences";
+import { useMovieActions } from "./hooks/useMovieActions";
+import { SwipeableCard } from "./components/SwipeableCard";
+import { DetailsDrawer } from "./components/DetailsDrawer";
+import { MovieShelf } from "./components/MovieShelf";
+import { MatchPanel } from "./components/MatchPanel";
+import { OnboardView, SetupView } from "./components/OnboardFlow";
 
-interface UserPreferences {
-  likes: number[];
-  dislikes: number[];
-  watched: number[];
-  wantToWatch: number[];
-}
+export default function MovieVerse({}: ToolComponentProps) {
+  const { user, signInWithGoogle, signInWithRedirectFlow, signOut } = useAuth();
+  const router = useRouter();
 
-const mockMovies: Movie[] = [
-  {
-    id: 1,
-    title: "Inception",
-    overview: "Cobb, a skilled thief who commits corporate espionage by infiltrating the subconscious of his targets is offered a chance to regain his old life as payment for a task considered to be impossible: &quot;inception&quot;.",
-    backdrop_path: "/8ZTVqvKdQ8emSGUEMjsS4yHAwrp.jpg",
-    poster_path: "/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
-    media_type: "movie",
-    vote_average: 8.8,
-    release_date: "2010-07-15",
-  },
-  {
-    id: 2,
-    title: "Interstellar",
-    overview: "The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the limitations on human space travel and conquer the vast distances involved in an interstellar voyage.",
-    backdrop_path: "/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg",
-    poster_path: "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-    media_type: "movie",
-    vote_average: 8.6,
-    release_date: "2014-11-05",
-  },
-  {
-    id: 3,
-    title: "The Dark Knight",
-    overview: "Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets.",
-    backdrop_path: "/nMKdUUepR0i5zn0y1T4CsSB5chy.jpg",
-    poster_path: "/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
-    media_type: "movie",
-    vote_average: 9.0,
-    release_date: "2008-07-16",
-  },
-  {
-    id: 4,
-    title: "Stranger Things",
-    name: "Stranger Things",
-    overview: "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl.",
-    backdrop_path: "/56v2KjBlU4XaDp9xxcIGQp8cGIp.jpg",
-    poster_path: "/49WJfeN0moxb9IPfGn8xXKSg7bp.jpg",
-    media_type: "tv",
-    vote_average: 8.6,
-    first_air_date: "2016-07-15",
-  }
-];
+  type ViewType = "onboard" | "setup" | "discover" | "search" | "lists" | "match" | "profile";
+  const [view, setView] = useState<ViewType>("discover");
 
-export default function MovieVerse({ }: ToolComponentProps) {
-  const { user, signInWithGoogle } = useAuth();
-  const [trending, setTrending] = useState<Movie[]>([]);
-  const [action, setAction] = useState<Movie[]>([]);
-  const [comedy, setComedy] = useState<Movie[]>([]);
-  const [heroMovie, setHeroMovie] = useState<Movie | null>(null);
+  // Global State
+  const { prefs, updateInteraction, clearData, loading: prefsLoading } = useMoviePreferences(user);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   
-  const [preferences, setPreferences] = useState<UserPreferences>({
-    likes: [],
-    dislikes: [],
-    watched: [],
-    wantToWatch: [],
-  });
+  const { advanceCard } = useMovieActions(user, profile, setProfile, updateInteraction);
 
+  // Feed State
+  const [feed, setFeed] = useState<Movie[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+  const [mediaType, setMediaType] = useState<"movie" | "tv" | "both">("both");
+  
+  // Modals
+  const [selectedMovieForDetails, setSelectedMovieForDetails] = useState<Movie | null>(null);
+  const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [showMoodPicker, setShowMoodPicker] = useState(false);
 
-  async function loadPreferences() {
-    if (!user) return;
-    try {
-      const docRef = doc(db, "user_movie_preferences", user.uid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setPreferences(docSnap.data() as UserPreferences);
-      } else {
-        await setDoc(docRef, preferences);
-      }
-    } catch (e) {
-      console.error("Error loading preferences:", e);
-    }
-  }
+  // Search State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Movie[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
 
-  async function fetchMovies() {
-    setLoading(true);
-    if (!API_KEY) {
-      setTrending(mockMovies);
-      setAction(mockMovies.slice().reverse());
-      setComedy([mockMovies[1], mockMovies[3], mockMovies[0]]);
-      setHeroMovie(mockMovies[0]);
+  // 1. Initial Load & Auth routing
+  useEffect(() => {
+    if (prefsLoading) return;
+    if (!user || user.isAnonymous) {
+      if (view !== "setup" && view !== "onboard") setView("onboard");
       setLoading(false);
       return;
     }
-
-    try {
-      const [trendingRes, actionRes, comedyRes] = await Promise.all([
-        fetch(`${BASE_URL}/trending/all/day?api_key=${API_KEY}`),
-        fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=28`),
-        fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=35`),
-      ]);
-      const trendingData = await trendingRes.json();
-      const actionData = await actionRes.json();
-      const comedyData = await comedyRes.json();
-
-      setTrending(trendingData.results || mockMovies);
-      setAction(actionData.results || []);
-      setComedy(comedyData.results || []);
-      if (trendingData.results && trendingData.results.length > 0) {
-        setHeroMovie(trendingData.results[0]);
-      } else {
-        setHeroMovie(mockMovies[0]);
+    const init = async () => {
+      try {
+        const pd = await getDoc(doc(db, "user_movie_profiles", user.uid));
+        if (pd.exists()) {
+          setProfile(pd.data() as UserProfile);
+          if (view === "onboard" || view === "setup") setView("discover");
+        } else {
+          setView("setup");
+        }
+      } catch (e) {
+        console.error(e);
       }
-    } catch (error) {
-      console.error("Failed to fetch movies:", error);
-      setTrending(mockMovies);
-      setHeroMovie(mockMovies[0]);
-    }
+      setLoading(false);
+    };
+    init();
+  }, [user, prefsLoading]);
+
+  // 2. Fetch Feed
+  const fetchFeed = useCallback(async (mood: string | null) => {
+    setLoading(true);
+    const results = await MovieEngine.fetchCandidates(mood, [], prefs, profile, mediaType);
+    setFeed(results);
+    setCurrentIndex(0);
     setLoading(false);
-  }
+  }, [prefs, profile, mediaType]);
 
   useEffect(() => {
-    fetchMovies();
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      loadPreferences();
-    } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setPreferences({ likes: [], dislikes: [], watched: [], wantToWatch: [] });
+    if (view === "discover" && feed.length === 0 && !loading) {
+      fetchFeed(selectedMood);
     }
-  }, [user]);
+  }, [view, feed.length, loading, selectedMood, fetchFeed]);
 
-  async function updatePreference(listType: keyof UserPreferences, movieId: number, add: boolean) {
-    if (!user) {
-      signInWithGoogle();
-      return;
-    }
-
-    const currentList = preferences[listType] || [];
-    let newList;
-    if (add) {
-      if (currentList.includes(movieId)) return;
-      newList = [...currentList, movieId];
-    } else {
-      newList = currentList.filter(id => id !== movieId);
-    }
-
-    const newPreferences = { ...preferences, [listType]: newList };
-    setPreferences(newPreferences);
-
-    try {
-      const docRef = doc(db, "user_movie_preferences", user.uid);
-      await setDoc(docRef, newPreferences, { merge: true });
-    } catch (e) {
-      console.error("Error updating preferences:", e);
-    }
+  // Setup Complete Handler
+  const handleSetupComplete = async (name: string, genres: number[]) => {
+    const p: UserProfile = { name, favoriteGenres: genres, createdAt: new Date().toISOString() };
+    setProfile(p);
+    if (user && !user.isAnonymous) await setDoc(doc(db, "user_movie_profiles", user.uid), p);
+    setView("discover");
   };
 
+  // Search Handler
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+    if (!query.trim()) { setSearchResults([]); return; }
+    setSearchLoading(true);
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&query=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      setSearchResults((data.results || []).filter((m: any) => m.poster_path && (m.media_type === "movie" || m.media_type === "tv")));
+    } catch(e) {}
+    setSearchLoading(false);
+  };
 
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen w-full bg-[#0a0a0a] text-white">
-        <motion.div 
-          animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="text-4xl font-black tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-purple-600"
-        >
-          MOVIEVERSE
-        </motion.div>
-      </div>
-    );
+  if (loading || prefsLoading) {
+    return <div className="fixed inset-0 bg-[#0a0a0a] flex items-center justify-center z-[9999]"><div className="w-10 h-10 border-4 border-white/20 border-t-pink-500 rounded-full animate-spin" /></div>;
   }
 
+  if (view === "onboard") return <OnboardView onSignIn={signInWithGoogle} onSignInGuest={() => setView("setup")} onSignInAlt={signInWithRedirectFlow} onBack={() => router.back()} />;
+  if (view === "setup") return <SetupView onComplete={handleSetupComplete} />;
+
+  const current = feed[currentIndex];
+  const next1 = feed[currentIndex + 1];
+  const next2 = feed[currentIndex + 2];
+  const visibleCards = [current, next1, next2].filter(Boolean);
+
   return (
-    <div className="relative min-h-screen w-full bg-[#0a0a0a] text-white overflow-x-hidden font-sans pb-20 selection:bg-red-600/30 selection:text-white">
-      {/* Hero Section */}
-      <AnimatePresence>
-        {heroMovie && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.5 }}
-            className="relative w-full h-[75vh] md:h-[85vh] overflow-hidden"
-          >
-            <motion.div 
-              initial={{ scale: 1.1 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 10, ease: "easeOut" }}
-              className="absolute inset-0 w-full h-full"
-            >
-              <img 
-                src={API_KEY ? `${IMAGE_BASE}${heroMovie.backdrop_path}` : heroMovie.backdrop_path}
-                alt={heroMovie.title || heroMovie.name || "Movie Poster"}
-                className="w-full h-full object-cover opacity-80"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/50 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent" />
-            </motion.div>
+    <div className="fixed inset-0 z-[9999] bg-[#0a0a0a] text-white flex flex-col overflow-hidden font-sans selection:bg-pink-500/30">
+      
+      {/* ─── HEADER ─── */}
+      <div className="flex items-center justify-between p-5 sm:p-8 z-50">
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-red-600/20">
+            <Popcorn className="w-5 h-5 text-white" />
+          </div>
+          <span className="font-black text-xl tracking-tight hidden sm:block">MovieVerse</span>
+        </div>
+
+        {view === "discover" && (
+          <div className="flex items-center bg-white/5 p-1 rounded-2xl border border-white/10 shadow-inner">
+            <button onClick={() => { setMediaType("movie"); setFeed([]); }} className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 ${mediaType === "movie" ? "bg-white text-black shadow-lg" : "text-white/50 hover:text-white"}`}><Film className="w-4 h-4"/> Movie</button>
+            <button onClick={() => { setMediaType("tv"); setFeed([]); }} className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 ${mediaType === "tv" ? "bg-white text-black shadow-lg" : "text-white/50 hover:text-white"}`}><Tv className="w-4 h-4"/> TV</button>
+            <button onClick={() => { setMediaType("both"); setFeed([]); }} className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 ${mediaType === "both" ? "bg-white text-black shadow-lg" : "text-white/50 hover:text-white"}`}>Both</button>
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <Button variant="ghost" size="icon" onClick={() => setView("search")} className={`rounded-full ${view === "search" ? "bg-white/10" : ""}`}><Search className="w-5 h-5" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => setView("profile")} className={`rounded-full ${view === "profile" ? "bg-white/10" : ""}`}><div className="w-6 h-6 rounded-full bg-gradient-to-tr from-pink-500 to-yellow-500 border-2 border-white/20" /></Button>
+        </div>
+      </div>
+
+      {/* ─── MAIN CONTENT ─── */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden relative">
+        
+        {/* DISCOVER */}
+        {view === "discover" && (
+          <div className="absolute inset-0 flex flex-col">
+            <div className="px-5 sm:px-8 py-2 flex items-center justify-between z-40">
+              <Button onClick={() => setShowMoodPicker(true)} variant="ghost" className="bg-white/5 hover:bg-white/10 rounded-full text-sm font-bold border border-white/10">
+                {selectedMood ? MOODS.find(m => m.id === selectedMood)?.emoji + " " + MOODS.find(m => m.id === selectedMood)?.label : "How are you feeling?"}
+              </Button>
+            </div>
+
+            {loading ? (
+              <div className="flex-1 flex flex-col items-center justify-center gap-4">
+                <div className="w-10 h-10 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                <p className="text-white/30 text-sm font-semibold">Curating your universe…</p>
+              </div>
+            ) : current ? (
+              <div className="w-full max-w-[min(100%,_48vh)] px-4 flex flex-col items-center justify-center h-[calc(100vh-140px)] min-h-[450px] pt-4 pb-32 mx-auto">
+                <div className="relative w-full aspect-[2/3] perspective-[1000px]">
+                  <AnimatePresence>
+                    {visibleCards.slice().reverse().map((movie, index, arr) => {
+                      const isTop = movie.id === current.id;
+                      const isBackground = !isTop;
+                      return (
+                        <SwipeableCard 
+                          key={`${movie.media_type}-${movie.id}`}
+                          movie={movie}
+                          isTop={isTop}
+                          isBackground={isBackground}
+                          whyText={isTop ? MovieEngine.generateWhyTag(movie, profile) : null}
+                          onInfoClick={() => setSelectedMovieForDetails(movie)}
+                          onSwipe={(dir) => {
+                            const actionMap: Record<string, InteractionState> = { left: "disliked", right: "loved", up: "interested", down: "skipped" };
+                            advanceCard(movie, actionMap[dir]);
+                            setCurrentIndex(prev => prev + 1);
+                          }}
+                        />
+                      );
+                    })}
+                  </AnimatePresence>
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex items-center justify-center gap-4 mt-8 w-full z-30">
+                  <Button onClick={() => { advanceCard(current, "skipped"); setCurrentIndex(prev=>prev+1); }} size="icon" className="w-12 h-12 rounded-full bg-white/10 text-white/50 hover:bg-white/20"><SkipForward className="w-5 h-5" /></Button>
+                  <Button onClick={() => { advanceCard(current, "disliked"); setCurrentIndex(prev=>prev+1); }} size="icon" className="w-16 h-16 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/30"><X className="w-8 h-8" /></Button>
+                  <Button onClick={() => { advanceCard(current, "interested"); setCurrentIndex(prev=>prev+1); }} size="icon" className="w-16 h-16 rounded-full bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 border border-purple-500/30"><Bookmark className="w-8 h-8" /></Button>
+                  <Button onClick={() => { advanceCard(current, "loved"); setCurrentIndex(prev=>prev+1); }} size="icon" className="w-12 h-12 rounded-full bg-pink-500/10 text-pink-400 hover:bg-pink-500/20 border border-pink-500/30"><Heart className="w-5 h-5 fill-current" /></Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
+                <Sparkles className="w-10 h-10 text-white/20 mb-6" />
+                <h3 className="text-2xl font-black mb-3">You&apos;ve cleared this lane.</h3>
+                <Button onClick={() => { setFeed([]); fetchFeed(null); }} className="rounded-full bg-white text-black font-bold">Explore the vault</Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* SEARCH */}
+        {view === "search" && (
+          <div className="p-5 sm:p-8 max-w-4xl mx-auto pb-32">
+            <div className="relative mb-8 max-w-lg mx-auto">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+              <Input autoFocus value={searchQuery} onChange={e => handleSearch(e.target.value)} placeholder="Search for a movie or TV show…" className="bg-white/5 border-white/10 text-white rounded-xl h-14 pl-12 text-lg" />
+            </div>
             
-            <motion.div 
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="absolute bottom-0 left-0 p-6 md:p-12 lg:p-24 w-full md:w-2/3 lg:w-1/2 z-10 flex flex-col gap-6"
-            >
-              <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white drop-shadow-2xl">
-                {heroMovie.title || heroMovie.name}
-              </h1>
-              <div className="flex items-center gap-4 text-sm text-gray-300 font-semibold uppercase tracking-wider">
-                <span className="flex items-center gap-1 text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded">
-                  <Star className="w-4 h-4 fill-current" /> {Math.round(heroMovie.vote_average * 10)}%
-                </span>
-                <span>{heroMovie.release_date?.substring(0, 4) || heroMovie.first_air_date?.substring(0, 4)}</span>
-                <span className="border border-gray-600 px-2 py-1 rounded">{heroMovie.media_type || "movie"}</span>
+            {searchLoading ? <div className="text-center py-12"><div className="w-10 h-10 border-4 border-white/10 border-t-white rounded-full animate-spin mx-auto shadow-xl" /></div> : null}
+            
+            {!searchQuery && !searchLoading && (
+              <div className="text-center py-24 px-4">
+                <div className="w-24 h-24 bg-gradient-to-b from-white/10 to-white/5 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl border border-white/10"><Search className="w-10 h-10 text-white/30" /></div>
+                <h3 className="text-3xl font-black mb-3">Find anything</h3>
+                <p className="text-white/40 max-w-sm mx-auto mb-8">Search for specific movies or TV shows to add directly to your Shelf.</p>
               </div>
-              <p className="text-gray-300 text-sm md:text-lg line-clamp-3 leading-relaxed drop-shadow-md max-w-2xl">
-                {heroMovie.overview}
-              </p>
-              <div className="flex items-center gap-4 mt-2">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button 
-                    onClick={() => setSelectedMovie(heroMovie)} 
-                    className="bg-white text-black hover:bg-gray-200 font-bold rounded-full px-8 py-6 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-                  >
-                    <Info className="w-5 h-5 mr-2" /> More Info
-                  </Button>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button 
-                    onClick={() => updatePreference("wantToWatch", heroMovie.id, !preferences.wantToWatch.includes(heroMovie.id))}
-                    variant="outline" 
-                    className={`rounded-full px-8 py-6 backdrop-blur-md border-gray-500 text-white ${preferences.wantToWatch.includes(heroMovie.id) ? 'bg-purple-600/40 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.4)]' : 'bg-black/40 hover:bg-white/10'}`}
-                  >
-                    <Bookmark className={`w-5 h-5 mr-2 ${preferences.wantToWatch.includes(heroMovie.id) ? 'fill-current' : ''}`} /> 
-                    {preferences.wantToWatch.includes(heroMovie.id) ? 'In Watchlist' : 'Watchlist'}
-                  </Button>
-                </motion.div>
-              </div>
-            </motion.div>
+            )}
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-8">
+              {searchResults.map(movie => {
+                const key = `${movie.media_type}:${movie.id}`;
+                const state = prefs.interactions[key];
+                return (
+                  <div key={key} className="flex gap-4 bg-white/5 rounded-2xl p-3 border border-white/5 items-center hover:bg-white/10 cursor-pointer" onClick={() => setSelectedMovieForDetails(movie)}>
+                    <div className="w-16 h-24 rounded-xl overflow-hidden bg-zinc-900 shrink-0 shadow-md">
+                      <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt="" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-sm truncate">{movie.title || movie.name}</h3>
+                      <p className="text-white/40 text-xs mt-1">{movie.release_date?.substring(0,4)} · ⭐ {Math.round(movie.vote_average * 10)}%</p>
+                      <div className="flex gap-2 mt-3">
+                        <Button size="sm" onClick={(e) => { e.stopPropagation(); updateInteraction(movie.media_type || "movie", movie.id, "interested"); }} variant={state === "interested" ? "default" : "outline"} className={`h-7 text-[10px] rounded-full ${state === "interested" ? "bg-purple-500 hover:bg-purple-600" : "border-white/10 text-white/60"}`}>Save</Button>
+                        <Button size="sm" onClick={(e) => { e.stopPropagation(); updateInteraction(movie.media_type || "movie", movie.id, "loved"); }} variant={state === "loved" ? "default" : "outline"} className={`h-7 text-[10px] rounded-full ${state === "loved" ? "bg-pink-500 hover:bg-pink-600" : "border-white/10 text-white/60"}`}>Love</Button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* SHELF */}
+        {view === "lists" && (
+          <MovieShelf prefs={prefs} onRemove={(mediaType, id) => updateInteraction(mediaType, id, "unseen")} onDetails={setSelectedMovieForDetails} />
+        )}
+
+        {/* MATCH */}
+        {view === "match" && (
+          <MatchPanel user={user} profile={profile} prefs={prefs} onGoToOnboard={() => setView("onboard")} onDetails={setSelectedMovieForDetails} />
+        )}
+
+        {/* PROFILE */}
+        {view === "profile" && (
+          <div className="p-5 sm:p-8 max-w-lg mx-auto pb-32">
+            <h2 className="text-2xl font-black mb-8">Taste Passport</h2>
+            <div className="bg-white/5 rounded-3xl p-6 border border-white/10 shadow-xl mb-8">
+              <h3 className="font-bold text-white/60 text-xs uppercase tracking-widest mb-4">DNA Signature</h3>
+              {profile ? (
+                <>
+                  <p className="text-xl font-black mb-1">{profile.name}</p>
+                  <p className="text-sm text-pink-400 font-mono mb-6">User since {new Date(profile.createdAt).getFullYear()}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {Object.entries(profile.genreAffinities || {})
+                      .sort(([,a], [,b]) => b - a).slice(0, 5)
+                      .map(([gId, score]) => (
+                        <span key={gId} className="px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-xs font-bold text-white/70">
+                          {MOODS.flatMap(m => m.genres).includes(Number(gId)) ? "★ " : ""}{score}pts
+                        </span>
+                      ))}
+                  </div>
+                </>
+              ) : (
+                <p className="text-white/40 text-sm">No DNA found.</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <Button onClick={() => { if(confirm("Clear data?")) { clearData(); setProfile(null); setView("setup"); } }} variant="outline" className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-2xl font-bold">Clear My Data</Button>
+              <Button onClick={() => { signOut().then(() => setView("onboard")); }} variant="ghost" className="w-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white rounded-2xl font-bold">Log Out</Button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ─── BOTTOM NAVIGATION ─── */}
+      <div className="absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-black via-black/90 to-transparent pointer-events-none z-40" />
+      <div className="absolute bottom-6 inset-x-0 flex justify-center z-50 pointer-events-auto px-4">
+        <div className="flex items-center gap-1 bg-black/60 backdrop-blur-xl p-1.5 rounded-full border border-white/10 shadow-2xl">
+          <Button onClick={() => setView("discover")} variant="ghost" className={`rounded-full px-6 py-6 transition-all ${view === "discover" ? "bg-white text-black shadow-lg scale-105" : "text-white/50 hover:text-white hover:bg-white/10"}`}>
+            <Sparkles className="w-5 h-5" /> <span className={`ml-2 font-bold ${view !== "discover" ? "hidden sm:inline" : ""}`}>Discover</span>
+          </Button>
+          <Button onClick={() => setView("lists")} variant="ghost" className={`rounded-full px-6 py-6 transition-all ${view === "lists" ? "bg-white text-black shadow-lg scale-105" : "text-white/50 hover:text-white hover:bg-white/10"}`}>
+            <Bookmark className="w-5 h-5" /> <span className={`ml-2 font-bold ${view !== "lists" ? "hidden sm:inline" : ""}`}>Shelf</span>
+          </Button>
+          <Button onClick={() => setView("match")} variant="ghost" className={`rounded-full px-6 py-6 transition-all ${view === "match" ? "bg-pink-500 text-white shadow-lg shadow-pink-500/25 scale-105" : "text-white/50 hover:text-pink-400 hover:bg-pink-500/10"}`}>
+            <Users className="w-5 h-5" /> <span className={`ml-2 font-bold ${view !== "match" ? "hidden sm:inline" : ""}`}>Match</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Details Drawer */}
+      <AnimatePresence>
+        {selectedMovieForDetails && (
+          <DetailsDrawer
+            movie={selectedMovieForDetails}
+            prefs={prefs}
+            mediaType={(selectedMovieForDetails.media_type as "movie" | "tv") || "movie"}
+            onClose={() => setSelectedMovieForDetails(null)}
+            onSave={() => updateInteraction(selectedMovieForDetails.media_type || "movie", selectedMovieForDetails.id, "interested")}
+            onWatched={() => updateInteraction(selectedMovieForDetails.media_type || "movie", selectedMovieForDetails.id, "watched")}
+          />
+        )}
+      </AnimatePresence>
+      
+      {/* Mood Picker */}
+      <AnimatePresence>
+        {showMoodPicker && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[10000] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center">
+            <h2 className="text-3xl font-black mb-8">What&apos;s the vibe?</h2>
+            <div className="grid grid-cols-2 gap-3 max-w-sm w-full">
+              {MOODS.map(mood => (
+                <button key={mood.id} onClick={() => { setSelectedMood(mood.id); setShowMoodPicker(false); setFeed([]); }}
+                  className="bg-white/5 hover:bg-white/10 border border-white/10 p-4 rounded-2xl flex flex-col items-center gap-2 transition-all hover:scale-105"
+                >
+                  <span className="text-3xl">{mood.emoji}</span>
+                  <span className="text-sm font-bold">{mood.label}</span>
+                </button>
+              ))}
+            </div>
+            <Button variant="ghost" onClick={() => setShowMoodPicker(false)} className="mt-8 text-white/40">Cancel</Button>
           </motion.div>
         )}
       </AnimatePresence>
-
-      <div className="flex flex-col gap-12 mt-8 md:-mt-20 relative z-20 px-6 md:px-12">
-        <MovieRow title="Trending in the Verse" movies={trending} onSelect={setSelectedMovie} />
-        {action.length > 0 && <MovieRow title="Adrenaline Rush" movies={action} onSelect={setSelectedMovie} />}
-        {comedy.length > 0 && <MovieRow title="Laugh Out Loud" movies={comedy} onSelect={setSelectedMovie} />}
-      </div>
-
-      {/* Movie Details Modal */}
-      <AnimatePresence>
-        {selectedMovie && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-xl">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="bg-[#111] border border-white/10 w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl relative max-h-[95vh] flex flex-col"
-            >
-              <button 
-                onClick={() => setSelectedMovie(null)}
-                className="absolute top-4 right-4 z-50 bg-black/60 hover:bg-white/20 backdrop-blur-md text-white rounded-full p-2 transition-all"
-              >
-                <X className="w-6 h-6" />
-              </button>
-              
-              <div className="relative h-[40vh] shrink-0">
-                <img 
-                  src={API_KEY ? `${IMAGE_BASE}${selectedMovie.backdrop_path}` : selectedMovie.backdrop_path}
-                  alt={selectedMovie.title || selectedMovie.name || "Movie Poster"}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-[#111]/60 to-transparent" />
-              </div>
-              
-              <div className="p-6 md:p-10 relative -mt-24 z-10 flex flex-col md:flex-row gap-8 overflow-y-auto">
-                <motion.div 
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="flex-shrink-0 w-40 md:w-56 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-xl overflow-hidden border border-white/10 bg-slate-900 mx-auto md:mx-0"
-                >
-                  {selectedMovie.poster_path ? (
-                    <img 
-                      src={API_KEY ? `${POSTER_BASE}${selectedMovie.poster_path}` : selectedMovie.poster_path} 
-                      alt="Poster" 
-                      className="w-full h-auto object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-72 flex items-center justify-center text-slate-500">No Image</div>
-                  )}
-                </motion.div>
-                
-                <motion.div 
-                  initial={{ x: 20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="flex-grow flex flex-col"
-                >
-                  <h2 className="text-3xl md:text-5xl font-black mb-3 text-white">{selectedMovie.title || selectedMovie.name}</h2>
-                  <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 font-medium">
-                    <span className="flex items-center gap-1 text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded">
-                      <Star className="w-4 h-4 fill-current" /> {Math.round(selectedMovie.vote_average * 10)}%
-                    </span>
-                    <span>{selectedMovie.release_date || selectedMovie.first_air_date}</span>
-                    <span className="uppercase border border-white/20 px-2 py-0.5 rounded-sm tracking-wider text-xs">{selectedMovie.media_type || "Movie"}</span>
-                  </div>
-                  
-                  {/* Actions */}
-                  <div className="flex flex-wrap items-center gap-4 mb-8">
-                    <ActionBtn 
-                      active={preferences.likes.includes(selectedMovie.id)} 
-                      icon={<Heart className={`w-5 h-5 ${preferences.likes.includes(selectedMovie.id) ? 'fill-current' : ''}`} />} 
-                      label="Love It" 
-                      onClick={() => updatePreference("likes", selectedMovie.id, !preferences.likes.includes(selectedMovie.id))} 
-                      color="pink"
-                    />
-                    <ActionBtn 
-                      active={preferences.dislikes.includes(selectedMovie.id)} 
-                      icon={<X className="w-5 h-5" />} 
-                      label="Not For Me" 
-                      onClick={() => updatePreference("dislikes", selectedMovie.id, !preferences.dislikes.includes(selectedMovie.id))} 
-                      color="red"
-                    />
-                    <ActionBtn 
-                      active={preferences.watched.includes(selectedMovie.id)} 
-                      icon={<Check className={`w-5 h-5 ${preferences.watched.includes(selectedMovie.id) ? 'text-white' : ''}`} />} 
-                      label="Watched" 
-                      onClick={() => updatePreference("watched", selectedMovie.id, !preferences.watched.includes(selectedMovie.id))} 
-                      color="green"
-                    />
-                    <ActionBtn 
-                      active={preferences.wantToWatch.includes(selectedMovie.id)} 
-                      icon={<Bookmark className={`w-5 h-5 ${preferences.wantToWatch.includes(selectedMovie.id) ? 'fill-current' : ''}`} />} 
-                      label="Watchlist" 
-                      onClick={() => updatePreference("wantToWatch", selectedMovie.id, !preferences.wantToWatch.includes(selectedMovie.id))} 
-                      color="purple"
-                    />
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
-                      <Info className="w-5 h-5 text-gray-400" /> Storyline
-                    </h3>
-                    <p className="text-gray-400 leading-relaxed text-sm md:text-base font-medium">
-                      {selectedMovie.overview}
-                    </p>
-                  </div>
-                </motion.div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
-  );
-}
-
-function MovieRow({ title, movies, onSelect }: { title: string, movies: Movie[], onSelect: (m: Movie) => void }) {
-  const rowRef = useRef<HTMLDivElement>(null);
-  
-  const scroll = (direction: 'left' | 'right') => {
-    if (rowRef.current) {
-      const { scrollLeft, clientWidth } = rowRef.current;
-      const scrollTo = direction === 'left' ? scrollLeft - clientWidth * 0.75 : scrollLeft + clientWidth * 0.75;
-      rowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
-    }
-  };
-
-  return (
-    <div className="flex flex-col gap-4 group/row">
-      <h2 className="text-2xl md:text-3xl font-bold text-white/90 group-hover/row:text-white transition-colors px-4 md:px-0">
-        {title}
-      </h2>
-      <div className="relative group/scroll">
-        <button 
-          onClick={() => scroll('left')}
-          className="absolute left-0 top-0 bottom-0 z-40 w-16 bg-gradient-to-r from-[#0a0a0a] to-transparent text-white flex items-center justify-start pl-2 opacity-0 group-hover/scroll:opacity-100 transition-opacity"
-        >
-          <div className="bg-black/50 p-2 rounded-full backdrop-blur-sm hover:bg-white/20 transition-colors">
-            <ChevronLeft className="w-8 h-8" />
-          </div>
-        </button>
-        
-        <div 
-          ref={rowRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide py-6 px-4 md:px-0 snap-x snap-mandatory"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {movies.map((movie, idx) => (
-            <motion.div 
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.05 }}
-              key={movie.id} 
-              className="relative flex-none w-[150px] md:w-[220px] snap-start cursor-pointer origin-bottom"
-              onClick={() => onSelect(movie)}
-              whileHover={{ scale: 1.08, zIndex: 50, y: -10 }}
-            >
-              <div className="aspect-[2/3] rounded-xl overflow-hidden bg-slate-800 shadow-lg border border-white/5 group-hover/row:border-white/10 transition-colors">
-                {movie.poster_path ? (
-                  <img 
-                    src={API_KEY ? `${POSTER_BASE}${movie.poster_path}` : movie.poster_path}
-                    alt={movie.title || movie.name || "Movie Poster"}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-500 font-medium p-4 text-center">
-                    {movie.title || movie.name}
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity flex items-end p-4">
-                  <p className="text-white font-bold text-sm truncate">{movie.title || movie.name}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-        
-        <button 
-          onClick={() => scroll('right')}
-          className="absolute right-0 top-0 bottom-0 z-40 w-16 bg-gradient-to-l from-[#0a0a0a] to-transparent text-white flex items-center justify-end pr-2 opacity-0 group-hover/scroll:opacity-100 transition-opacity"
-        >
-          <div className="bg-black/50 p-2 rounded-full backdrop-blur-sm hover:bg-white/20 transition-colors">
-            <ChevronRight className="w-8 h-8" />
-          </div>
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function ActionBtn({ active, icon, label, onClick, color }: { active: boolean, icon: React.ReactNode, label: string, onClick: () => void, color: "pink" | "red" | "green" | "purple" }) {
-  const baseClass = "flex items-center gap-2 px-5 py-2.5 rounded-full font-bold transition-all duration-300 text-sm border shadow-sm";
-  
-  const colors = {
-    pink: { active: "bg-pink-500 border-pink-500 text-white shadow-[0_0_15px_rgba(236,72,153,0.5)]", inactive: "hover:border-pink-500 hover:text-pink-400" },
-    red: { active: "bg-red-500 border-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.5)]", inactive: "hover:border-red-500 hover:text-red-400" },
-    green: { active: "bg-green-500 border-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]", inactive: "hover:border-green-500 hover:text-green-400" },
-    purple: { active: "bg-purple-500 border-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]", inactive: "hover:border-purple-500 hover:text-purple-400" },
-  };
-
-  const activeClass = colors[color].active;
-  const inactiveClass = `bg-white/5 border-white/10 text-gray-300 ${colors[color].inactive} hover:bg-white/10`;
-
-  return (
-    <motion.button 
-      whileHover={{ scale: 1.05 }} 
-      whileTap={{ scale: 0.95 }}
-      onClick={onClick} 
-      className={`${baseClass} ${active ? activeClass : inactiveClass}`}
-    >
-      {icon}
-      {label}
-    </motion.button>
   );
 }

@@ -1,13 +1,15 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { User, onAuthStateChanged, signInWithPopup, signOut as firebaseSignOut } from "firebase/auth";
+import { User, onAuthStateChanged, signInWithPopup, signInAnonymously, signOut as firebaseSignOut } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   signInWithGoogle: () => Promise<User | null>;
+  signInWithRedirectFlow: () => Promise<void>;
+  signInAsGuest: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -15,6 +17,8 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   signInWithGoogle: async () => null,
+  signInWithRedirectFlow: async () => {},
+  signInAsGuest: async () => {},
   signOut: async () => {},
 });
 
@@ -34,9 +38,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       return result.user;
+    } catch (error: any) {
+      console.error("Error signing in with popup, falling back to redirect:", error);
+      // Fallback for mobile browsers or popup blockers (e.g., Firefox Android)
+      import("firebase/auth").then(({ signInWithRedirect }) => {
+        signInWithRedirect(auth, googleProvider);
+      });
+      return null;
+    }
+  };
+
+  const signInWithRedirectFlow = async () => {
+    import("firebase/auth").then(({ signInWithRedirect }) => {
+      signInWithRedirect(auth, googleProvider);
+    });
+  };
+
+  const signInAsGuest = async () => {
+    try {
+      await signInAnonymously(auth);
     } catch (error) {
-      console.error("Error signing in with Google:", error);
-      throw error;
+      console.error("Error signing in anonymously:", error);
     }
   };
 
@@ -49,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signInWithRedirectFlow, signInAsGuest, signOut }}>
       {children}
     </AuthContext.Provider>
   );

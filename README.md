@@ -142,7 +142,7 @@ Because this project uses Next.js Static Export, it is perfectly compatible with
 - [**YouTube Transcript Downloader**](https://clinikkit.web.app/tools/developer/youtube-transcript): Extract, search, read, and download full text transcripts from any accessible YouTube video in TXT, Markdown, JSON, CSV, SRT, and VTT formats.
 
 ### Entertainment
-- [**MovieVerse Suggestor**](https://clinikkit.web.app/tools/entertainment/movieverse): Discover movies and web series. Save your likes, dislikes, and watchlists.
+- [**MovieVerse Suggestor**](https://clinikkit.web.app/tools/entertainment/movieverse): Tinder for Movies: Discover and rate movies with a friend. Features gesture swipes, taste matching, and a beautiful shelf.
 
 ### Everyday
 - [**Barcode Generator**](https://clinikkit.web.app/tools/everyday/barcode-generator): Generate high-quality barcodes for products, inventory, and more.

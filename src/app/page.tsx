@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Calculator, Code, Bot, Headphones, Stethoscope, HeartPulse, Wind, Brain, Activity, Baby, Eye, ArrowRight, X, Heart } from "lucide-react";
+import { Search, Calculator, Code, Bot, Headphones, Stethoscope, HeartPulse, Wind, Brain, Activity, Baby, Eye, ArrowRight, X, Heart, Film } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ const CATEGORIES = [
   { name: "Pediatrics", icon: Baby, color: "text-teal-500", bg: "bg-teal-500/10", border: "border-teal-500/20", href: "/categories/pediatrics", examples: "Immunization Sched" },
   { name: "Ophthalmology", icon: Eye, color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20", href: "/categories/ophthalmology", examples: "Ishihara Color Test" },
   { name: "Psychology", icon: Heart, color: "text-violet-500", bg: "bg-violet-500/10", border: "border-violet-500/20", href: "/categories/psychology", examples: "Emotion Compass" },
+  { name: "Entertainment", icon: Film, color: "text-yellow-500", bg: "bg-yellow-500/10", border: "border-yellow-500/20", href: "/categories/entertainment", examples: "MovieVerse Suggestor" },
 ];
 
 import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
@@ -27,8 +28,9 @@ import { db } from "@/lib/firebase";
 import { siteConfig } from "@/config/site";
 
 const DEFAULT_TRENDING = [
+  ...toolsRegistry.filter((t) => t.metadata.slug === "movieverse"),
   ...toolsRegistry.filter((t) => t.metadata.category === "obstetrics").slice(0, 2),
-  ...toolsRegistry.filter((t) => t.metadata.category !== "obstetrics").slice(0, 3), // Keep 5 tools + 1 request card = 6 items
+  ...toolsRegistry.filter((t) => t.metadata.category !== "obstetrics" && t.metadata.slug !== "movieverse").slice(0, 2),
 ];
 
 // --- 3D Braided Mesh Generator ---
