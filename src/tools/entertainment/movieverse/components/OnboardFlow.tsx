@@ -13,7 +13,7 @@ const GENRE_EMOJIS: Record<number, string> = {
 };
 
 export function OnboardView({ 
-  onSignIn, onSignInGuest, onSignInAlt, onBack 
+  onSignIn, onSignInGuest, onBack 
 }: any) {
   const [isAuthLoading, setIsAuthLoading] = React.useState(false);
 
@@ -50,10 +50,6 @@ export function OnboardView({
           
           <Button variant="ghost" disabled={isAuthLoading} onClick={onSignInGuest} className="w-full text-white/60 hover:text-white hover:bg-white/10 rounded-2xl py-6 font-bold mt-1">
             Continue as Guest
-          </Button>
-          
-          <Button variant="ghost" disabled={isAuthLoading} onClick={onSignInAlt} className="text-white/30 text-xs hover:text-white/60">
-            Trouble signing in? Try alternate method
           </Button>
           
           <Button variant="ghost" disabled={isAuthLoading} onClick={onBack} className="text-white/40 hover:text-white/70 mt-2">

@@ -1,14 +1,14 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { User, onAuthStateChanged, signInWithPopup, signInAnonymously, signOut as firebaseSignOut } from "firebase/auth";
+import { User, onAuthStateChanged, signInAnonymously, signOut as firebaseSignOut, getRedirectResult, signInWithRedirect, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signInWithGoogle: () => Promise<User | null>;
-  signInWithRedirectFlow: () => Promise<void>;
+  authError: string | null;
+  signInWithGoogle: () => Promise<void>;
   signInAsGuest: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -16,8 +16,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  signInWithGoogle: async () => null,
-  signInWithRedirectFlow: async () => {},
+  authError: null,
+  signInWithGoogle: async () => {},
   signInAsGuest: async () => {},
   signOut: async () => {},
 });
@@ -25,66 +25,71 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Explicitly process redirect results for mobile browsers
-    import("firebase/auth").then(({ getRedirectResult }) => {
-      getRedirectResult(auth).catch((error) => {
-        console.error("Auth Redirect Error:", error);
-      });
-    });
+    let mounted = true;
+
+    const initializeAuth = async () => {
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+        const result = await getRedirectResult(auth);
+        
+        if (result?.user && mounted) {
+          setUser(result.user);
+        }
+      } catch (error: any) {
+        console.error("[Auth] Initialization/Redirect failed:", error);
+        if (mounted) {
+          setAuthError(error.message || "Failed to sign in.");
+        }
+      }
+    };
+
+    initializeAuth();
 
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (!mounted) return;
       setUser(currentUser);
       setLoading(false);
     });
-    return () => unsubscribe();
+
+    return () => {
+      mounted = false;
+      unsubscribe();
+    };
   }, []);
 
   const signInWithGoogle = async () => {
     try {
-      const isMobile = typeof window !== "undefined" && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      if (isMobile) {
-        const { signInWithRedirect } = await import("firebase/auth");
-        await signInWithRedirect(auth, googleProvider);
-        return null;
-      }
-      
-      const result = await signInWithPopup(auth, googleProvider);
-      return result.user;
-    } catch (error: any) {
-      console.error("Error signing in with popup, falling back to redirect:", error);
-      // Fallback for mobile browsers or popup blockers (e.g., Firefox Android)
-      const { signInWithRedirect } = await import("firebase/auth");
+      setAuthError(null);
       await signInWithRedirect(auth, googleProvider);
-      return null;
+    } catch (error: any) {
+      console.error("[Auth] Google sign-in failed:", error);
+      setAuthError(error.message || "Failed to initialize sign-in.");
     }
-  };
-
-  const signInWithRedirectFlow = async () => {
-    import("firebase/auth").then(({ signInWithRedirect }) => {
-      signInWithRedirect(auth, googleProvider);
-    });
   };
 
   const signInAsGuest = async () => {
     try {
+      setAuthError(null);
       await signInAnonymously(auth);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error signing in anonymously:", error);
+      setAuthError(error.message || "Failed to sign in as guest.");
     }
   };
 
   const signOut = async () => {
     try {
       await firebaseSignOut(auth);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error signing out:", error);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signInWithRedirectFlow, signInAsGuest, signOut }}>
+    <AuthContext.Provider value={{ user, loading, authError, signInWithGoogle, signInAsGuest, signOut }}>
       {children}
     </AuthContext.Provider>
   );
