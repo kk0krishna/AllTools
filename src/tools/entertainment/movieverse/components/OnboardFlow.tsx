@@ -1,9 +1,16 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogIn, ChevronLeft, Popcorn } from "lucide-react";
+import { LogIn, ChevronLeft, Popcorn, ArrowRight, Check } from "lucide-react";
 import { GENRE_LIST } from "../lib/types";
+
+const GENRE_EMOJIS: Record<number, string> = {
+  28: "💥", 12: "🌍", 16: "🎨", 35: "😂", 80: "🔫",
+  99: "📽️", 18: "🎭", 10751: "👨‍👩‍👧‍👦", 14: "✨", 36: "📜",
+  27: "😱", 10402: "🎵", 9648: "🕵️", 10749: "💕", 878: "🧠",
+  53: "🔥", 10752: "⚔️", 37: "🤠"
+};
 
 export function OnboardView({ 
   onSignIn, onSignInGuest, onSignInAlt, onBack 
@@ -21,8 +28,8 @@ export function OnboardView({
           Swipe through cinema. Teach it your taste. Match with friends for the perfect movie night.
         </motion.p>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="w-full flex flex-col gap-4">
-          <Button size="lg" onClick={onSignIn} className="w-full rounded-2xl py-7 text-lg font-bold bg-white text-black hover:bg-white/90 shadow-xl">
-            <LogIn className="w-5 h-5 mr-3" /> Sign in to start
+          <Button size="lg" onClick={onSignIn} className="w-full rounded-2xl py-7 text-lg font-bold bg-white text-black hover:bg-white/90 shadow-xl group">
+            <LogIn className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" /> Sign in to start
           </Button>
           <Button variant="ghost" onClick={onSignInGuest} className="w-full text-white/60 hover:text-white hover:bg-white/10 rounded-2xl py-6 font-bold mt-1">
             Continue as Guest
@@ -40,51 +47,97 @@ export function OnboardView({
 }
 
 export function SetupView({ onComplete }: any) {
+  const [step, setStep] = React.useState(1);
   const [name, setName] = React.useState("");
   const [genres, setGenres] = React.useState<number[]>([]);
 
+  const handleNext = () => {
+    if (step === 1 && name.trim()) setStep(2);
+    else if (step === 2 && genres.length > 0) onComplete(name.trim(), genres);
+  };
+
   return (
     <div className="fixed inset-0 z-[9999] bg-[#0a0a0a] text-white flex flex-col p-6 overflow-y-auto">
-      <div className="max-w-md w-full mx-auto py-12">
-        <h1 className="text-4xl font-black mb-3">Create your Taste Passport</h1>
-        <p className="text-white/50 mb-12 text-sm leading-relaxed">This DNA will be used to curate your feed and match you with friends.</p>
+      <div className="max-w-md w-full mx-auto py-12 flex flex-col min-h-[80vh]">
         
-        <div className="mb-10">
-          <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-3">What should we call you?</label>
-          <Input 
-            value={name} 
-            onChange={e => setName(e.target.value)} 
-            placeholder="Your name" 
-            className="bg-white/5 border-white/10 text-white rounded-2xl h-14 px-5 text-lg" 
-          />
+        {/* Progress Indicator */}
+        <div className="flex gap-2 mb-12">
+          <div className={`h-1.5 flex-1 rounded-full ${step >= 1 ? 'bg-pink-500' : 'bg-white/10'}`} />
+          <div className={`h-1.5 flex-1 rounded-full ${step >= 2 ? 'bg-pink-500' : 'bg-white/10'}`} />
         </div>
 
-        <div className="mb-12">
-          <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-3">Select your core genres</label>
-          <div className="flex flex-wrap gap-2">
-            {GENRE_LIST.map(g => {
-              const sel = genres.includes(g.id);
-              return (
-                <button 
-                  key={g.id} 
-                  onClick={() => setGenres(prev => sel ? prev.filter(x => x !== g.id) : [...prev, g.id])}
-                  className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all border ${sel ? "bg-white text-black border-white scale-105" : "bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white"}`}
-                >
-                  {g.name}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        <AnimatePresence mode="wait">
+          {step === 1 && (
+            <motion.div 
+              key="step1"
+              initial={{ opacity: 0, x: -20 }} 
+              animate={{ opacity: 1, x: 0 }} 
+              exit={{ opacity: 0, x: 20 }}
+              className="flex-1"
+            >
+              <h1 className="text-4xl font-black mb-3">What's your name?</h1>
+              <p className="text-white/50 mb-12 text-sm leading-relaxed">Let's start by personalizing your Taste Passport.</p>
+              
+              <Input 
+                value={name} 
+                onChange={e => setName(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && name.trim() && handleNext()}
+                placeholder="Enter your name" 
+                className="bg-white/5 border-white/10 text-white rounded-2xl h-16 px-6 text-xl mb-8 focus:border-pink-500 transition-colors" 
+                autoFocus
+              />
+            </motion.div>
+          )}
 
-        <Button 
-          size="lg" 
-          disabled={!name.trim() || genres.length === 0} 
-          onClick={() => onComplete(name.trim(), genres)}
-          className="w-full rounded-2xl py-7 text-lg font-bold bg-pink-500 text-white hover:bg-pink-600 disabled:opacity-30 disabled:hover:bg-pink-500 transition-all shadow-xl shadow-pink-500/20"
-        >
-          Initialize Feed
-        </Button>
+          {step === 2 && (
+            <motion.div 
+              key="step2"
+              initial={{ opacity: 0, x: -20 }} 
+              animate={{ opacity: 1, x: 0 }} 
+              exit={{ opacity: 0, x: 20 }}
+              className="flex-1"
+            >
+              <button onClick={() => setStep(1)} className="flex items-center text-white/40 hover:text-white/80 text-sm font-bold mb-8">
+                <ChevronLeft className="w-4 h-4 mr-1" /> Back
+              </button>
+              
+              <h1 className="text-4xl font-black mb-3">Select your core genres</h1>
+              <p className="text-white/50 mb-8 text-sm leading-relaxed">Pick a few to seed your initial DNA signature.</p>
+              
+              <div className="flex flex-wrap gap-2.5">
+                {GENRE_LIST.map(g => {
+                  const sel = genres.includes(g.id);
+                  const emoji = GENRE_EMOJIS[g.id] || "🍿";
+                  return (
+                    <button 
+                      key={g.id} 
+                      onClick={() => setGenres(prev => sel ? prev.filter(x => x !== g.id) : [...prev, g.id])}
+                      className={`px-4 py-3 rounded-2xl text-sm font-bold transition-all border flex items-center gap-2 ${sel ? "bg-white text-black border-white scale-105 shadow-xl shadow-white/10" : "bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white"}`}
+                    >
+                      <span>{emoji}</span>
+                      <span>{g.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="mt-8 pt-8 border-t border-white/10">
+          <Button 
+            size="lg" 
+            disabled={(step === 1 && !name.trim()) || (step === 2 && genres.length === 0)} 
+            onClick={handleNext}
+            className="w-full rounded-2xl py-7 text-lg font-bold bg-pink-500 text-white hover:bg-pink-600 disabled:opacity-30 disabled:hover:bg-pink-500 transition-all shadow-xl shadow-pink-500/20 flex items-center justify-center"
+          >
+            {step === 1 ? (
+              <>Continue <ArrowRight className="w-5 h-5 ml-2" /></>
+            ) : (
+              <>Initialize Feed <Check className="w-5 h-5 ml-2" /></>
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );

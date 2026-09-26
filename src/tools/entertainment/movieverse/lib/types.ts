@@ -28,6 +28,14 @@ export interface UserProfile {
   genreAffinities?: Record<number, number>;
 }
 
+export type DiscoveryMode = "know-me" | "explore" | "surprise";
+
+export interface ScoredMovie extends Movie {
+  tasteMatch: number;     // 0–100 percentage
+  whyReason: string;      // Data-driven explanation
+  moodTags: string[];     // e.g. ["🧠 Mind-bending", "🌌 Epic"]
+}
+
 export interface LastAction {
   movieId: number;
   previousPrefs: UserPreferences;
@@ -42,6 +50,22 @@ export const GENRE_MAP: Record<number, string> = {
 };
 
 export const GENRE_LIST = Object.entries(GENRE_MAP).map(([id, name]) => ({ id: Number(id), name }));
+
+// Maps genre IDs to cinematic mood tags for the card UI
+export const GENRE_MOOD_MAP: Record<number, string> = {
+  878: "🧠 Mind-bending", 9648: "🕵️ Mysterious", 53: "🔥 Intense",
+  28: "💥 Action-packed", 27: "😱 Terrifying", 18: "🎭 Emotional",
+  35: "😂 Hilarious", 10749: "💕 Romantic", 14: "✨ Fantastical",
+  12: "🌍 Adventurous", 80: "🔫 Gritty", 16: "🎨 Animated",
+  99: "📽️ Documentary", 10751: "👨‍👩‍👧‍👦 Family", 36: "📜 Historical",
+  10402: "🎵 Musical", 10752: "⚔️ War", 37: "🤠 Western"
+};
+
+export const DISCOVERY_MODES: { id: DiscoveryMode; emoji: string; label: string; description: string; novelty: number }[] = [
+  { id: "know-me", emoji: "🎯", label: "Know Me", description: "High personalization", novelty: 0.0 },
+  { id: "explore", emoji: "🧭", label: "Explore", description: "Adjacent discoveries", novelty: 0.35 },
+  { id: "surprise", emoji: "🎲", label: "Surprise", description: "Expect the unexpected", novelty: 0.8 },
+];
 
 export interface MoodProfile {
   id: string;

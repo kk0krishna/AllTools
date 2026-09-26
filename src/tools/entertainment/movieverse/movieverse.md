@@ -6441,3 +6441,192 @@ The product should make the user feel:
 
     "I don't need to search anymore. Just show me something good."
 
+
+
+
+
+
+
+
+
+
+
+# MovieVerse — Code Study & Improvement Plan
+
+## 📂 Architecture Overview
+
+```mermaid
+graph TD
+    subgraph "Entry"
+        META["metadata.tsx"] --> IDX["index.tsx (353 lines)"]
+    end
+    
+    subgraph "Components"
+        IDX --> SC["SwipeableCard"]
+        IDX --> DD["DetailsDrawer"]
+        IDX --> MS["MovieShelf"]
+        IDX --> MP["MatchPanel"]
+        IDX --> OB["OnboardFlow"]
+    end
+    
+    subgraph "Hooks"
+        IDX --> UMP["useMoviePreferences"]
+        IDX --> UMA["useMovieActions"]
+    end
+    
+    subgraph "Lib / Engine"
+        IDX --> ME["MovieEngine"]
+        MP --> MAT["MatchEngine"]
+        IDX --> TYP["types.ts"]
+    end
+    
+    subgraph "External"
+        ME --> TMDB["TMDB API"]
+        UMP --> FS["Firestore"]
+        MAT --> FS
+    end
+```
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| [`index.tsx`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/index.tsx) | 353 | Main orchestrator — views, feed, mood, routing |
+| [`SwipeableCard.tsx`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/components/SwipeableCard.tsx) | 140 | Drag-gesture movie card with directional feedback |
+| [`DetailsDrawer.tsx`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/components/DetailsDrawer.tsx) | 91 | Bottom-sheet with YouTube trailer embed |
+| [`MovieShelf.tsx`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/components/MovieShelf.tsx) | 102 | Tabbed grid of saved/loved/watched/disliked/skipped |
+| [`MatchPanel.tsx`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/components/MatchPanel.tsx) | 433 | Create/Join/Live room system with "Pick for Room" |
+| [`OnboardFlow.tsx`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/components/OnboardFlow.tsx) | 92 | Splash + genre-selection setup |
+| [`engine.ts`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/lib/engine.ts) | 142 | Discovery funnel: fetch → filter → score → fuzz → rank |
+| [`matchEngine.ts`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/lib/matchEngine.ts) | 162 | Room CRUD + "Pick for Group" logic |
+| [`useMoviePreferences.ts`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/hooks/useMoviePreferences.ts) | 80 | Firestore load/save, legacy V1→V2 migration |
+| [`useMovieActions.ts`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/hooks/useMovieActions.ts) | 34 | Taste affinity vector updates on interaction |
+| [`types.ts`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/lib/types.ts) | 69 | Movie, UserProfile, InteractionState, MOODS, GENRE_MAP |
+
+---
+
+## 🐛 Bugs & Critical Issues
+
+### 1. Feed exhaustion without auto-reload
+When `currentIndex` surpasses the feed length, the user sees "You've cleared this lane" but must manually click "Explore the vault." The engine fetched only ~40 movies per batch. Should **auto-prefetch** when `currentIndex` reaches `feed.length - 3`.
+
+> [!WARNING]
+> **Lines affected**: [`index.tsx:90-94`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/index.tsx#L90-L94) — the `useEffect` checks `feed.length === 0`, so it never re-fetches when the feed is partially consumed.
+
+### 2. Deduplication bug — cross-media type collisions
+[`engine.ts:76`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/lib/engine.ts#L76) deduplicates on `t.id === v.id` alone, but a movie and TV show can share the same TMDB numeric ID. Should deduplicate on `${media_type}:${id}`.
+
+### 3. `useEffect` missing dependencies
+[`index.tsx:57-79`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/index.tsx#L57-L79) — the init `useEffect` references `view` in its body but doesn't include it in the dependency array. Can cause stale routing after re-renders.
+
+### 4. Shelf fires unlimited parallel API requests
+[`MovieShelf.tsx:43-56`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/components/MovieShelf.tsx#L43-L56) fires `Promise.all` with up to 20 concurrent fetches on every tab switch. No concurrency limiting, no abort controller. If a user rapidly switches tabs, stale responses overwrite current data.
+
+### 5. Guest users get no local persistence
+When `user.isAnonymous` or `!user`, preferences are held in React state only. Navigating away or refreshing loses everything. Should persist to `localStorage` for guests.
+
+### 6. Match code collision risk
+[`matchEngine.ts:11-13`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/lib/matchEngine.ts#L11-L13) generates `MV-XXXXXX` from `Math.random()` — no uniqueness check before writing to Firestore. Could overwrite an existing code.
+
+### 7. API key exposure
+`process.env.NEXT_PUBLIC_TMDB_API_KEY` is used in client-side `fetch` calls throughout the codebase. While TMDB keys are free, it's still exposed in browser network tab. Should proxy through an API route.
+
+---
+
+## ⚠️ Architecture Weaknesses
+
+### A. Monolithic `index.tsx`
+All 7 views (onboard, setup, discover, search, lists, match, profile) are rendered conditionally inside a single component. State management happens via ~15+ `useState` hooks. This file will keep growing.
+
+### B. No feed prefetching
+The spec calls for "the next movie should already be loading" — but the engine does a single batch fetch and walks through it. No background prefetch.
+
+### C. `generateWhyTag` is too simplistic
+[`engine.ts:125-140`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/lib/engine.ts#L125-L140) has 4 hardcoded strings and no actual cross-referencing with liked movie titles. The spec emphasizes this as the **most differentiating feature**.
+
+### D. No taste match percentage
+The card shows a `whyText` string but never computes an actual "87% MATCH" score despite the spec calling it out repeatedly.
+
+### E. Unused `next/image` import
+[`SwipeableCard.tsx:5`](file:///c:/Users/krish/web%20APP/ToolVerse/src/tools/entertainment/movieverse/components/SwipeableCard.tsx#L5) imports `Image from "next/image"` but never uses it. Regular `<img>` tags are used everywhere.
+
+### F. No abort/cleanup on async effects
+Multiple `useEffect` hooks fire async operations without cleanup. Component unmounting during a fetch can cause React "setState on unmounted component" warnings.
+
+---
+
+## 🚀 Improvement Plan (Prioritized)
+
+### Phase 1 — Bug Fixes & Stability (Do First)
+
+| # | Fix | File(s) | Impact |
+|---|-----|---------|--------|
+| 1 | Auto-prefetch when `currentIndex >= feed.length - 5` | `index.tsx` | **High** — prevents dead-end feed |
+| 2 | Fix dedup key to `${media_type}:${id}` | `engine.ts` | **Medium** — prevents wrong exclusions |
+| 3 | Add `AbortController` to all `useEffect` fetch chains | All components | **Medium** — prevents race conditions |
+| 4 | Local persistence for guest users via `localStorage` | `useMoviePreferences.ts` | **High** — guests lose all data on refresh |
+| 5 | Remove unused `next/image` import | `SwipeableCard.tsx` | **Low** — cleanup |
+| 6 | Add shelf fetch concurrency limit (batch of 5) | `MovieShelf.tsx` | **Medium** — prevents API flooding |
+
+### Phase 2 — "Why This Movie?" & Taste Match Score
+
+This is the **highest-impact feature** from the spec. Replace the static `generateWhyTag` with a real system:
+
+1. **Compute a taste match score** (0-100%) based on genre affinity overlap between the user's vector and the movie's genre_ids
+2. **Cross-reference with loved movies** — find which liked titles share genres/directors and name them: *"Because you loved Interstellar"*
+3. **Show the score on the card** as a prominent badge
+4. **Make whyText data-driven** — pull from affinity data, not hardcoded strings
+
+### Phase 3 — Enhanced Swipeable Card (Cinematic Upgrade)
+
+- Use **backdrop as full-card background** (already available as `backdrop_path`) instead of poster-only
+- Add **mood tags** derived from genre mapping (e.g., Sci-Fi+Thriller → 🧠 Mind-bending)
+- Show **taste match %** as a glowing badge
+- Add **runtime** to card metadata (requires fetching movie details)
+- Improved swipe feedback text: progressive messages at drag thresholds
+
+### Phase 4 — Discovery Modes (Know Me / Explore / Surprise)
+
+Add a 3-mode toggle to the Discover header:
+- **Know Me** → `novelty: 0.0`, max affinity weighting
+- **Explore** → `novelty: 0.3`, adjacent genre exploration
+- **Surprise Me** → `novelty: 0.8`, random page + low affinity filter
+
+This requires a small change to `engine.ts`'s scoring weights.
+
+### Phase 5 — Taste DNA Profile Upgrade
+
+Replace the current bare-bones Profile view with:
+- **Visual genre bars** showing affinity scores (normalized 0-100%)
+- **Movie personality label** generated from top affinities
+- **Stats**: total explored, loved, watched counts
+- **Shareable cinema passport card** (exportable as image)
+
+### Phase 6 — Feed Prefetching & Performance
+
+- Prefetch next batch when `currentIndex >= feed.length - 5`
+- Cache TMDB responses in a `Map` to avoid re-fetching
+- Use TMDB's smaller image sizes for cards not in viewport
+- Batch Firestore writes with a debounce rather than writing on every swipe
+
+---
+
+## ✅ What's Already Working Well
+
+| Feature | Quality | Notes |
+|---------|---------|-------|
+| Swipe gestures | ✅ Good | Real drag physics with directional detection |
+| Swipe overlay labels | ✅ Good | LOVE/NOPE/SAVE/SKIP with progressive opacity |
+| Firestore integration | ✅ Solid | Atomic dict-based interactions, V1→V2 migration |
+| Genre affinity tracking | ✅ Solid | +1/-1 vector updates on every interaction |
+| Mood picker | ✅ Good | 10 moods with genre/rating/novelty tuning |
+| Room system | ✅ Good | Create/Join/Live with real-time Firestore listener |
+| "Pick for Room" | ✅ Works | Multi-member intersection with fallback logic |
+| Onboarding flow | ✅ Clean | Two-step: splash → genre setup |
+| Details drawer | ✅ Good | YouTube trailer auto-embed, save/watched buttons |
+| Media type toggle | ✅ Good | Movie / TV / Both with feed refresh |
+
+---
+
+> [!IMPORTANT]
+> **Recommended starting point**: Fix the **feed exhaustion bug** (Phase 1 #1) and implement the **"Why This Movie?" engine** (Phase 2). These two changes alone would transform the feel of MovieVerse from "random poster deck" → "intelligent recommendation system."
+
+Shall I proceed with implementing these improvements?
