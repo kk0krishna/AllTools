@@ -208,7 +208,18 @@ export default function MovieVerse({}: ToolComponentProps) {
   };
 
   if (loading || prefsLoading) {
-    return <div className="fixed inset-0 bg-[#0a0a0a] flex items-center justify-center z-[9999]"><div className="w-10 h-10 border-4 border-white/20 border-t-pink-500 rounded-full animate-spin" /></div>;
+    return (
+      <div className="fixed inset-0 bg-[#0a0a0a] flex flex-col items-center justify-center z-[9999]">
+        <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-purple-700 rounded-2xl flex items-center justify-center mb-6 shadow-2xl animate-pulse">
+          <Popcorn className="w-8 h-8 text-white" />
+        </div>
+        <div className="flex gap-1">
+          <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
+          <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
+          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" />
+        </div>
+      </div>
+    );
   }
 
   if (view === "onboard") return <OnboardView onSignIn={signInWithGoogle} onSignInGuest={() => setView("setup")} onSignInAlt={signInWithRedirectFlow} onBack={() => router.back()} />;
@@ -252,30 +263,30 @@ export default function MovieVerse({}: ToolComponentProps) {
       </div>
 
       {/* ─── MAIN CONTENT ─── */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden relative">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden relative pb-28">
         
         {/* DISCOVER */}
         {view === "discover" && (
-          <div className="absolute inset-0 flex flex-col">
-            <div className="px-5 sm:px-8 py-2 flex items-center justify-between z-40 gap-2">
+          <div className="absolute inset-0 flex flex-col pb-6">
+            <div className="w-full max-w-xl mx-auto px-4 sm:px-8 py-2 flex items-center justify-between z-40 gap-2 shrink-0">
               <Button onClick={() => setShowMoodPicker(true)} variant="ghost" className="bg-white/5 hover:bg-white/10 rounded-full text-sm font-bold border border-white/10 shrink-0 shadow-lg">
                 {selectedMood ? MOODS.find(m => m.id === selectedMood)?.emoji + " " + MOODS.find(m => m.id === selectedMood)?.label : "How are you feeling?"}
               </Button>
 
               {/* Discovery Mode Toggle */}
-              <div className="flex items-center bg-white/5 p-0.5 rounded-full border border-white/10 shadow-inner">
+              <div className="flex items-center bg-white/5 p-0.5 rounded-full border border-white/10 shadow-inner overflow-x-auto [&::-webkit-scrollbar]:hidden shrink-0 max-w-[60vw]">
                 {DISCOVERY_MODES.map(mode => (
                   <button 
                     key={mode.id}
                     onClick={() => { setDiscoveryMode(mode.id); setFeed([]); }}
-                    className={`px-2.5 py-1.5 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 sm:text-xs sm:px-3 ${
+                    className={`px-2.5 py-1.5 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 sm:text-xs sm:px-3 shrink-0 ${
                       discoveryMode === mode.id 
                         ? "bg-white text-black shadow-lg" 
                         : "text-white/40 hover:text-white"
                     }`}
                   >
                     <span>{mode.emoji}</span>
-                    <span>{mode.label}</span>
+                    <span className="whitespace-nowrap">{mode.label}</span>
                   </button>
                 ))}
               </div>
@@ -287,7 +298,7 @@ export default function MovieVerse({}: ToolComponentProps) {
                 <p className="text-white/30 text-sm font-semibold">Curating your universe…</p>
               </div>
             ) : current ? (
-              <div className="flex-1 w-full max-w-[min(100%,_48vh)] px-4 flex flex-col justify-center min-h-0 pt-2 pb-28 mx-auto">
+              <div className="flex-1 w-full max-w-[min(100%,_48vh)] px-4 flex flex-col justify-center min-h-0 pt-2 pb-4 mx-auto">
                 
                 {/* Card Counter & Undo */}
                 <div className="w-full flex justify-between items-center mb-3 px-2 z-40 shrink-0">

@@ -28,14 +28,14 @@ export function OnboardView({
           Swipe through cinema. Teach it your taste. Match with friends for the perfect movie night.
         </motion.p>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="w-full flex flex-col gap-4">
-          <Button size="lg" onClick={onSignIn} className="w-full rounded-2xl py-7 text-lg font-bold bg-white text-black hover:bg-white/90 shadow-xl group">
-            <LogIn className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" /> Sign in to start
+          <Button size="lg" onClick={onSignInGuest} className="w-full rounded-2xl py-7 text-lg font-bold bg-pink-500 text-white hover:bg-pink-600 shadow-xl shadow-pink-500/20 group">
+            Start Exploring <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
-          <Button variant="ghost" onClick={onSignInGuest} className="w-full text-white/60 hover:text-white hover:bg-white/10 rounded-2xl py-6 font-bold mt-1">
-            Continue as Guest
+          <Button variant="ghost" onClick={onSignIn} className="w-full text-white hover:bg-white/10 rounded-2xl py-6 font-bold mt-1 border border-white/20">
+            <LogIn className="w-4 h-4 mr-2" /> Sign in with Google
           </Button>
           <Button variant="ghost" onClick={onSignInAlt} className="text-white/30 text-xs hover:text-white/60">
-            Trouble signing in? Use alternate method
+            Trouble signing in? Try alternate method
           </Button>
           <Button variant="ghost" onClick={onBack} className="text-white/40 hover:text-white/70 mt-2">
             <ChevronLeft className="w-4 h-4 mr-1" /> Back to Clinikkit
