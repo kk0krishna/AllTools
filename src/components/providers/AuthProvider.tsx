@@ -29,6 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let mounted = true;
+    let redirectPromise: Promise<void> | null = null;
 
     const initializeAuth = async () => {
       try {
@@ -46,9 +47,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    initializeAuth();
+    redirectPromise = initializeAuth();
 
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!mounted) return;
+      
+      // If we don't have a user, make absolutely sure the redirect isn't just taking a moment to process
+      if (!currentUser && redirectPromise) {
+        await redirectPromise;
+      }
+      
       if (!mounted) return;
       setUser(currentUser);
       setLoading(false);

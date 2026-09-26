@@ -28,7 +28,7 @@ import { OnboardView, SetupView } from "./components/OnboardFlow";
 const PREFETCH_THRESHOLD = 5;
 
 export default function MovieVerse({ }: ToolComponentProps) {
-  const { user, signInWithGoogle, signOut } = useAuth();
+  const { user, signInWithGoogle, signOut, authError } = useAuth();
   const router = useRouter();
 
   type ViewType = "onboard" | "setup" | "discover" | "search" | "lists" | "match" | "profile";
@@ -222,7 +222,7 @@ export default function MovieVerse({ }: ToolComponentProps) {
     );
   }
 
-  if (view === "onboard") return <OnboardView onSignIn={signInWithGoogle} onSignInGuest={() => setView("setup")} onBack={() => router.back()} />;
+  if (view === "onboard") return <OnboardView onSignIn={signInWithGoogle} onSignInGuest={() => setView("setup")} onBack={() => router.back()} authError={authError} />;
   if (view === "setup") return <SetupView onComplete={handleSetupComplete} />;
 
   const current = feed[currentIndex];

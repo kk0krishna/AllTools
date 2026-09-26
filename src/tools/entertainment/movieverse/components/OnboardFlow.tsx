@@ -13,9 +13,14 @@ const GENRE_EMOJIS: Record<number, string> = {
 };
 
 export function OnboardView({ 
-  onSignIn, onSignInGuest, onBack 
+  onSignIn, onSignInGuest, onBack, authError 
 }: any) {
   const [isAuthLoading, setIsAuthLoading] = React.useState(false);
+
+  // If there's an external auth error that just came in, stop loading state
+  React.useEffect(() => {
+    if (authError) setIsAuthLoading(false);
+  }, [authError]);
 
   const handleSignIn = async () => {
     setIsAuthLoading(true);
@@ -39,6 +44,17 @@ export function OnboardView({
           Swipe through cinema. Teach it your taste. Match with friends for the perfect movie night.
         </motion.p>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="w-full flex flex-col gap-4 relative">
+          
+          <AnimatePresence>
+            {authError && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-xs sm:text-sm px-4 py-3 rounded-xl mb-2 flex items-start text-left gap-2 shadow-lg backdrop-blur-md">
+                  <span className="shrink-0 mt-0.5 text-red-500">⚠️</span>
+                  <span className="break-all">{authError}</span>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           
           <Button size="lg" disabled={isAuthLoading} onClick={handleSignIn} className="w-full rounded-2xl py-7 text-lg font-bold bg-white text-black hover:bg-white/90 shadow-xl group">
             {isAuthLoading ? (
