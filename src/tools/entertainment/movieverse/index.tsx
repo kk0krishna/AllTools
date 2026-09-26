@@ -27,7 +27,7 @@ import { OnboardView, SetupView } from "./components/OnboardFlow";
 // Prefetch threshold: when user is this many cards from the end, load more
 const PREFETCH_THRESHOLD = 5;
 
-export default function MovieVerse({}: ToolComponentProps) {
+export default function MovieVerse({ }: ToolComponentProps) {
   const { user, signInWithGoogle, signOut } = useAuth();
   const router = useRouter();
 
@@ -37,7 +37,7 @@ export default function MovieVerse({}: ToolComponentProps) {
   // Global State
   const { prefs, updateInteraction, clearData, loading: prefsLoading } = useMoviePreferences(user);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  
+
   const { advanceCard } = useMovieActions(user, profile, setProfile, updateInteraction);
 
   // Feed State
@@ -48,7 +48,7 @@ export default function MovieVerse({}: ToolComponentProps) {
   const [discoveryMode, setDiscoveryMode] = useState<DiscoveryMode>("explore");
   const isFetchingRef = useRef(false);
   const [lastAction, setLastAction] = useState<{ movie: ScoredMovie, index: number } | null>(null);
-  
+
   // Modals
   const [selectedMovieForDetails, setSelectedMovieForDetails] = useState<Movie | null>(null);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
@@ -96,9 +96,9 @@ export default function MovieVerse({}: ToolComponentProps) {
     if (isFetchingRef.current) return;
     isFetchingRef.current = true;
     if (!append) setLoading(true);
-    
+
     const results = await MovieEngine.fetchCandidates(mood, [], prefs, profile, mediaType, discoveryMode);
-    
+
     if (append) {
       setFeed(prev => {
         // Deduplicate when appending
@@ -111,7 +111,7 @@ export default function MovieVerse({}: ToolComponentProps) {
       setCurrentIndex(0);
       setLastAction(null);
     }
-    
+
     setLoading(false);
     isFetchingRef.current = false;
   }, [prefs, profile, mediaType, discoveryMode]);
@@ -149,9 +149,9 @@ export default function MovieVerse({}: ToolComponentProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (view !== "discover" || feed.length === 0 || currentIndex >= feed.length) return;
       if (showMoodPicker || selectedMovieForDetails) return;
-      
+
       const current = feed[currentIndex];
-      
+
       if (e.key === "ArrowLeft") handleSwipe(current, "disliked");
       else if (e.key === "ArrowRight") handleSwipe(current, "loved");
       else if (e.key === "ArrowUp") handleSwipe(current, "interested");
@@ -190,19 +190,19 @@ export default function MovieVerse({}: ToolComponentProps) {
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-    
-    if (!query.trim()) { 
-      setSearchResults([]); 
-      return; 
+
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
     }
-    
+
     searchTimeoutRef.current = setTimeout(async () => {
       setSearchLoading(true);
       try {
         const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&query=${encodeURIComponent(query)}`);
         const data = await res.json();
         setSearchResults((data.results || []).filter((m: any) => m.poster_path && (m.media_type === "movie" || m.media_type === "tv")));
-      } catch(e) {}
+      } catch (e) { }
       setSearchLoading(false);
     }, 400); // 400ms debounce
   };
@@ -238,7 +238,7 @@ export default function MovieVerse({}: ToolComponentProps) {
 
   return (
     <div className="fixed inset-0 z-[9999] bg-[#0a0a0a] text-white flex flex-col overflow-hidden font-sans selection:bg-pink-500/30">
-      
+
       {/* ─── HEADER ─── */}
       <div className="flex items-center justify-between p-5 sm:p-8 z-50">
         <div className="flex items-center gap-2">
@@ -250,8 +250,8 @@ export default function MovieVerse({}: ToolComponentProps) {
 
         {view === "discover" && (
           <div className="flex items-center bg-white/5 p-1 rounded-2xl border border-white/10 shadow-inner">
-            <button onClick={() => { setMediaType("movie"); setFeed([]); }} className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 ${mediaType === "movie" ? "bg-white text-black shadow-lg" : "text-white/50 hover:text-white"}`}><Film className="w-4 h-4"/> Movie</button>
-            <button onClick={() => { setMediaType("tv"); setFeed([]); }} className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 ${mediaType === "tv" ? "bg-white text-black shadow-lg" : "text-white/50 hover:text-white"}`}><Tv className="w-4 h-4"/> TV</button>
+            <button onClick={() => { setMediaType("movie"); setFeed([]); }} className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 ${mediaType === "movie" ? "bg-white text-black shadow-lg" : "text-white/50 hover:text-white"}`}><Film className="w-4 h-4" /> Movie</button>
+            <button onClick={() => { setMediaType("tv"); setFeed([]); }} className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 ${mediaType === "tv" ? "bg-white text-black shadow-lg" : "text-white/50 hover:text-white"}`}><Tv className="w-4 h-4" /> TV</button>
             <button onClick={() => { setMediaType("both"); setFeed([]); }} className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 ${mediaType === "both" ? "bg-white text-black shadow-lg" : "text-white/50 hover:text-white"}`}>Both</button>
           </div>
         )}
@@ -264,26 +264,25 @@ export default function MovieVerse({}: ToolComponentProps) {
 
       {/* ─── MAIN CONTENT ─── */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden relative pb-28">
-        
+
         {/* DISCOVER */}
         {view === "discover" && (
           <div className="absolute inset-0 flex flex-col pb-6">
             <div className="w-full max-w-xl mx-auto px-4 sm:px-8 py-2 flex items-center justify-between z-40 gap-2 shrink-0">
               <Button onClick={() => setShowMoodPicker(true)} variant="ghost" className="bg-white/5 hover:bg-white/10 rounded-full text-sm font-bold border border-white/10 shrink-0 shadow-lg">
-                {selectedMood ? MOODS.find(m => m.id === selectedMood)?.emoji + " " + MOODS.find(m => m.id === selectedMood)?.label : "How are you feeling?"}
+                {selectedMood ? MOODS.find(m => m.id === selectedMood)?.emoji + " " + MOODS.find(m => m.id === selectedMood)?.label : "Choose Mood?"}
               </Button>
 
               {/* Discovery Mode Toggle */}
               <div className="flex items-center bg-white/5 p-0.5 rounded-full border border-white/10 shadow-inner overflow-x-auto [&::-webkit-scrollbar]:hidden shrink-0 max-w-[60vw]">
                 {DISCOVERY_MODES.map(mode => (
-                  <button 
+                  <button
                     key={mode.id}
                     onClick={() => { setDiscoveryMode(mode.id); setFeed([]); }}
-                    className={`px-2.5 py-1.5 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 sm:text-xs sm:px-3 shrink-0 ${
-                      discoveryMode === mode.id 
-                        ? "bg-white text-black shadow-lg" 
+                    className={`px-2.5 py-1.5 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 sm:text-xs sm:px-3 shrink-0 ${discoveryMode === mode.id
+                        ? "bg-white text-black shadow-lg"
                         : "text-white/40 hover:text-white"
-                    }`}
+                      }`}
                   >
                     <span>{mode.emoji}</span>
                     <span className="whitespace-nowrap">{mode.label}</span>
@@ -299,7 +298,7 @@ export default function MovieVerse({}: ToolComponentProps) {
               </div>
             ) : current ? (
               <div className="flex-1 w-full max-w-[min(100%,_48vh)] px-4 flex flex-col justify-center min-h-0 pt-2 pb-4 mx-auto">
-                
+
                 {/* Card Counter & Undo */}
                 <div className="w-full flex justify-between items-center mb-3 px-2 z-40 shrink-0">
                   <span className="text-xs font-bold text-white/30 tracking-widest">{currentIndex + 1} / {feed.length}</span>
@@ -316,7 +315,7 @@ export default function MovieVerse({}: ToolComponentProps) {
                       const isTop = movie.id === current.id;
                       const isBackground = !isTop;
                       return (
-                        <SwipeableCard 
+                        <SwipeableCard
                           key={`${movie.media_type}-${movie.id}`}
                           movie={movie}
                           isTop={isTop}
@@ -332,11 +331,11 @@ export default function MovieVerse({}: ToolComponentProps) {
                       );
                     })}
                   </AnimatePresence>
-                  
+
                   {/* Tutorial Overlay */}
                   <AnimatePresence>
                     {showTutorial && (
-                      <motion.div 
+                      <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         className="absolute inset-0 z-50 pointer-events-none flex flex-col items-center justify-center bg-black/60 rounded-3xl backdrop-blur-[2px]"
                       >
@@ -353,13 +352,13 @@ export default function MovieVerse({}: ToolComponentProps) {
                     )}
                   </AnimatePresence>
                 </div>
-                
+
                 {/* Action Buttons */}
                 <div className="flex items-center justify-center gap-3 sm:gap-4 mt-6 w-full z-30 shrink-0">
-                  <Button onClick={() => { if(showTutorial) dismissTutorial(); handleSwipe(current, "skipped"); }} size="icon" className="w-12 h-12 rounded-full bg-white/10 text-white/50 hover:bg-white/20 shadow-lg"><SkipForward className="w-5 h-5" /></Button>
-                  <Button onClick={() => { if(showTutorial) dismissTutorial(); handleSwipe(current, "disliked"); }} size="icon" className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/30 shadow-lg"><X className="w-6 h-6 sm:w-8 sm:h-8" /></Button>
-                  <Button onClick={() => { if(showTutorial) dismissTutorial(); handleSwipe(current, "interested"); }} size="icon" className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 border border-purple-500/30 shadow-lg"><Bookmark className="w-6 h-6 sm:w-8 sm:h-8" /></Button>
-                  <Button onClick={() => { if(showTutorial) dismissTutorial(); handleSwipe(current, "loved"); }} size="icon" className="w-12 h-12 rounded-full bg-pink-500/10 text-pink-400 hover:bg-pink-500/20 border border-pink-500/30 shadow-lg"><Heart className="w-5 h-5 fill-current" /></Button>
+                  <Button onClick={() => { if (showTutorial) dismissTutorial(); handleSwipe(current, "skipped"); }} size="icon" className="w-12 h-12 rounded-full bg-white/10 text-white/50 hover:bg-white/20 shadow-lg"><SkipForward className="w-5 h-5" /></Button>
+                  <Button onClick={() => { if (showTutorial) dismissTutorial(); handleSwipe(current, "disliked"); }} size="icon" className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/30 shadow-lg"><X className="w-6 h-6 sm:w-8 sm:h-8" /></Button>
+                  <Button onClick={() => { if (showTutorial) dismissTutorial(); handleSwipe(current, "interested"); }} size="icon" className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 border border-purple-500/30 shadow-lg"><Bookmark className="w-6 h-6 sm:w-8 sm:h-8" /></Button>
+                  <Button onClick={() => { if (showTutorial) dismissTutorial(); handleSwipe(current, "loved"); }} size="icon" className="w-12 h-12 rounded-full bg-pink-500/10 text-pink-400 hover:bg-pink-500/20 border border-pink-500/30 shadow-lg"><Heart className="w-5 h-5 fill-current" /></Button>
                 </div>
               </div>
             ) : (
@@ -379,9 +378,9 @@ export default function MovieVerse({}: ToolComponentProps) {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
               <Input autoFocus value={searchQuery} onChange={e => handleSearch(e.target.value)} placeholder="Search for a movie or TV show…" className="bg-white/5 border-white/10 text-white rounded-xl h-14 pl-12 text-lg focus:border-pink-500 transition-colors" />
             </div>
-            
+
             {searchLoading ? <div className="text-center py-12"><div className="w-10 h-10 border-4 border-white/10 border-t-white rounded-full animate-spin mx-auto shadow-xl" /></div> : null}
-            
+
             {!searchQuery && !searchLoading && (
               <div className="text-center py-24 px-4">
                 <div className="w-24 h-24 bg-gradient-to-b from-white/10 to-white/5 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl border border-white/10"><Search className="w-10 h-10 text-white/30" /></div>
@@ -389,7 +388,7 @@ export default function MovieVerse({}: ToolComponentProps) {
                 <p className="text-white/40 max-w-sm mx-auto mb-8">Search for specific movies or TV shows to add directly to your Shelf.</p>
               </div>
             )}
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-8">
               {searchResults.map(movie => {
                 const key = `${movie.media_type}:${movie.id}`;
@@ -401,7 +400,7 @@ export default function MovieVerse({}: ToolComponentProps) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-sm truncate">{movie.title || movie.name}</h3>
-                      <p className="text-white/40 text-xs mt-1">{movie.release_date?.substring(0,4) || movie.first_air_date?.substring(0,4)} · ⭐ {Math.round(movie.vote_average * 10)}%</p>
+                      <p className="text-white/40 text-xs mt-1">{movie.release_date?.substring(0, 4) || movie.first_air_date?.substring(0, 4)} · ⭐ {Math.round(movie.vote_average * 10)}%</p>
                       <div className="flex gap-2 mt-3">
                         <Button size="sm" onClick={(e) => { e.stopPropagation(); updateInteraction(movie.media_type || "movie", movie.id, "interested"); }} variant={state === "interested" ? "default" : "outline"} className={`h-7 text-[10px] rounded-full ${state === "interested" ? "bg-purple-500 hover:bg-purple-600 border-transparent text-white" : "border-white/10 text-white/60 hover:text-white"}`}>Save</Button>
                         <Button size="sm" onClick={(e) => { e.stopPropagation(); updateInteraction(movie.media_type || "movie", movie.id, "loved"); }} variant={state === "loved" ? "default" : "outline"} className={`h-7 text-[10px] rounded-full ${state === "loved" ? "bg-pink-500 hover:bg-pink-600 border-transparent text-white" : "border-white/10 text-white/60 hover:text-white"}`}>Love</Button>
@@ -428,7 +427,7 @@ export default function MovieVerse({}: ToolComponentProps) {
         {view === "profile" && (
           <div className="p-5 sm:p-8 max-w-lg mx-auto pb-32">
             <h2 className="text-2xl font-black mb-8">Taste Passport</h2>
-            
+
             {/* Stats Row */}
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="bg-white/5 rounded-2xl p-4 text-center border border-white/5 shadow-lg">
@@ -452,12 +451,12 @@ export default function MovieVerse({}: ToolComponentProps) {
                 <>
                   <p className="text-xl font-black mb-1">{profile.name}</p>
                   <p className="text-sm text-pink-400 font-mono mb-6">User since {new Date(profile.createdAt).getFullYear()}</p>
-                  
+
                   {/* Genre Affinity Bars */}
                   {profile.genreAffinities && Object.keys(profile.genreAffinities).length > 0 ? (
                     <div className="space-y-3">
                       {Object.entries(profile.genreAffinities)
-                        .sort(([,a], [,b]) => b - a)
+                        .sort(([, a], [, b]) => b - a)
                         .slice(0, 6)
                         .map(([gId, score]) => {
                           const genreName = ({
@@ -475,8 +474,8 @@ export default function MovieVerse({}: ToolComponentProps) {
                                 <span className="font-mono text-white/40">{pct}%</span>
                               </div>
                               <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                                <div 
-                                  className="h-full bg-gradient-to-r from-pink-500 to-purple-500 rounded-full transition-all duration-500" 
+                                <div
+                                  className="h-full bg-gradient-to-r from-pink-500 to-purple-500 rounded-full transition-all duration-500"
                                   style={{ width: `${pct}%` }}
                                 />
                               </div>
@@ -499,7 +498,7 @@ export default function MovieVerse({}: ToolComponentProps) {
                 <h3 className="font-bold text-white/60 text-xs uppercase tracking-widest mb-3">Your Movie Personality</h3>
                 <p className="text-2xl font-black text-white mb-2">
                   {(() => {
-                    const entries = Object.entries(profile.genreAffinities!).sort(([,a],[,b]) => b - a);
+                    const entries = Object.entries(profile.genreAffinities!).sort(([, a], [, b]) => b - a);
                     const topGenre = Number(entries[0]?.[0]);
                     if ([878, 9648].includes(topGenre)) return "THE THINKER";
                     if ([28, 53].includes(topGenre)) return "THE THRILL-SEEKER";
@@ -512,7 +511,7 @@ export default function MovieVerse({}: ToolComponentProps) {
                 </p>
                 <p className="text-sm text-white/50 leading-relaxed">
                   {(() => {
-                    const entries = Object.entries(profile.genreAffinities!).sort(([,a],[,b]) => b - a);
+                    const entries = Object.entries(profile.genreAffinities!).sort(([, a], [, b]) => b - a);
                     const topGenres = entries.slice(0, 3).map(([gId]) => {
                       const map: Record<number, string> = { 878: "sci-fi", 9648: "mystery", 53: "thrillers", 28: "action", 27: "horror", 18: "drama", 35: "comedy", 10749: "romance", 14: "fantasy", 12: "adventure" };
                       return map[Number(gId)] || "cinema";
@@ -524,7 +523,7 @@ export default function MovieVerse({}: ToolComponentProps) {
             )}
 
             <div className="flex flex-col gap-3">
-              <Button onClick={() => { if(confirm("Clear data?")) { clearData(); setProfile(null); setView("setup"); } }} variant="outline" className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-2xl font-bold transition-colors">Clear My Data</Button>
+              <Button onClick={() => { if (confirm("Clear data?")) { clearData(); setProfile(null); setView("setup"); } }} variant="outline" className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-2xl font-bold transition-colors">Clear My Data</Button>
               <Button onClick={() => { signOut().then(() => setView("onboard")); }} variant="ghost" className="w-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white rounded-2xl font-bold transition-colors">Log Out</Button>
             </div>
           </div>
@@ -561,7 +560,7 @@ export default function MovieVerse({}: ToolComponentProps) {
           />
         )}
       </AnimatePresence>
-      
+
       {/* Mood Picker */}
       <AnimatePresence>
         {showMoodPicker && (

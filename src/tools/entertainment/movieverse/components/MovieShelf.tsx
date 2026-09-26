@@ -169,7 +169,7 @@ export function MovieShelf({ prefs, onRemove, onDetails }: MovieShelfProps) {
                 {/* Delete button */}
                 <button 
                   onClick={(e) => { e.stopPropagation(); onRemove(movie.media_type, movie.id); }} 
-                  className="absolute -top-3 -right-3 bg-red-500/90 hover:bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-xl z-20 backdrop-blur-md hover:scale-110"
+                  className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 bg-red-500/90 hover:bg-red-500 text-white p-1.5 sm:p-2 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200 shadow-xl z-20 backdrop-blur-md hover:scale-110"
                 >
                   <X className="w-4 h-4" />
                 </button>

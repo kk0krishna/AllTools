@@ -193,7 +193,11 @@ export function SwipeableCard({
             </div>
           )}
 
-          <button onClick={(e) => { e.stopPropagation(); onInfoClick(); }} className="w-full text-xs text-white hover:text-white font-bold flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/10 px-4 py-3 rounded-xl backdrop-blur-md transition-colors">
+          <button 
+            onPointerDownCapture={(e) => e.stopPropagation()} 
+            onClick={(e) => { e.stopPropagation(); onInfoClick(); }} 
+            className="w-full text-xs text-white hover:text-white font-bold flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/10 px-4 py-3 rounded-xl backdrop-blur-md transition-colors"
+          >
             <Info className="w-4 h-4" /> View Details & Trailer
           </button>
         </div>
