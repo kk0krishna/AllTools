@@ -27,6 +27,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Explicitly process redirect results for mobile browsers
+    import("firebase/auth").then(({ getRedirectResult }) => {
+      getRedirectResult(auth).catch((error) => {
+        console.error("Auth Redirect Error:", error);
+      });
+    });
+
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
