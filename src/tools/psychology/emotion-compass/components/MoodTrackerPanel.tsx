@@ -91,6 +91,7 @@ export function MoodTrackerPanel({ selectedEmotions, onClear }: MoodTrackerPanel
       // Trigger login prompt
       try {
         await signInWithGoogle();
+        return; // Redirect flow will handle login and reload the page
       } catch (e) {
         return; // Login failed or cancelled
       }
@@ -99,14 +100,8 @@ export function MoodTrackerPanel({ selectedEmotions, onClear }: MoodTrackerPanel
     if (selectedEmotions.length === 0) return;
     setSaving(true);
     try {
-      let currentUser = user;
-      if (!currentUser) {
-        currentUser = await signInWithGoogle();
-        if (!currentUser) throw new Error("No user found after login");
-      }
-      
-      await addDoc(collection(db, "users", currentUser.uid, "mood_logs"), {
-        userId: currentUser.uid,
+      await addDoc(collection(db, "users", user.uid, "mood_logs"), {
+        userId: user.uid,
         emotions: selectedEmotions,
         note,
         createdAt: Timestamp.now()
