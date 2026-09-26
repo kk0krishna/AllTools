@@ -72,6 +72,7 @@ export interface MoodProfile {
   emoji: string;
   label: string;
   genres: number[];
+  excludeGenres?: number[];
   keywords?: string[];
   minRating: number;
   minVotes: number;
@@ -80,13 +81,13 @@ export interface MoodProfile {
 
 export const MOODS: MoodProfile[] = [
   { id: "think", emoji: "🌀", label: "Make me think", genres: [878, 9648, 18], minRating: 7.0, minVotes: 500, novelty: 0.25 },
-  { id: "laugh", emoji: "😂", label: "Make me laugh", genres: [35], minRating: 6.5, minVotes: 300, novelty: 0.15 },
+  { id: "laugh", emoji: "😂", label: "Make me laugh", genres: [35], excludeGenres: [27, 53, 18], minRating: 6.5, minVotes: 300, novelty: 0.15 },
   { id: "cry", emoji: "😭", label: "Break my heart", genres: [18, 10749], minRating: 7.0, minVotes: 400, novelty: 0.2 },
-  { id: "adrenaline", emoji: "🔥", label: "Adrenaline rush", genres: [28, 53], minRating: 6.5, minVotes: 500, novelty: 0.20 },
+  { id: "adrenaline", emoji: "🔥", label: "Adrenaline rush", genres: [28, 53], excludeGenres: [10749, 10751, 35], minRating: 6.5, minVotes: 500, novelty: 0.20 },
   { id: "escape", emoji: "🌌", label: "Escape reality", genres: [14, 878, 12], minRating: 6.8, minVotes: 500, novelty: 0.35 },
   { id: "mystery", emoji: "🕵️", label: "Solve a mystery", genres: [9648, 80], minRating: 7.0, minVotes: 400, novelty: 0.2 },
-  { id: "scare", emoji: "😱", label: "Scare me", genres: [27], minRating: 6.0, minVotes: 300, novelty: 0.3 },
-  { id: "chill", emoji: "😌", label: "Easy watch", genres: [35, 10751, 16], minRating: 6.5, minVotes: 200, novelty: 0.10 },
-  { id: "date", emoji: "❤️", label: "Date night", genres: [10749, 35, 18], minRating: 6.8, minVotes: 400, novelty: 0.15 },
+  { id: "scare", emoji: "😱", label: "Scare me", genres: [27], excludeGenres: [35, 10751, 10749], minRating: 6.0, minVotes: 300, novelty: 0.3 },
+  { id: "chill", emoji: "😌", label: "Easy watch", genres: [35, 10751, 16], excludeGenres: [27, 53, 80, 28], minRating: 6.5, minVotes: 200, novelty: 0.10 },
+  { id: "date", emoji: "❤️", label: "Date night", genres: [10749, 35], excludeGenres: [27, 53, 28, 878, 80], minRating: 6.8, minVotes: 400, novelty: 0.15 },
   { id: "surprise", emoji: "🎲", label: "Surprise me", genres: [], minRating: 6.0, minVotes: 100, novelty: 0.8 },
 ];

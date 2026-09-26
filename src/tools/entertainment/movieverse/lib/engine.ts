@@ -62,6 +62,7 @@ export class MovieEngine {
     // Base Discovery
     let discoverUrl = `${BASE}/discover/${mediaType}?api_key=${API_KEY}&vote_count.gte=${minVotes}&vote_average.gte=${minRating}`;
     if (activeGenres.length > 0) discoverUrl += `&with_genres=${activeGenres.join("|")}`;
+    if (mood?.excludeGenres?.length) discoverUrl += `&without_genres=${mood.excludeGenres.join(",")}`;
     
     // Funnel 1: Popular / Familiar
     fetches.push(cachedFetch(`${discoverUrl}&sort_by=popularity.desc&page=1`));
@@ -91,7 +92,8 @@ export class MovieEngine {
     }
     
     // Funnel 5: Additional exploration pages for "know-me" mode (more depth in preferred genres)
-    if (discoveryMode === "know-me" && profile?.favoriteGenres?.length) {
+    // Only apply if no specific mood is selected, to avoid polluting mood results
+    if (discoveryMode === "know-me" && profile?.favoriteGenres?.length && !moodId) {
       const topGenre = profile.favoriteGenres[0];
       fetches.push(cachedFetch(`${BASE}/discover/${mediaType}?api_key=${API_KEY}&with_genres=${topGenre}&sort_by=vote_average.desc&vote_count.gte=500&page=1`));
     }

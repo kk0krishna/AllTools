@@ -60,6 +60,9 @@ export default function MovieVerse({}: ToolComponentProps) {
   const [searchLoading, setSearchLoading] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Tutorial State
+  const [showTutorial, setShowTutorial] = useState(false);
+
   // 1. Initial Load & Auth routing
   useEffect(() => {
     if (prefsLoading) return;
@@ -119,6 +122,18 @@ export default function MovieVerse({}: ToolComponentProps) {
       fetchFeed(selectedMood);
     }
   }, [view, feed.length, loading, selectedMood, fetchFeed]);
+
+  // Check if tutorial should be shown
+  useEffect(() => {
+    if (user && profile && feed.length > 0 && !localStorage.getItem("movieverse_tutorial_seen")) {
+      setShowTutorial(true);
+    }
+  }, [user, profile, feed.length]);
+
+  const dismissTutorial = () => {
+    localStorage.setItem("movieverse_tutorial_seen", "true");
+    setShowTutorial(false);
+  };
 
   // 3. Prefetch more movies when approaching end of feed
   useEffect(() => {
@@ -253,15 +268,14 @@ export default function MovieVerse({}: ToolComponentProps) {
                   <button 
                     key={mode.id}
                     onClick={() => { setDiscoveryMode(mode.id); setFeed([]); }}
-                    className={`px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold transition-all flex items-center gap-1 ${
+                    className={`px-2.5 py-1.5 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 sm:text-xs sm:px-3 ${
                       discoveryMode === mode.id 
                         ? "bg-white text-black shadow-lg" 
                         : "text-white/40 hover:text-white"
                     }`}
-                    title={mode.description}
                   >
                     <span>{mode.emoji}</span>
-                    <span className="hidden sm:inline">{mode.label}</span>
+                    <span>{mode.label}</span>
                   </button>
                 ))}
               </div>
@@ -273,10 +287,10 @@ export default function MovieVerse({}: ToolComponentProps) {
                 <p className="text-white/30 text-sm font-semibold">Curating your universe…</p>
               </div>
             ) : current ? (
-              <div className="w-full max-w-[min(100%,_48vh)] px-4 flex flex-col items-center justify-center h-[calc(100vh-140px)] min-h-[450px] pt-4 pb-32 mx-auto">
+              <div className="flex-1 w-full max-w-[min(100%,_48vh)] px-4 flex flex-col justify-center min-h-0 pt-2 pb-28 mx-auto">
                 
                 {/* Card Counter & Undo */}
-                <div className="w-full flex justify-between items-center mb-3 px-2 z-40">
+                <div className="w-full flex justify-between items-center mb-3 px-2 z-40 shrink-0">
                   <span className="text-xs font-bold text-white/30 tracking-widest">{currentIndex + 1} / {feed.length}</span>
                   {lastAction && (
                     <button onClick={handleUndo} className="flex items-center gap-1 text-xs font-bold text-white/50 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1 rounded-full border border-white/10">
@@ -285,7 +299,7 @@ export default function MovieVerse({}: ToolComponentProps) {
                   )}
                 </div>
 
-                <div className="relative w-full aspect-[2/3] perspective-[1000px]">
+                <div className="relative w-full flex-1 min-h-[300px] perspective-[1000px] z-10">
                   <AnimatePresence>
                     {visibleCards.slice().reverse().map((movie, index, arr) => {
                       const isTop = movie.id === current.id;
@@ -299,6 +313,7 @@ export default function MovieVerse({}: ToolComponentProps) {
                           whyText={isTop ? MovieEngine.generateWhyTag(movie, profile) : null}
                           onInfoClick={() => setSelectedMovieForDetails(movie)}
                           onSwipe={(dir) => {
+                            if (showTutorial) dismissTutorial();
                             const actionMap: Record<string, InteractionState> = { left: "disliked", right: "loved", up: "interested", down: "skipped" };
                             handleSwipe(movie, actionMap[dir]);
                           }}
@@ -306,14 +321,34 @@ export default function MovieVerse({}: ToolComponentProps) {
                       );
                     })}
                   </AnimatePresence>
+                  
+                  {/* Tutorial Overlay */}
+                  <AnimatePresence>
+                    {showTutorial && (
+                      <motion.div 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-50 pointer-events-none flex flex-col items-center justify-center bg-black/60 rounded-3xl backdrop-blur-[2px]"
+                      >
+                        <div className="text-center font-bold text-white space-y-8">
+                          <p className="text-purple-400">↑ Save for later</p>
+                          <div className="flex justify-between w-full px-8 gap-12">
+                            <p className="text-red-400">← Nope</p>
+                            <p className="text-pink-400">Love →</p>
+                          </div>
+                          <p className="text-white/70">↓ Skip</p>
+                        </div>
+                        <p className="absolute bottom-6 text-xs text-white/50 animate-pulse">Swipe to start building your DNA</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
                 
                 {/* Action Buttons */}
-                <div className="flex items-center justify-center gap-4 mt-8 w-full z-30">
-                  <Button onClick={() => handleSwipe(current, "skipped")} size="icon" className="w-12 h-12 rounded-full bg-white/10 text-white/50 hover:bg-white/20 shadow-lg"><SkipForward className="w-5 h-5" /></Button>
-                  <Button onClick={() => handleSwipe(current, "disliked")} size="icon" className="w-16 h-16 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/30 shadow-lg"><X className="w-8 h-8" /></Button>
-                  <Button onClick={() => handleSwipe(current, "interested")} size="icon" className="w-16 h-16 rounded-full bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 border border-purple-500/30 shadow-lg"><Bookmark className="w-8 h-8" /></Button>
-                  <Button onClick={() => handleSwipe(current, "loved")} size="icon" className="w-12 h-12 rounded-full bg-pink-500/10 text-pink-400 hover:bg-pink-500/20 border border-pink-500/30 shadow-lg"><Heart className="w-5 h-5 fill-current" /></Button>
+                <div className="flex items-center justify-center gap-3 sm:gap-4 mt-6 w-full z-30 shrink-0">
+                  <Button onClick={() => { if(showTutorial) dismissTutorial(); handleSwipe(current, "skipped"); }} size="icon" className="w-12 h-12 rounded-full bg-white/10 text-white/50 hover:bg-white/20 shadow-lg"><SkipForward className="w-5 h-5" /></Button>
+                  <Button onClick={() => { if(showTutorial) dismissTutorial(); handleSwipe(current, "disliked"); }} size="icon" className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/30 shadow-lg"><X className="w-6 h-6 sm:w-8 sm:h-8" /></Button>
+                  <Button onClick={() => { if(showTutorial) dismissTutorial(); handleSwipe(current, "interested"); }} size="icon" className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 border border-purple-500/30 shadow-lg"><Bookmark className="w-6 h-6 sm:w-8 sm:h-8" /></Button>
+                  <Button onClick={() => { if(showTutorial) dismissTutorial(); handleSwipe(current, "loved"); }} size="icon" className="w-12 h-12 rounded-full bg-pink-500/10 text-pink-400 hover:bg-pink-500/20 border border-pink-500/30 shadow-lg"><Heart className="w-5 h-5 fill-current" /></Button>
                 </div>
               </div>
             ) : (
