@@ -20,7 +20,7 @@ const CATEGORIES = [
   { name: "Pediatrics", icon: Baby, color: "text-teal-500", bg: "bg-teal-500/10", border: "border-teal-500/20", href: "/categories/pediatrics", examples: "Immunization Sched" },
   { name: "Ophthalmology", icon: Eye, color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20", href: "/categories/ophthalmology", examples: "Ishihara Color Test" },
   { name: "Psychology", icon: Heart, color: "text-violet-500", bg: "bg-violet-500/10", border: "border-violet-500/20", href: "/categories/psychology", examples: "Emotion Compass" },
-  { name: "Entertainment", icon: Film, color: "text-yellow-500", bg: "bg-yellow-500/10", border: "border-yellow-500/20", href: "/categories/entertainment", examples: "MovieVerse Suggestor" },
+  { name: "Entertainment", icon: Film, color: "text-yellow-500", bg: "bg-yellow-500/10", border: "border-yellow-500/20", href: "/categories/entertainment", examples: "Filmiyaar Redirect" },
 ];
 
 import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
@@ -28,9 +28,8 @@ import { db } from "@/lib/firebase";
 import { siteConfig } from "@/config/site";
 
 const DEFAULT_TRENDING = [
-  ...toolsRegistry.filter((t) => t.metadata.slug === "movieverse"),
   ...toolsRegistry.filter((t) => t.metadata.category === "obstetrics").slice(0, 2),
-  ...toolsRegistry.filter((t) => t.metadata.category !== "obstetrics" && t.metadata.slug !== "movieverse").slice(0, 2),
+  ...toolsRegistry.filter((t) => t.metadata.category !== "obstetrics").slice(0, 2),
 ];
 
 // --- 3D Braided Mesh Generator ---
@@ -475,7 +474,7 @@ export default function Home() {
             Clinikkit is a comprehensive, privacy-first platform offering a vast suite of free online tools designed specifically for medical professionals, developers, designers, and everyday users. Our mission is to provide lightning-fast, secure, and accurate web utilities directly in your browser.
           </p>
           <p className="text-muted-foreground mb-4">
-            Our platform features an extensive library of specialized utilities. For healthcare professionals, we offer clinical-grade calculators including the <strong>ABG Analyzer</strong>, <strong>BMI Calculator</strong>, <strong>Child Immunization Schedule</strong>, comprehensive <strong>Obstetrics Tools</strong>, and the <strong>Ishihara Color Blindness Test</strong>. For developers and creators, our suite includes the powerful <strong>Favicon Generator</strong>, <strong>Upload Ready Image Converter</strong>, and a lossless <strong>Audio Spectrum Analyzer</strong>. We also cater to mental health and lifestyle with the <strong>Feelings Wheel</strong> and our immersive <strong>MovieVerse Suggestor</strong>.
+            Our platform features an extensive library of specialized utilities. For healthcare professionals, we offer clinical-grade calculators including the <strong>ABG Analyzer</strong>, <strong>BMI Calculator</strong>, <strong>Child Immunization Schedule</strong>, comprehensive <strong>Obstetrics Tools</strong>, and the <strong>Ishihara Color Blindness Test</strong>. For developers and creators, our suite includes the powerful <strong>Favicon Generator</strong>, <strong>Upload Ready Image Converter</strong>, and a lossless <strong>Audio Spectrum Analyzer</strong>. We also cater to mental health and lifestyle with the <strong>Feelings Wheel</strong>.
           </p>
           <p className="text-muted-foreground">
             Explore our curated categories above to discover powerful calculators, formatters, and analyzers tailored to streamline your daily workflow. Built with modern web technologies, Clinikkit ensures that your data remains secure while delivering a seamless, premium user experience—all without requiring you to download any software or create an account.

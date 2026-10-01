@@ -16,25 +16,6 @@ service cloud.firestore {
     match /users/{userId}/mood_logs/{document} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
-    // Allow authenticated users to manage their movie preferences
-    // Any authenticated user can read (needed for Movie Match feature)
-    // Only the owner can write
-    match /user_movie_preferences/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-    // User movie profiles (name, favorite genres) — readable by others for Match
-    match /user_movie_profiles/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-    // MovieVerse Match Codes (Legacy)
-    match /movieverse_match_codes/{code} {
-      allow read, write: if request.auth != null;
-    }
-    // MovieVerse Groups / Rooms
-    match /movieverse_groups/{groupId} {
-      allow read, write: if request.auth != null;
-    }
+    // End of tools rules
   }
 }

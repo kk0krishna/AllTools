@@ -33,10 +33,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${tool.metadata.name} | Clinikkit`,
     description: tool.metadata.description,
     keywords: tool.metadata.keywords.join(", "),
+    alternates: { canonical: `/tools/${resolvedParams.category}/${resolvedParams.slug}` },
     manifest: `/tools-icons/${resolvedParams.slug}/manifest.json`,
     openGraph: {
       title: tool.metadata.name,
       description: tool.metadata.description,
+      url: `/tools/${resolvedParams.category}/${resolvedParams.slug}`,
       type: "website",
     },
   };
@@ -61,7 +63,7 @@ export default async function ToolPage({ params }: Props) {
             "@context": "https://schema.org",
             "@type": "WebApplication",
             name: metadata.name,
-            applicationCategory: metadata.category === "obstetrics" ? "HealthApplication" : "UtilityApplication",
+            applicationCategory: metadata.category === "obstetrics" ? "HealthApplication" : metadata.category === "entertainment" ? "EntertainmentApplication" : "UtilityApplication",
             operatingSystem: "All",
             description: metadata.description,
             offers: {
