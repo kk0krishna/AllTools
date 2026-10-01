@@ -84,17 +84,24 @@ export function useTempoRoutines() {
     setRoutines(routines.map(r => r.id === id ? { ...r, enabled: !r.enabled } : r));
   };
   
+  const editRoutine = (id: string, updated: Partial<Routine>) => {
+    setRoutines(routines.map(r => r.id === id ? { ...r, ...updated } : r));
+  };
+  
   const deleteRoutine = (id: string) => {
     setRoutines(routines.filter(r => r.id !== id));
   };
 
-  const handleAction = (routineId: string, action: 'done' | 'snooze' | 'skip', time: Date) => {
+  const handleAction = (routineId: string, action: 'done' | 'snooze' | 'skip', time: Date, note?: string) => {
     setRoutines(routines.map(r => {
       if (r.id !== routineId) return r;
+      
+      const rSettings = { ...settings, ...r.settings };
       const newEvent: RoutineEvent = {
         time: time.getTime(),
         action,
-        snoozeUntil: action === 'snooze' ? currentTime.getTime() + settings.snoozeDuration * 60000 : undefined
+        snoozeUntil: action === 'snooze' ? currentTime.getTime() + rSettings.snoozeDuration * 60000 : undefined,
+        note
       };
       const newEvents = [...r.events, newEvent].slice(-100);
       return { ...r, events: newEvents };
@@ -145,8 +152,11 @@ export function useTempoRoutines() {
     if (activeRoutine && !isGloballyPaused) {
       const occurrenceId = `${activeRoutine.routineId}-${activeRoutine.time.getTime()}`;
       if (lastNotifiedId !== occurrenceId) {
-        playNotificationSound(settings);
-        sendNotification("Tempo Routine", `Time for: ${activeRoutine.routineName}`, settings.vibrate);
+        const r = routines.find(x => x.id === activeRoutine.routineId);
+        const rSettings = r ? { ...settings, ...r.settings } : settings;
+        
+        playNotificationSound(rSettings);
+        sendNotification("Tempo Routine", `Time for: ${activeRoutine.routineName}`, rSettings.vibrate);
         setLastNotifiedId(occurrenceId);
       }
     }
@@ -180,6 +190,7 @@ export function useTempoRoutines() {
     addRoutine,
     toggleRoutine,
     deleteRoutine,
+    editRoutine,
     handleAction,
     nextOccurrences,
     activeRoutine,

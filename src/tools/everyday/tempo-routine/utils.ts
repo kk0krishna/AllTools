@@ -8,7 +8,12 @@ export const PRESETS = [
   { name: "💧 Drink Water", category: "Health", interval: 120, start: "08:00", end: "20:00" },
   { name: "🧘 Stretch", category: "Fitness", interval: 60, start: "09:00", end: "18:00" },
   { name: "👁️ Eye Drops", category: "Health", interval: 180, start: "09:00", end: "21:00" },
-  { name: "☕ Study Break", category: "Productivity", interval: 50, start: "09:00", end: "22:00" }
+  { name: "☕ Study Break", category: "Productivity", interval: 50, start: "09:00", end: "22:00" },
+  { name: "⚡ 1 Min Quick Task", category: "Productivity", interval: 1, start: "00:00", end: "23:59" },
+  { name: "⏱️ 5 Min Pacing", category: "Productivity", interval: 5, start: "00:00", end: "23:59" },
+  { name: "⏳ Pomodoro", category: "Productivity", interval: 30, start: "09:00", end: "18:00" },
+  { name: "🔔 Hourly Chime", category: "Other", interval: 60, start: "08:00", end: "20:00" },
+  { name: "🌸 Mindfulness", category: "Health", interval: 90, start: "08:00", end: "22:00" }
 ];
 
 export const parseTime = (timeStr: string): { h: number; m: number } => {
@@ -111,7 +116,9 @@ export const playNotificationSound = (settings: UserSettings) => {
     const gain = audioCtx.createGain();
     osc.connect(gain);
     gain.connect(audioCtx.destination);
-    osc.type = settings.soundPreset === 'bells' ? "square" : (settings.soundPreset === 'chime' ? "triangle" : "sine");
+    osc.type = settings.soundPreset === 'bells' ? "square" : 
+               (settings.soundPreset === 'chime' ? "triangle" : 
+               (settings.soundPreset === 'radar' ? "sawtooth" : "sine"));
     
     const duration = settings.alarmDuration;
     
@@ -121,6 +128,13 @@ export const playNotificationSound = (settings: UserSettings) => {
     } else if (settings.soundPreset === 'chime') {
       osc.frequency.setValueAtTime(600, audioCtx.currentTime);
       osc.frequency.linearRampToValueAtTime(400, audioCtx.currentTime + duration);
+    } else if (settings.soundPreset === 'radar') {
+      osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+      osc.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.2);
+      osc.frequency.linearRampToValueAtTime(400, audioCtx.currentTime + 0.4);
+    } else if (settings.soundPreset === 'soft') {
+      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(250, audioCtx.currentTime + duration);
     } else {
       osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
     }

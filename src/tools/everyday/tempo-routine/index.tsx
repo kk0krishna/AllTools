@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Clock, Plus, Trash2, CalendarDays, CheckCircle2, Play, Bell, Settings2, 
-  RotateCcw, Ban, LayoutDashboard, History, Zap, ShieldAlert, Download, Upload, LineChart, Moon, Sun 
+  RotateCcw, Ban, LayoutDashboard, History, Zap, ShieldAlert, Download, Upload, LineChart, Moon, Sun, Edit3
 } from "lucide-react";
 
 import { PRESETS, DAYS_OF_WEEK, CATEGORIES, formatCountdown, getNextOccurrences, initAudio } from "./utils";
@@ -27,6 +27,7 @@ export function TempoRoutine() {
     addRoutine,
     toggleRoutine,
     deleteRoutine,
+    editRoutine,
     handleAction,
     nextOccurrences,
     activeRoutine,
@@ -52,6 +53,20 @@ export function TempoRoutine() {
   const [intervalMinutes, setIntervalMinutes] = useState(120);
   const [days, setDays] = useState<number[]>([1, 2, 3, 4, 5]);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [routineSettings, setRoutineSettings] = useState<Partial<Routine['settings']>>({});
+  
+  // Action state
+  const [actionNote, setActionNote] = useState("");
+
+  // Theme effect
+  useEffect(() => {
+    if (isClient && settings) {
+      const isDark = settings.theme === 'dark' || (settings.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (isDark) document.documentElement.classList.add('dark');
+      else document.documentElement.classList.remove('dark');
+    }
+  }, [settings?.theme, isClient]);
 
   const toggleDay = (d: number) => {
     if (days.includes(d)) {
@@ -63,21 +78,30 @@ export function TempoRoutine() {
 
   const handleAddRoutine = () => {
     if (!name.trim()) return;
-    const newRoutine: Routine = {
-      id: Math.random().toString(36).substring(7),
-      name,
-      category,
-      startTime,
-      endTime,
-      intervalMinutes,
-      days,
-      enabled: true,
-      events: []
-    };
-    addRoutine(newRoutine);
+    
+    if (editingId) {
+      editRoutine(editingId, { name, category, startTime, endTime, intervalMinutes, days, settings: routineSettings });
+    } else {
+      const newRoutine: Routine = {
+        id: Math.random().toString(36).substring(7),
+        name,
+        category,
+        startTime,
+        endTime,
+        intervalMinutes,
+        days,
+        enabled: true,
+        events: [],
+        settings: routineSettings
+      };
+      addRoutine(newRoutine);
+    }
+    
     setShowForm(false);
+    setEditingId(null);
     setName("");
     setCategory("Other");
+    setRoutineSettings({});
     setActiveTab('routines');
   };
 
@@ -98,7 +122,32 @@ export function TempoRoutine() {
 
   const handleAddBtnClick = () => {
     initAudio();
-    setShowForm(!showForm);
+    if (showForm) {
+      setShowForm(false);
+      setEditingId(null);
+      setName("");
+    } else {
+      setShowForm(true);
+    }
+  };
+  
+  const handleEditBtnClick = (r: Routine) => {
+    initAudio();
+    setEditingId(r.id);
+    setName(r.name);
+    setCategory(r.category || 'Other');
+    setStartTime(r.startTime);
+    setEndTime(r.endTime);
+    setIntervalMinutes(r.intervalMinutes);
+    setDays(r.days);
+    setRoutineSettings(r.settings || {});
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
+  const handleActionClick = (id: string, action: 'done' | 'snooze' | 'skip', time: Date) => {
+    handleAction(id, action, time, actionNote.trim() || undefined);
+    setActionNote("");
   };
 
   if (!isClient) return <div className="min-h-[400px] flex items-center justify-center text-primary"><RotateCcw className="w-8 h-8 animate-spin" /></div>;
@@ -217,16 +266,24 @@ export function TempoRoutine() {
                           Scheduled at {activeRoutine.time.toLocaleTimeString([], { hour12: settings.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
-                      <div className="flex flex-col sm:flex-row justify-center gap-3 w-full md:w-auto mt-4 md:mt-0">
-                        <Button size="lg" variant="secondary" className="w-full sm:w-auto font-bold text-lg text-primary hover:text-primary hover:bg-white" onClick={() => handleAction(activeRoutine.routineId, 'done', activeRoutine.time)}>
-                          <CheckCircle2 className="w-5 h-5 mr-2" /> Done
-                        </Button>
-                        <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-primary-foreground/30 hover:bg-primary-foreground/10 text-primary-foreground" onClick={() => handleAction(activeRoutine.routineId, 'snooze', activeRoutine.time)}>
-                          Snooze 10m
-                        </Button>
-                        <Button size="lg" variant="ghost" className="w-full sm:w-auto hover:bg-primary-foreground/10 text-primary-foreground mt-2 sm:mt-0" onClick={() => handleAction(activeRoutine.routineId, 'skip', activeRoutine.time)} title="Skip this occurrence">
-                          <Ban className="w-5 h-5 mr-2 sm:mr-0" /> <span className="sm:hidden">Skip</span>
-                        </Button>
+                      <div className="flex flex-col justify-center gap-3 w-full md:w-auto mt-4 md:mt-0">
+                        <Input 
+                          placeholder="Add a note (optional)" 
+                          value={actionNote} 
+                          onChange={(e) => setActionNote(e.target.value)}
+                          className="w-full bg-white/20 border-primary-foreground/30 text-primary-foreground placeholder:text-primary-foreground/60 mb-2"
+                        />
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <Button size="lg" variant="secondary" className="w-full sm:w-auto font-bold text-lg text-primary hover:text-primary hover:bg-white" onClick={() => handleActionClick(activeRoutine.routineId, 'done', activeRoutine.time)}>
+                            <CheckCircle2 className="w-5 h-5 mr-2" /> Done
+                          </Button>
+                          <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-primary-foreground/30 hover:bg-primary-foreground/10 text-primary-foreground" onClick={() => handleActionClick(activeRoutine.routineId, 'snooze', activeRoutine.time)}>
+                            Snooze
+                          </Button>
+                          <Button size="lg" variant="ghost" className="w-full sm:w-auto hover:bg-primary-foreground/10 text-primary-foreground" onClick={() => handleActionClick(activeRoutine.routineId, 'skip', activeRoutine.time)} title="Skip this occurrence">
+                            <Ban className="w-5 h-5 mr-2 sm:mr-0" /> <span className="sm:hidden">Skip</span>
+                          </Button>
+                        </div>
                       </div>
                     </motion.div>
                   ) : nextOccurrences.length > 0 ? (
@@ -338,7 +395,7 @@ export function TempoRoutine() {
                       <Zap className="w-24 h-24 md:w-32 md:h-32 text-primary" />
                     </div>
                     <CardHeader>
-                      <CardTitle className="text-lg md:text-xl">Create New Routine</CardTitle>
+                      <CardTitle className="text-lg md:text-xl">{editingId ? 'Edit Routine' : 'Create New Routine'}</CardTitle>
                       <CardDescription className="text-xs md:text-sm">Set the rules for your repetitive task or pick a preset.</CardDescription>
                       <div className="flex flex-wrap gap-2 pt-2">
                         {PRESETS.map((preset, idx) => (
@@ -432,8 +489,55 @@ export function TempoRoutine() {
                         </div>
                       </div>
                       
+                      <div className="space-y-3 pt-4 border-t border-border/50">
+                        <Label className="text-base font-bold flex items-center justify-between">
+                          <span>Custom Alarm Settings <span className="text-sm font-normal text-muted-foreground">(Optional)</span></span>
+                        </Label>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-muted/30 p-4 rounded-xl">
+                          <div className="space-y-2">
+                            <Label className="text-xs">Sound</Label>
+                            <select 
+                              className="w-full bg-background border p-2 rounded-md text-sm"
+                              value={routineSettings?.soundPreset || ''}
+                              onChange={(e) => setRoutineSettings({...routineSettings, soundPreset: e.target.value || undefined})}
+                            >
+                              <option value="">Default</option>
+                              <option value="digital">Digital</option>
+                              <option value="chime">Chime</option>
+                              <option value="bells">Bells</option>
+                              <option value="radar">Radar</option>
+                              <option value="soft">Soft</option>
+                            </select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-xs">Vibrate</Label>
+                            <select 
+                              className="w-full bg-background border p-2 rounded-md text-sm"
+                              value={routineSettings?.vibrate === undefined ? '' : routineSettings.vibrate.toString()}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setRoutineSettings({...routineSettings, vibrate: val === '' ? undefined : val === 'true'});
+                              }}
+                            >
+                              <option value="">Default</option>
+                              <option value="true">Yes</option>
+                              <option value="false">No</option>
+                            </select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-xs">Volume ({routineSettings?.volume !== undefined ? routineSettings.volume : 'Default'})</Label>
+                            <Input 
+                              type="range" min="0" max="1" step="0.1" 
+                              value={routineSettings?.volume !== undefined ? routineSettings.volume : settings.volume}
+                              onChange={(e) => setRoutineSettings({...routineSettings, volume: parseFloat(e.target.value)})}
+                              className="w-full h-8"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      
                       <Button onClick={handleAddRoutine} className="w-full h-14 text-lg font-bold rounded-xl shadow-lg" disabled={!name.trim()}>
-                        Save Routine
+                        {editingId ? 'Update Routine' : 'Save Routine'}
                       </Button>
                     </CardContent>
                   </Card>
@@ -492,9 +596,14 @@ export function TempoRoutine() {
                               ? `Next: ${getNextOccurrences(routine, currentTime, 1)[0].time.toLocaleTimeString([], { hour12: settings.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })}`
                               : 'Inactive'}
                           </Badge>
-                          <Button variant="ghost" size="icon" onClick={() => deleteRoutine(routine.id)} className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-full h-9 w-9">
-                            <Trash2 className="w-4.5 h-4.5" />
-                          </Button>
+                          <div className="flex items-center gap-1">
+                            <Button variant="ghost" size="icon" onClick={() => handleEditBtnClick(routine)} className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full h-9 w-9">
+                              <Edit3 className="w-4 h-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => deleteRoutine(routine.id)} className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-full h-9 w-9">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -590,6 +699,9 @@ export function TempoRoutine() {
                         <div className="text-right">
                           <p className="font-mono text-sm">{new Date(entry.time).toLocaleTimeString([], { hour12: settings.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })}</p>
                           <p className="text-xs text-muted-foreground">{new Date(entry.time).toLocaleDateString()}</p>
+                          {entry.note && (
+                            <p className="text-xs mt-1 text-primary italic">"{entry.note}"</p>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -697,6 +809,25 @@ export function TempoRoutine() {
                           onClick={() => setSettings({ ...settings, timeFormat: fmt as '12h' | '24h' })}
                         >
                           {fmt}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base font-semibold">Theme</Label>
+                      <p className="text-sm text-muted-foreground">App appearance</p>
+                    </div>
+                    <div className="flex gap-2">
+                      {['light', 'dark', 'system'].map((t) => (
+                        <Badge 
+                          key={t}
+                          variant={settings.theme === t ? 'default' : 'outline'}
+                          className="cursor-pointer capitalize px-3 py-1"
+                          onClick={() => setSettings({ ...settings, theme: t as 'light'|'dark'|'system' })}
+                        >
+                          {t}
                         </Badge>
                       ))}
                     </div>

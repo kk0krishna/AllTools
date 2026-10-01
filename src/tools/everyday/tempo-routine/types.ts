@@ -2,6 +2,7 @@ export interface RoutineEvent {
   time: number; // timestamp
   action: 'done' | 'snooze' | 'skip';
   snoozeUntil?: number; // timestamp
+  note?: string;
 }
 
 export interface Routine {
@@ -14,6 +15,7 @@ export interface Routine {
   days: number[]; // 0-6 (Sun-Sat)
   enabled: boolean;
   events: RoutineEvent[]; // History of actions
+  settings?: Partial<UserSettings>; // Override global settings
 }
 
 export interface Occurrence {
