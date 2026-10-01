@@ -10,10 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Clock, Plus, Trash2, CalendarDays, CheckCircle2, Play, Bell, Settings2, 
-  RotateCcw, Ban, LayoutDashboard, History, Zap, ShieldAlert, Download, Upload, LineChart, Moon, Sun, Edit3
+  RotateCcw, Ban, LayoutDashboard, History, Zap, ShieldAlert, Download, Upload, LineChart, Moon, Sun, Edit3, PlayCircle
 } from "lucide-react";
-
-import { PRESETS, DAYS_OF_WEEK, CATEGORIES, formatCountdown, getNextOccurrences, initAudio } from "./utils";
+import { PRESETS, DAYS_OF_WEEK, CATEGORIES, formatCountdown, getNextOccurrences, initAudio, playNotificationSound } from "./utils";
 import { useTempoRoutines } from "./hooks";
 import { Routine } from "./types";
 
@@ -56,7 +55,12 @@ export function TempoRoutine() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [routineSettings, setRoutineSettings] = useState<Partial<Routine['settings']>>({});
   
-  // Action state
+  const [actionDialog, setActionDialog] = useState<{
+    isOpen: boolean;
+    action: 'done' | 'snooze' | 'skip';
+    routineId?: string;
+    time?: Date;
+  }>({ isOpen: false, action: 'done' });
   const [actionNote, setActionNote] = useState("");
 
   // Theme effect
@@ -131,6 +135,11 @@ export function TempoRoutine() {
     }
   };
   
+  const handleTestSound = () => {
+    initAudio();
+    playNotificationSound({ ...settings, ...routineSettings });
+  };
+  
   const handleEditBtnClick = (r: Routine) => {
     initAudio();
     setEditingId(r.id);
@@ -146,8 +155,7 @@ export function TempoRoutine() {
   };
   
   const handleActionClick = (id: string, action: 'done' | 'snooze' | 'skip', time: Date) => {
-    handleAction(id, action, time, actionNote.trim() || undefined);
-    setActionNote("");
+    setActionDialog({ isOpen: true, action, routineId: id, time });
   };
 
   if (!isClient) return <div className="min-h-[400px] flex items-center justify-center text-primary"><RotateCcw className="w-8 h-8 animate-spin" /></div>;
@@ -267,12 +275,6 @@ export function TempoRoutine() {
                         </p>
                       </div>
                       <div className="flex flex-col justify-center gap-3 w-full md:w-auto mt-4 md:mt-0">
-                        <Input 
-                          placeholder="Add a note (optional)" 
-                          value={actionNote} 
-                          onChange={(e) => setActionNote(e.target.value)}
-                          className="w-full bg-white/20 border-primary-foreground/30 text-primary-foreground placeholder:text-primary-foreground/60 mb-2"
-                        />
                         <div className="flex flex-col sm:flex-row gap-2">
                           <Button size="lg" variant="secondary" className="w-full sm:w-auto font-bold text-lg text-primary hover:text-primary hover:bg-white" onClick={() => handleActionClick(activeRoutine.routineId, 'done', activeRoutine.time)}>
                             <CheckCircle2 className="w-5 h-5 mr-2" /> Done
@@ -491,17 +493,22 @@ export function TempoRoutine() {
                       
                       <div className="space-y-3 pt-4 border-t border-border/50">
                         <Label className="text-base font-bold flex items-center justify-between">
-                          <span>Custom Alarm Settings <span className="text-sm font-normal text-muted-foreground">(Optional)</span></span>
+                          <span>Alarm Configuration <span className="text-sm font-normal text-muted-foreground">(Overrides global defaults)</span></span>
                         </Label>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-muted/30 p-4 rounded-xl">
-                          <div className="space-y-2">
-                            <Label className="text-xs">Sound</Label>
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-muted/30 p-4 rounded-xl">
+                          <div className="space-y-2 col-span-2 md:col-span-1">
+                            <Label className="text-xs flex items-center justify-between">
+                              <span>Sound</span>
+                              <Button variant="ghost" size="sm" className="h-5 px-1 py-0 text-primary" onClick={handleTestSound} title="Test Sound">
+                                <PlayCircle className="w-3.5 h-3.5" />
+                              </Button>
+                            </Label>
                             <select 
                               className="w-full bg-background border p-2 rounded-md text-sm"
                               value={routineSettings?.soundPreset || ''}
-                              onChange={(e) => setRoutineSettings({...routineSettings, soundPreset: e.target.value || undefined})}
+                              onChange={(e) => setRoutineSettings({...routineSettings, soundPreset: e.target.value as any || undefined})}
                             >
-                              <option value="">Default</option>
+                              <option value="">Default (Digital)</option>
                               <option value="digital">Digital</option>
                               <option value="chime">Chime</option>
                               <option value="bells">Bells</option>
@@ -525,12 +532,30 @@ export function TempoRoutine() {
                             </select>
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-xs">Volume ({routineSettings?.volume !== undefined ? routineSettings.volume : 'Default'})</Label>
+                            <Label className="text-xs">Volume ({routineSettings?.volume !== undefined ? Math.round(routineSettings.volume * 100) : Math.round(settings.volume * 100)}%)</Label>
                             <Input 
                               type="range" min="0" max="1" step="0.1" 
                               value={routineSettings?.volume !== undefined ? routineSettings.volume : settings.volume}
                               onChange={(e) => setRoutineSettings({...routineSettings, volume: parseFloat(e.target.value)})}
-                              className="w-full h-8"
+                              className="w-full h-8 cursor-pointer"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-xs">Ring (s)</Label>
+                            <Input 
+                              type="number" min="1" max="300"
+                              value={routineSettings?.alarmDuration !== undefined ? routineSettings.alarmDuration : settings.alarmDuration}
+                              onChange={(e) => setRoutineSettings({...routineSettings, alarmDuration: parseInt(e.target.value) || 5})}
+                              className="w-full bg-background border p-2 rounded-md text-sm h-[38px]"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-xs">Snooze (m)</Label>
+                            <Input 
+                              type="number" min="1" max="60"
+                              value={routineSettings?.snoozeDuration !== undefined ? routineSettings.snoozeDuration : settings.snoozeDuration}
+                              onChange={(e) => setRoutineSettings({...routineSettings, snoozeDuration: parseInt(e.target.value) || 10})}
+                              className="w-full bg-background border p-2 rounded-md text-sm h-[38px]"
                             />
                           </div>
                         </div>
@@ -734,65 +759,6 @@ export function TempoRoutine() {
             <Card className="border-border shadow-sm">
               <CardContent className="p-6 space-y-6">
                 <div className="space-y-4">
-                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider border-b pb-2">Audio & Alerts</h3>
-                  
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-base font-semibold">Alarm Sound</Label>
-                      <p className="text-sm text-muted-foreground">Select the alert tone</p>
-                    </div>
-                    <div className="flex gap-2">
-                      {['digital', 'chime', 'bells'].map((sound) => (
-                        <Badge 
-                          key={sound}
-                          variant={settings.soundPreset === sound ? 'default' : 'outline'}
-                          className="cursor-pointer capitalize px-3 py-1"
-                          onClick={() => setSettings({ ...settings, soundPreset: sound })}
-                        >
-                          {sound}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-base font-semibold">Alarm Volume</Label>
-                      <p className="text-sm text-muted-foreground">Alert loudness (0 to 100%)</p>
-                    </div>
-                    <Input 
-                      type="range" 
-                      min="0" max="1" step="0.1" 
-                      value={settings.volume} 
-                      onChange={(e) => setSettings({ ...settings, volume: parseFloat(e.target.value) })}
-                      className="w-32"
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-base font-semibold">Gradual Volume Increase</Label>
-                      <p className="text-sm text-muted-foreground">Start soft and get louder</p>
-                    </div>
-                    <Switch 
-                      checked={settings.gradualVolume}
-                      onCheckedChange={(c) => setSettings({ ...settings, gradualVolume: c })}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-base font-semibold">Vibration</Label>
-                      <p className="text-sm text-muted-foreground">Vibrate on alert</p>
-                    </div>
-                    <Switch 
-                      checked={settings.vibrate}
-                      onCheckedChange={(c) => setSettings({ ...settings, vibrate: c })}
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-4 pt-4">
                   <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider border-b pb-2">Timing & Display</h3>
                   
                   <div className="flex items-center justify-between">
@@ -832,40 +798,72 @@ export function TempoRoutine() {
                       ))}
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-base font-semibold">Alarm Duration (sec)</Label>
-                      <p className="text-sm text-muted-foreground">How long it rings</p>
-                    </div>
-                    <Input 
-                      type="number" 
-                      min="5" max="300"
-                      value={settings.alarmDuration} 
-                      onChange={(e) => setSettings({ ...settings, alarmDuration: parseInt(e.target.value) || 30 })}
-                      className="w-24 text-right"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-base font-semibold">Snooze Duration (min)</Label>
-                      <p className="text-sm text-muted-foreground">Time before next alert</p>
-                    </div>
-                    <Input 
-                      type="number" 
-                      min="1" max="60"
-                      value={settings.snoozeDuration} 
-                      onChange={(e) => setSettings({ ...settings, snoozeDuration: parseInt(e.target.value) || 15 })}
-                      className="w-24 text-right"
-                    />
-                  </div>
                 </div>
               </CardContent>
             </Card>
           </motion.section>
         )}
 
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {actionDialog.isOpen && actionDialog.routineId && actionDialog.time && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 10 }} 
+              animate={{ scale: 1, opacity: 1, y: 0 }} 
+              exit={{ scale: 0.95, opacity: 0, y: 10 }} 
+              className="bg-card text-card-foreground border border-border rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden relative"
+            >
+              <div className="p-6 space-y-4">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${
+                  actionDialog.action === 'done' ? 'bg-green-500/10 text-green-500' :
+                  actionDialog.action === 'snooze' ? 'bg-blue-500/10 text-blue-500' :
+                  'bg-red-500/10 text-red-500'
+                }`}>
+                  {actionDialog.action === 'done' && <CheckCircle2 className="w-6 h-6" />}
+                  {actionDialog.action === 'snooze' && <Clock className="w-6 h-6" />}
+                  {actionDialog.action === 'skip' && <Ban className="w-6 h-6" />}
+                </div>
+                <h3 className="text-2xl font-bold">
+                  {actionDialog.action === 'done' ? 'Great job!' :
+                   actionDialog.action === 'snooze' ? 'Take a break' :
+                   'Skip for now?'}
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  {actionDialog.action === 'done' ? 'You completed this routine.' :
+                   actionDialog.action === 'snooze' ? `We'll remind you again in ${settings.snoozeDuration} minutes.` :
+                   'You are skipping this occurrence.'}
+                </p>
+                <div className="pt-2">
+                  <Label className="text-xs font-semibold text-muted-foreground mb-2 block">ADD A NOTE (OPTIONAL)</Label>
+                  <textarea 
+                    autoFocus
+                    placeholder="How did it go?" 
+                    value={actionNote} 
+                    onChange={(e) => setActionNote(e.target.value)}
+                    className="w-full bg-background border border-border p-3 rounded-xl text-sm min-h-[80px] focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none shadow-inner"
+                  />
+                </div>
+              </div>
+              <div className="bg-muted/50 p-4 flex gap-2 border-t border-border">
+                <Button variant="ghost" className="flex-1 rounded-xl" onClick={() => {
+                  setActionDialog({ isOpen: false, action: 'done' });
+                  setActionNote("");
+                }}>
+                  Cancel
+                </Button>
+                <Button className="flex-1 rounded-xl font-bold shadow-md" onClick={() => {
+                  handleAction(actionDialog.routineId!, actionDialog.action, actionDialog.time!, actionNote.trim() || undefined);
+                  setActionDialog({ isOpen: false, action: 'done' });
+                  setActionNote("");
+                }}>
+                  Confirm
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </AnimatePresence>
     </div>
   );
