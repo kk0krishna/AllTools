@@ -141,6 +141,8 @@ Because this project uses Next.js Static Export, it is perfectly compatible with
 - [**JSON Formatter**](https://clinikkit.web.app/tools/developer/json-formatter): Format, validate, beautify, and minify your JSON data instantly.
 - [**YouTube Transcript Downloader**](https://clinikkit.web.app/tools/developer/youtube-transcript): Extract, search, read, and download full text transcripts from any accessible YouTube video in TXT, Markdown, JSON, CSV, SRT, and VTT formats.
 
+### Entertainment
+- [**FilmiYaar (Formerly MovieVerse)**](https://clinikkit.web.app/tools/entertainment/movieverse): MovieVerse has moved to a dedicated platform. Click here to be redirected to FilmiYaar. (https://filmiyaar.web.app/)
 
 ### Everyday
 - [**Barcode Generator**](https://clinikkit.web.app/tools/everyday/barcode-generator): Generate high-quality barcodes for products, inventory, and more.
