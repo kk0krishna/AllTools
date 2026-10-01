@@ -96,6 +96,14 @@ export const getNextOccurrences = (routine: Routine, now: Date, limit: number = 
 };
 
 let audioCtx: AudioContext | null = null;
+const activeOscillators = new Set<OscillatorNode>();
+
+export const stopNotificationSound = () => {
+  activeOscillators.forEach((oscillator) => {
+    try { oscillator.stop(); } catch { /* Oscillator already stopped. */ }
+  });
+  activeOscillators.clear();
+};
 
 export const initAudio = () => {
   if (typeof window === 'undefined') return;
@@ -111,29 +119,11 @@ export const initAudio = () => {
   }
 };
 
-const MP3_URLS: Record<string, string> = {
-  'mp3_harp': 'https://actions.google.com/sounds/v1/alarms/harp_melody.ogg',
-  'mp3_guitar': 'https://actions.google.com/sounds/v1/alarms/acoustic_guitar_melody.ogg',
-  'mp3_synth': 'https://actions.google.com/sounds/v1/alarms/spaceship_alarm.ogg'
-};
-
 export const playNotificationSound = (settings: UserSettings) => {
   try {
-    if (settings.volume === 0) return;
-    
-    // Check if it's an MP3 preset
-    if (settings.soundPreset.startsWith('mp3_') && MP3_URLS[settings.soundPreset]) {
-      const audio = new Audio(MP3_URLS[settings.soundPreset]);
-      audio.volume = settings.volume;
-      audio.play().catch(e => console.warn("Audio playback blocked", e));
-      setTimeout(() => {
-        audio.pause();
-        audio.currentTime = 0;
-      }, settings.alarmDuration * 1000);
-      return;
-    }
+    stopNotificationSound();
+    if (settings.volume === 0 || settings.soundPreset === 'silent') return;
 
-    // Fallback to oscillator
     if (!audioCtx) initAudio();
     if (!audioCtx) return;
     
@@ -141,51 +131,48 @@ export const playNotificationSound = (settings: UserSettings) => {
        audioCtx.resume();
     }
 
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.type = settings.soundPreset === 'bells' ? "square" : 
-               (settings.soundPreset === 'chime' ? "triangle" : 
-               (settings.soundPreset === 'radar' ? "sawtooth" : "sine"));
-    
-    const duration = settings.alarmDuration;
-    
-    if (settings.soundPreset === 'digital') {
-      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.1);
-    } else if (settings.soundPreset === 'chime') {
-      osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-      osc.frequency.linearRampToValueAtTime(400, audioCtx.currentTime + duration);
-    } else if (settings.soundPreset === 'radar') {
-      osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-      osc.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.2);
-      osc.frequency.linearRampToValueAtTime(400, audioCtx.currentTime + 0.4);
-    } else if (settings.soundPreset === 'soft') {
-      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(250, audioCtx.currentTime + duration);
-    } else {
-      osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
+    const now = audioCtx.currentTime;
+    const duration = Math.max(1, Math.min(settings.alarmDuration || 30, 300));
+    const presets: Record<string, { notes: number[]; gap: number; tone: OscillatorType; noteLength: number }> = {
+      digital: { notes: [880, 660], gap: 0.16, tone: 'sine', noteLength: 0.12 },
+      chime: { notes: [659, 784, 988], gap: 0.22, tone: 'sine', noteLength: 0.5 },
+      bells: { notes: [784, 988, 1175], gap: 0.3, tone: 'triangle', noteLength: 0.38 },
+      radar: { notes: [440, 880], gap: 0.2, tone: 'sawtooth', noteLength: 0.16 },
+      soft: { notes: [440, 523], gap: 0.45, tone: 'sine', noteLength: 0.55 },
+      ringtone: { notes: [740, 587, 740, 587], gap: 0.13, tone: 'square', noteLength: 0.24 },
+      music: { notes: [523, 659, 784, 659, 587, 698, 880, 698], gap: 0.18, tone: 'sine', noteLength: 0.28 },
+      rising: { notes: [392, 494, 587, 784], gap: 0.24, tone: 'triangle', noteLength: 0.35 },
+    };
+    const preset = presets[settings.soundPreset] || presets.digital;
+    const cycleLength = preset.notes.length * preset.gap;
+    const cycleCount = Math.max(1, Math.ceil(duration / cycleLength));
+    for (let cycle = 0; cycle < cycleCount; cycle++) {
+      preset.notes.forEach((frequency, noteIndex) => {
+        const start = now + cycle * cycleLength + noteIndex * preset.gap;
+        if (start >= now + duration) return;
+        const stop = Math.min(start + preset.noteLength, now + duration);
+        const osc = audioCtx!.createOscillator();
+        const gain = audioCtx!.createGain();
+        osc.type = preset.tone;
+        osc.frequency.setValueAtTime(frequency, start);
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.linearRampToValueAtTime(Math.max(0.005, settings.volume) * (settings.gradualVolume ? 0.45 : 1), start + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.0001, stop);
+        osc.connect(gain);
+        gain.connect(audioCtx!.destination);
+        activeOscillators.add(osc);
+        osc.onended = () => activeOscillators.delete(osc);
+        osc.start(start);
+        osc.stop(stop);
+      });
     }
-    
-    if (settings.gradualVolume) {
-      gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
-      gain.gain.linearRampToValueAtTime(settings.volume, audioCtx.currentTime + (duration / 2));
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-    } else {
-      gain.gain.setValueAtTime(settings.volume, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-    }
-
-    osc.start();
-    osc.stop(audioCtx.currentTime + duration);
   } catch (e) {
     console.warn("AudioContext not supported or blocked");
   }
 };
 
 export const sendNotification = (title: string, body: string, vibrate: boolean) => {
-  if (Notification.permission === "granted") {
+  if (typeof Notification !== 'undefined' && Notification.permission === "granted") {
     try {
       if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         navigator.serviceWorker.ready.then(registration => {

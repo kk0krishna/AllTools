@@ -33,5 +33,7 @@ export interface UserSettings {
   snoozeDuration: number;
   timeFormat: '12h' | '24h';
   gradualVolume: boolean;
+  /** Show a focused, full-viewport in-app alert when this routine is due. */
+  fullScreenAlert?: boolean;
   theme: 'system' | 'light' | 'dark';
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +12,7 @@ import {
   Clock, Plus, Trash2, CalendarDays, CheckCircle2, Play, Bell, Settings2, 
   RotateCcw, Ban, LayoutDashboard, History, Zap, ShieldAlert, Download, Upload, LineChart, Moon, Sun, Edit3, PlayCircle
 } from "lucide-react";
-import { PRESETS, DAYS_OF_WEEK, CATEGORIES, formatCountdown, getNextOccurrences, initAudio, playNotificationSound, formatInterval } from "./utils";
+import { PRESETS, DAYS_OF_WEEK, CATEGORIES, formatCountdown, getNextOccurrences, initAudio, playNotificationSound, stopNotificationSound, formatInterval } from "./utils";
 import { useTempoRoutines } from "./hooks";
 import { Routine } from "./types";
 
@@ -75,6 +75,8 @@ export function TempoRoutine() {
   }>({ isOpen: false, action: 'done' });
   const [actionNote, setActionNote] = useState("");
   const [completionMessage, setCompletionMessage] = useState("");
+  const [isBrowserFullscreen, setIsBrowserFullscreen] = useState(false);
+  const alertDoneRef = useRef<HTMLButtonElement>(null);
 
   const todayProgress = useMemo(() => {
     const start = new Date(currentTime);
@@ -111,6 +113,9 @@ export function TempoRoutine() {
     }
     return times;
   }, [startTime, endTime, intervalMinutes]);
+  const immersiveRoutine = activeRoutine && !isGloballyPaused && routines.find((routine) => routine.id === activeRoutine.routineId)?.settings?.fullScreenAlert
+    ? activeRoutine
+    : null;
 
   // Theme effect
   useEffect(() => {
@@ -120,6 +125,16 @@ export function TempoRoutine() {
       else document.documentElement.classList.remove('dark');
     }
   }, [settings?.theme, isClient]);
+
+  useEffect(() => {
+    const onFullscreenChange = () => setIsBrowserFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', onFullscreenChange);
+  }, []);
+
+  useEffect(() => {
+    if (immersiveRoutine) alertDoneRef.current?.focus({ preventScroll: true });
+  }, [immersiveRoutine?.routineId, immersiveRoutine?.time.getTime()]);
 
   const toggleDay = (d: number) => {
     if (days.includes(d)) {
@@ -187,7 +202,7 @@ export function TempoRoutine() {
   
   const handleTestSound = () => {
     initAudio();
-    playNotificationSound({ ...settings, ...routineSettings });
+    playNotificationSound({ ...settings, ...routineSettings, alarmDuration: 3 });
   };
   
   const handleEditBtnClick = (r: Routine) => {
@@ -209,6 +224,9 @@ export function TempoRoutine() {
   };
 
   const completeOccurrence = (id: string, time: Date, action: 'done' | 'snooze' | 'skip') => {
+    stopNotificationSound();
+    if ('vibrate' in navigator) navigator.vibrate(0);
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => undefined);
     handleAction(id, action, time, actionNote.trim() || undefined);
     setActionNote("");
     if (action === 'done') {
@@ -232,7 +250,7 @@ export function TempoRoutine() {
       </div>
 
       {/* Tabs */}
-      <div className="sticky top-0 z-30 flex flex-nowrap justify-start sm:justify-center overflow-x-auto bg-background/90 backdrop-blur-md p-1 md:p-1.5 rounded-none sm:rounded-2xl md:rounded-full w-full sm:w-max mx-auto border-y sm:border border-border gap-1 md:gap-0 [scrollbar-width:none]">
+      <div className="sticky top-0 z-30 hidden sm:flex flex-nowrap justify-center overflow-x-auto bg-background/90 backdrop-blur-md p-1 md:p-1.5 rounded-2xl md:rounded-full w-max mx-auto border border-border gap-1 md:gap-0 [scrollbar-width:none]">
         <Button 
           variant={activeTab === 'dashboard' ? 'default' : 'ghost'} 
           className="rounded-xl md:rounded-full px-3 md:px-6 transition-all text-xs md:text-sm flex-1 sm:flex-none min-w-fit h-11"
@@ -263,16 +281,27 @@ export function TempoRoutine() {
         </Button>
       </div>
 
+      <nav aria-label="Main navigation" className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-4 border-t border-border bg-background/95 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] shadow-[0_-8px_24px_rgba(0,0,0,0.08)] backdrop-blur-xl sm:hidden">
+        {([
+          { id: 'dashboard', label: 'Today', icon: LayoutDashboard },
+          { id: 'routines', label: 'Routines', icon: Settings2 },
+          { id: 'history', label: 'History', icon: History },
+          { id: 'settings', label: 'Settings', icon: Settings2 },
+        ] as const).map(({ id, label, icon: Icon }) => (
+          <button key={id} type="button" onClick={() => handleTabChange(id)} aria-current={activeTab === id ? 'page' : undefined} className={`min-h-12 flex flex-col items-center justify-center gap-1 rounded-xl text-[10px] font-medium transition-colors ${activeTab === id ? 'text-primary' : 'text-muted-foreground'}`}>
+            <Icon className={`h-5 w-5 ${activeTab === id ? 'stroke-[2.5]' : ''}`} />{label}
+          </button>
+        ))}
+      </nav>
+
       {permission !== 'granted' && (
-        <Card className="bg-yellow-500/10 border-yellow-500/50 mb-6">
+        <Card className="mx-3 sm:mx-0 bg-yellow-500/10 border-yellow-500/50 mb-6 rounded-2xl">
           <CardContent className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-500">
               <ShieldAlert className="w-5 h-5 shrink-0" />
-              <p className="text-sm font-medium">Please enable notifications to run routines in the background.</p>
+              <p className="text-sm font-medium">{permission === 'denied' ? 'Notifications are blocked for this site. Change site permissions in your browser to receive them.' : 'Allow notifications for a heads-up when a reminder is due.'}</p>
             </div>
-            <Button size="sm" variant="outline" className="border-yellow-500/50 hover:bg-yellow-500/20" onClick={requestPermission}>
-              Enable Notifications
-            </Button>
+            {permission !== 'denied' && 'Notification' in window && <Button size="sm" variant="outline" className="w-full sm:w-auto min-h-10 border-yellow-500/50 hover:bg-yellow-500/20" onClick={requestPermission}>Enable notifications</Button>}
           </CardContent>
         </Card>
       )}
@@ -320,25 +349,25 @@ export function TempoRoutine() {
 
             <Card className="mx-4 sm:mx-0 border border-primary/10 shadow-lg bg-gradient-to-br from-primary/10 via-background to-background overflow-hidden relative rounded-3xl">
               <div className="absolute top-0 left-0 w-1.5 h-full bg-primary" />
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl font-bold">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 sm:p-6">
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-2xl font-bold">
                   <Bell className="w-5 h-5 text-primary" />
                   {activeRoutine ? 'A moment for you' : 'Coming up'}
                 </CardTitle>
                 <div className="flex gap-2">
                   {nextOccurrences.some(o => o.time.getTime() < currentTime.getTime()) && (
-                    <Button variant="destructive" size="sm" onClick={dismissOverdue} className="shadow-sm">
-                      Dismiss Overdue
+                    <Button variant="destructive" size="sm" onClick={dismissOverdue} className="min-h-10 flex-1 sm:flex-none shadow-sm">
+                      <span className="sm:hidden">Dismiss missed</span><span className="hidden sm:inline">Dismiss Overdue</span>
                     </Button>
                   )}
                   {!isGloballyPaused && (
-                    <Button variant="ghost" size="sm" onClick={() => pauseAll(1)} className="text-muted-foreground hover:text-primary" title="Pause notifications for 1 hour">
-                      <Moon className="w-4 h-4 mr-2" /> Pause 1h
+                    <Button variant="ghost" size="sm" onClick={() => pauseAll(1)} className="min-h-10 flex-1 sm:flex-none text-muted-foreground hover:text-primary" title="Pause reminders for 1 hour">
+                      <Moon className="w-4 h-4 mr-1.5" /> Pause 1h
                     </Button>
                   )}
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6">
                 <AnimatePresence mode="wait">
                   {activeRoutine ? (
                     <motion.div 
@@ -507,7 +536,7 @@ export function TempoRoutine() {
                         ))}
                       </div>
                     </CardHeader>
-                    <CardContent className="space-y-4 md:space-y-6 relative z-10">
+                    <CardContent className="p-4 sm:p-6 space-y-4 md:space-y-6 relative z-10">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                         <div className="space-y-3">
                           <Label htmlFor="routine-name" className="text-base">What do you need to remember?</Label>
@@ -613,37 +642,45 @@ export function TempoRoutine() {
                       </div>
                       
                       <div className="space-y-3 pt-4 border-t border-border/50">
+                        <div className="flex items-center justify-between gap-4 rounded-2xl border border-primary/15 bg-primary/5 p-4">
+                          <div className="min-w-0"><Label htmlFor="full-screen-alert" className="text-sm font-semibold">Full-screen alert</Label><p className="text-xs text-muted-foreground mt-1">Bring Tempo to the front with a focused alert while this page is open.</p></div>
+                          <Switch id="full-screen-alert" checked={Boolean(routineSettings.fullScreenAlert)} onCheckedChange={(checked) => setRoutineSettings({ ...routineSettings, fullScreenAlert: checked })} aria-label="Show a full-screen alert for this routine" />
+                        </div>
                         <Label className="text-base font-bold flex items-center justify-between">
-                          <span>Alarm Configuration <span className="text-sm font-normal text-muted-foreground">(Overrides global defaults)</span></span>
+                          <span>Sound & alert <span className="block text-xs font-normal text-muted-foreground mt-1">Overrides global defaults. Preview sounds before saving.</span></span>
                         </Label>
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-muted/30 p-4 rounded-xl">
-                          <div className="space-y-2 col-span-2 md:col-span-1">
+                        <div className="grid grid-cols-1 min-[420px]:grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4 bg-muted/30 p-3 sm:p-4 rounded-2xl">
+                          <div className="space-y-2 md:col-span-1">
                             <Label className="text-xs flex items-center justify-between">
-                              <span>Sound</span>
-                              <Button variant="ghost" size="sm" className="h-5 px-1 py-0 text-primary" onClick={handleTestSound} title="Test Sound">
-                                <PlayCircle className="w-3.5 h-3.5" />
+                              <span>In-app sound</span>
+                              <Button type="button" variant="ghost" size="sm" className="h-9 px-2 text-primary" onClick={handleTestSound} title="Preview sound">
+                                <PlayCircle className="w-4 h-4 mr-1" /> Preview
                               </Button>
                             </Label>
-                            <select 
-                              className="w-full bg-background border p-2 rounded-md text-sm"
+                            <select
+                              aria-label="Routine sound"
+                              className="w-full min-w-0 h-11 bg-background border p-2 rounded-xl text-sm"
                               value={routineSettings?.soundPreset || ''}
                               onChange={(e) => setRoutineSettings({...routineSettings, soundPreset: e.target.value as any || undefined})}
                             >
-                              <option value="">Default</option>
-                              <option value="digital">Digital</option>
-                              <option value="chime">Chime</option>
-                              <option value="bells">Bells</option>
-                              <option value="radar">Radar</option>
-                              <option value="soft">Soft</option>
-                              <option value="mp3_harp">Harp (MP3)</option>
-                              <option value="mp3_guitar">Guitar (MP3)</option>
-                              <option value="mp3_synth">Synth (MP3)</option>
+                              <option value="">Use default</option>
+                              <option value="ringtone">Classic ringtone</option>
+                              <option value="chime">Bright chime</option>
+                              <option value="bells">Soft bells</option>
+                              <option value="digital">Digital pulse</option>
+                              <option value="radar">Repeating pulse</option>
+                              <option value="rising">Rising tones</option>
+                              <option value="music">Light melody</option>
+                              <option value="soft">Gentle tone</option>
+                              <option value="silent">Silent</option>
                             </select>
+                            <p className="text-[11px] text-muted-foreground">Sound plays while Tempo is open. System notification sound is controlled by your device.</p>
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-xs">Vibrate</Label>
+                            <Label htmlFor="vibrate-setting" className="text-xs">Vibration</Label>
                             <select 
-                              className="w-full bg-background border p-2 rounded-md text-sm"
+                              id="vibrate-setting"
+                              className="w-full min-w-0 h-11 bg-background border p-2 rounded-xl text-sm"
                               value={routineSettings?.vibrate === undefined ? '' : routineSettings.vibrate.toString()}
                               onChange={(e) => {
                                 const val = e.target.value;
@@ -656,8 +693,9 @@ export function TempoRoutine() {
                             </select>
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-xs">Volume ({routineSettings?.volume !== undefined ? Math.round(routineSettings.volume * 100) : Math.round(settings.volume * 100)}%)</Label>
+                            <Label htmlFor="routine-volume" className="text-xs">Volume · {routineSettings?.volume !== undefined ? Math.round(routineSettings.volume * 100) : Math.round(settings.volume * 100)}%</Label>
                             <Input 
+                              id="routine-volume"
                               type="range" min="0" max="1" step="0.1" 
                               value={routineSettings?.volume !== undefined ? routineSettings.volume : settings.volume}
                               onChange={(e) => setRoutineSettings({...routineSettings, volume: parseFloat(e.target.value)})}
@@ -665,7 +703,7 @@ export function TempoRoutine() {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-xs">Ring Duration</Label>
+                            <Label className="text-xs">Sound length</Label>
                             <div className="flex gap-1 items-center bg-background border rounded-md p-1 h-[38px]">
                               <Input 
                                 type="number" min="0" placeholder="M"
@@ -682,7 +720,7 @@ export function TempoRoutine() {
                             </div>
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-xs">Snooze</Label>
+                            <Label className="text-xs">Snooze length</Label>
                             <div className="flex gap-1 items-center bg-background border rounded-md p-1 h-[38px]">
                               <Input 
                                 type="number" min="0" placeholder="H"
@@ -903,9 +941,13 @@ export function TempoRoutine() {
               <h2 className="text-xl md:text-2xl font-bold">Preferences</h2>
             </div>
             <Card className="border-border shadow-sm">
-              <CardContent className="p-6 space-y-6">
+              <CardContent className="p-4 sm:p-6 space-y-6">
                 <div className="space-y-4">
                   <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider border-b pb-2">Timing & Display</h3>
+                  <div className="rounded-2xl border border-primary/15 bg-primary/5 p-4">
+                    <p className="text-sm font-semibold">Sound and alert behavior</p>
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Tempo can play a previewed tone and vibrate while the page is active. Notifications use your device’s notification sound. Browsers may pause alarms when the page is closed or suspended.</p>
+                  </div>
                   
                   <div className="flex items-center justify-between">
                     <div>
@@ -950,6 +992,34 @@ export function TempoRoutine() {
           </motion.section>
         )}
 
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {immersiveRoutine && (
+          <motion.div role="alertdialog" aria-modal="true" aria-labelledby="immersive-routine-name" aria-describedby="immersive-routine-time" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] min-h-[100dvh] overflow-y-auto bg-slate-950 text-white">
+            <div className="mx-auto flex min-h-[100dvh] w-full max-w-xl flex-col justify-between px-5 pt-[max(env(safe-area-inset-top),1.5rem)] pb-[max(env(safe-area-inset-bottom),1.5rem)] sm:px-8">
+              <div className="flex items-center justify-between gap-4"><span className="rounded-full border border-white/20 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/65">Tempo · Reminder</span>
+                {typeof document !== 'undefined' && document.fullscreenEnabled && <Button type="button" variant="ghost" className="min-h-10 rounded-full text-white hover:bg-white/10 hover:text-white" onClick={async () => { try { if (isBrowserFullscreen) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); } catch { /* Fullscreen can be blocked by browser policy. The in-page alert stays visible. */ } }}><LayoutDashboard className="mr-2 h-4 w-4"/>{isBrowserFullscreen ? 'Exit full screen' : 'Expand screen'}</Button>}
+              </div>
+              <div className="py-10 text-center">
+                <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15"><Bell className="h-9 w-9"/></div>
+                {immersiveRoutine.snoozed && <Badge variant="secondary" className="mb-4 rounded-full">Snoozed reminder</Badge>}
+                <p id="immersive-routine-time" className="text-xs font-semibold uppercase tracking-[0.22em] text-white/55">It’s time</p>
+                <p className="mt-3 font-mono text-4xl font-semibold tracking-tight sm:text-5xl">{immersiveRoutine.time.toLocaleTimeString([], { hour12: settings.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })}</p>
+                <h2 id="immersive-routine-name" className="mt-5 break-words text-3xl font-bold leading-tight sm:text-5xl">{immersiveRoutine.routineName}</h2>
+                <p className="mx-auto mt-4 max-w-sm text-base leading-relaxed text-white/65">Take a moment for this. You can mark it done, snooze, or skip this time.</p>
+              </div>
+              <div className="space-y-3">
+                <Button ref={alertDoneRef} type="button" size="lg" className="h-14 w-full rounded-2xl bg-white text-base font-bold text-slate-950 hover:bg-white/90" onClick={() => completeOccurrence(immersiveRoutine.routineId, immersiveRoutine.time, 'done')}><CheckCircle2 className="mr-2 h-5 w-5"/> Done</Button>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button type="button" variant="outline" className="h-12 rounded-2xl border-white/20 bg-white/5 text-white hover:bg-white/10 hover:text-white" onClick={() => completeOccurrence(immersiveRoutine.routineId, immersiveRoutine.time, 'snooze')}><Clock className="mr-2 h-4 w-4"/> {settings.snoozeDuration}m</Button>
+                  <Button type="button" variant="ghost" className="h-12 rounded-2xl text-white/70 hover:bg-white/10 hover:text-white" onClick={() => completeOccurrence(immersiveRoutine.routineId, immersiveRoutine.time, 'skip')}><Ban className="mr-2 h-4 w-4"/> Skip</Button>
+                </div>
+                <p className="pb-1 text-center text-[11px] text-white/40">This alert stays in Tempo. Notification delivery depends on browser and device settings.</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       <AnimatePresence>

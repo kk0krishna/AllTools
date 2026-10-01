@@ -23,9 +23,12 @@ export function useTempoRoutines() {
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
 
   const requestPermission = async () => {
-    if ('Notification' in window) {
+    if (typeof window === 'undefined' || !('Notification' in window)) return;
+    try {
       const perm = await Notification.requestPermission();
       setPermission(perm);
+    } catch (error) {
+      console.warn('Notification permission request was not available', error);
     }
   };
 
@@ -156,11 +159,12 @@ export function useTempoRoutines() {
         const rSettings = r ? { ...settings, ...r.settings } : settings;
         
         playNotificationSound(rSettings);
+        if (rSettings.vibrate && 'vibrate' in navigator) navigator.vibrate([250, 100, 250, 100, 350]);
         sendNotification("Tempo Routine", `Time for: ${activeRoutine.routineName}`, rSettings.vibrate);
         setLastNotifiedId(occurrenceId);
       }
     }
-  }, [activeRoutine, lastNotifiedId, isGloballyPaused]);
+  }, [activeRoutine, lastNotifiedId, isGloballyPaused, routines, settings]);
 
   const allHistory = useMemo(() => {
     return routines.flatMap(r => r.events.map(e => ({ ...e, routineName: r.name, routineId: r.id })))
