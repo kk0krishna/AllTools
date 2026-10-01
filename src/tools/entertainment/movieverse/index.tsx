@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect } from "react";
 import { ToolComponentProps } from "../../registry";
 import Image from "next/image";

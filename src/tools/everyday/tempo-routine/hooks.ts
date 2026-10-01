@@ -1,0 +1,179 @@
+import { useState, useEffect, useMemo } from "react";
+import { Routine, RoutineEvent, Occurrence } from "./types";
+import { getNextOccurrences, playNotificationSound, sendNotification } from "./utils";
+
+export function useTempoRoutines() {
+  const [routines, setRoutines] = useState<Routine[]>([]);
+  const [isClient, setIsClient] = useState(false);
+  const [permission, setPermission] = useState<NotificationPermission>('default');
+  const [lastNotifiedId, setLastNotifiedId] = useState<string | null>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [globalPauseUntil, setGlobalPauseUntil] = useState<number | null>(null);
+
+  const requestPermission = async () => {
+    if ('Notification' in window) {
+      const perm = await Notification.requestPermission();
+      setPermission(perm);
+    }
+  };
+
+  useEffect(() => {
+    setIsClient(true);
+    const saved = localStorage.getItem("tempo_routines");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setRoutines(parsed.routines || []);
+        if (parsed.globalPauseUntil && parsed.globalPauseUntil > Date.now()) {
+          setGlobalPauseUntil(parsed.globalPauseUntil);
+        }
+      } catch (e) {
+        console.error("Failed to parse saved routines", e);
+      }
+    }
+    
+    if ('Notification' in window) {
+      setPermission(Notification.permission);
+    }
+    
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 10000);
+    
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (isClient) {
+      localStorage.setItem("tempo_routines", JSON.stringify({
+        routines,
+        globalPauseUntil
+      }));
+    }
+  }, [routines, globalPauseUntil, isClient]);
+
+  const pauseAll = (hours: number) => {
+    setGlobalPauseUntil(currentTime.getTime() + hours * 3600000);
+  };
+
+  const resumeAll = () => {
+    setGlobalPauseUntil(null);
+  };
+
+  const addRoutine = (routine: Routine) => {
+    setRoutines([...routines, routine]);
+  };
+
+  const toggleRoutine = (id: string) => {
+    setRoutines(routines.map(r => r.id === id ? { ...r, enabled: !r.enabled } : r));
+  };
+  
+  const deleteRoutine = (id: string) => {
+    setRoutines(routines.filter(r => r.id !== id));
+  };
+
+  const handleAction = (routineId: string, action: 'done' | 'snooze' | 'skip', time: Date) => {
+    setRoutines(routines.map(r => {
+      if (r.id !== routineId) return r;
+      const newEvent: RoutineEvent = {
+        time: time.getTime(),
+        action,
+        snoozeUntil: action === 'snooze' ? currentTime.getTime() + 10 * 60000 : undefined
+      };
+      const newEvents = [...r.events, newEvent].slice(-100);
+      return { ...r, events: newEvents };
+    }));
+  };
+
+  const exportData = () => {
+    const dataStr = JSON.stringify(routines, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `tempo-backup-${new Date().toISOString().slice(0,10)}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importData = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const imported = JSON.parse(e.target?.result as string);
+        if (Array.isArray(imported)) {
+          setRoutines(imported);
+        }
+      } catch (err) {
+        alert("Invalid backup file");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const nextOccurrences = useMemo(() => {
+    const all: Occurrence[] = [];
+    routines.forEach(r => {
+      all.push(...getNextOccurrences(r, currentTime, 3));
+    });
+    return all.sort((a, b) => a.time.getTime() - b.time.getTime()).slice(0, 5);
+  }, [routines, currentTime]);
+
+  const activeRoutine = nextOccurrences.length > 0 && nextOccurrences[0].time.getTime() - currentTime.getTime() < 5 * 60000 
+    ? nextOccurrences[0] 
+    : null;
+
+  const isGloballyPaused = globalPauseUntil !== null && globalPauseUntil > currentTime.getTime();
+
+  useEffect(() => {
+    if (activeRoutine && !isGloballyPaused) {
+      const occurrenceId = `${activeRoutine.routineId}-${activeRoutine.time.getTime()}`;
+      if (lastNotifiedId !== occurrenceId) {
+        playNotificationSound();
+        sendNotification("Tempo Routine", `Time for: ${activeRoutine.routineName}`);
+        setLastNotifiedId(occurrenceId);
+      }
+    }
+  }, [activeRoutine, lastNotifiedId, isGloballyPaused]);
+
+  const allHistory = useMemo(() => {
+    return routines.flatMap(r => r.events.map(e => ({ ...e, routineName: r.name, routineId: r.id })))
+      .sort((a, b) => b.time - a.time);
+  }, [routines]);
+
+  const stats = useMemo(() => {
+    let done = 0;
+    let snoozed = 0;
+    let skipped = 0;
+    allHistory.forEach(h => {
+      if (h.action === 'done') done++;
+      if (h.action === 'snooze') snoozed++;
+      if (h.action === 'skip') skipped++;
+    });
+    const total = done + skipped; // Snoozes don't end the task cycle
+    const completionRate = total > 0 ? Math.round((done / total) * 100) : 0;
+    return { done, snoozed, skipped, completionRate, total };
+  }, [allHistory]);
+
+  return {
+    routines,
+    isClient,
+    currentTime,
+    permission,
+    requestPermission,
+    addRoutine,
+    toggleRoutine,
+    deleteRoutine,
+    handleAction,
+    nextOccurrences,
+    activeRoutine,
+    allHistory,
+    stats,
+    isGloballyPaused,
+    globalPauseUntil,
+    pauseAll,
+    resumeAll,
+    exportData,
+    importData,
+  };
+}
