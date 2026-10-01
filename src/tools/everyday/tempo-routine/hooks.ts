@@ -1,6 +1,17 @@
 import { useState, useEffect, useMemo } from "react";
-import { Routine, RoutineEvent, Occurrence } from "./types";
+import { Routine, RoutineEvent, Occurrence, UserSettings } from "./types";
 import { getNextOccurrences, playNotificationSound, sendNotification } from "./utils";
+
+const defaultSettings: UserSettings = {
+  volume: 1,
+  vibrate: true,
+  soundPreset: 'digital',
+  alarmDuration: 30, // seconds
+  snoozeDuration: 15, // minutes
+  timeFormat: '12h',
+  gradualVolume: false,
+  theme: 'system'
+};
 
 export function useTempoRoutines() {
   const [routines, setRoutines] = useState<Routine[]>([]);
@@ -9,6 +20,7 @@ export function useTempoRoutines() {
   const [lastNotifiedId, setLastNotifiedId] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [globalPauseUntil, setGlobalPauseUntil] = useState<number | null>(null);
+  const [settings, setSettings] = useState<UserSettings>(defaultSettings);
 
   const requestPermission = async () => {
     if ('Notification' in window) {
@@ -26,6 +38,9 @@ export function useTempoRoutines() {
         setRoutines(parsed.routines || []);
         if (parsed.globalPauseUntil && parsed.globalPauseUntil > Date.now()) {
           setGlobalPauseUntil(parsed.globalPauseUntil);
+        }
+        if (parsed.settings) {
+          setSettings({ ...defaultSettings, ...parsed.settings });
         }
       } catch (e) {
         console.error("Failed to parse saved routines", e);
@@ -47,10 +62,11 @@ export function useTempoRoutines() {
     if (isClient) {
       localStorage.setItem("tempo_routines", JSON.stringify({
         routines,
-        globalPauseUntil
+        globalPauseUntil,
+        settings
       }));
     }
-  }, [routines, globalPauseUntil, isClient]);
+  }, [routines, globalPauseUntil, settings, isClient]);
 
   const pauseAll = (hours: number) => {
     setGlobalPauseUntil(currentTime.getTime() + hours * 3600000);
@@ -78,7 +94,7 @@ export function useTempoRoutines() {
       const newEvent: RoutineEvent = {
         time: time.getTime(),
         action,
-        snoozeUntil: action === 'snooze' ? currentTime.getTime() + 10 * 60000 : undefined
+        snoozeUntil: action === 'snooze' ? currentTime.getTime() + settings.snoozeDuration * 60000 : undefined
       };
       const newEvents = [...r.events, newEvent].slice(-100);
       return { ...r, events: newEvents };
@@ -129,8 +145,8 @@ export function useTempoRoutines() {
     if (activeRoutine && !isGloballyPaused) {
       const occurrenceId = `${activeRoutine.routineId}-${activeRoutine.time.getTime()}`;
       if (lastNotifiedId !== occurrenceId) {
-        playNotificationSound();
-        sendNotification("Tempo Routine", `Time for: ${activeRoutine.routineName}`);
+        playNotificationSound(settings);
+        sendNotification("Tempo Routine", `Time for: ${activeRoutine.routineName}`, settings.vibrate);
         setLastNotifiedId(occurrenceId);
       }
     }
@@ -175,5 +191,7 @@ export function useTempoRoutines() {
     resumeAll,
     exportData,
     importData,
+    settings,
+    setSettings,
   };
 }

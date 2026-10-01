@@ -38,9 +38,11 @@ export function TempoRoutine() {
     resumeAll,
     exportData,
     importData,
+    settings,
+    setSettings,
   } = useTempoRoutines();
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'routines' | 'history'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'routines' | 'history' | 'settings'>('dashboard');
   
   // Form State
   const [name, setName] = useState("");
@@ -79,7 +81,7 @@ export function TempoRoutine() {
     setActiveTab('routines');
   };
 
-  const handleTabChange = (tab: 'dashboard' | 'routines' | 'history') => {
+  const handleTabChange = (tab: 'dashboard' | 'routines' | 'history' | 'settings') => {
     initAudio();
     setActiveTab(tab);
   };
@@ -136,6 +138,13 @@ export function TempoRoutine() {
         >
           <History className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" /> History
         </Button>
+        <Button 
+          variant={activeTab === 'settings' ? 'default' : 'ghost'} 
+          className="rounded-xl md:rounded-full px-3 md:px-6 transition-all text-xs md:text-sm flex-1 sm:flex-none" 
+          onClick={() => handleTabChange('settings')}
+        >
+          <Settings2 className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" /> Settings
+        </Button>
       </div>
 
       {permission !== 'granted' && (
@@ -168,7 +177,7 @@ export function TempoRoutine() {
                 <CardContent className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-3 text-primary">
                     <Moon className="w-5 h-5 shrink-0" />
-                    <p className="text-sm font-medium">All routines are paused until {new Date(globalPauseUntil!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.</p>
+                    <p className="text-sm font-medium">All routines are paused until {new Date(globalPauseUntil!).toLocaleTimeString([], { hour12: settings.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })}.</p>
                   </div>
                   <Button size="sm" variant="outline" className="border-primary hover:bg-primary hover:text-primary-foreground transition-colors" onClick={resumeAll}>
                     <Sun className="w-4 h-4 mr-2" /> Resume Now
@@ -205,7 +214,7 @@ export function TempoRoutine() {
                         <h3 className="text-2xl md:text-3xl font-black break-words">{activeRoutine.routineName}</h3>
                         <p className="opacity-90 flex items-center justify-center md:justify-start gap-2 text-sm md:text-base">
                           <Clock className="w-4 h-4" />
-                          Scheduled at {activeRoutine.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          Scheduled at {activeRoutine.time.toLocaleTimeString([], { hour12: settings.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
                       <div className="flex flex-col sm:flex-row justify-center gap-3 w-full md:w-auto mt-4 md:mt-0">
@@ -239,7 +248,7 @@ export function TempoRoutine() {
                       </div>
                       <div className="text-center sm:text-right">
                         <p className="text-3xl font-black text-primary">
-                          {nextOccurrences[0].time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {nextOccurrences[0].time.toLocaleTimeString([], { hour12: settings.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })}
                         </p>
                         <p className="text-sm font-medium text-muted-foreground bg-muted inline-block px-2 py-1 rounded-md mt-1">
                           {formatCountdown(nextOccurrences[0].time, currentTime)}
@@ -274,7 +283,7 @@ export function TempoRoutine() {
                         {occ.snoozed && <Badge variant="outline" className="text-[10px]">Snoozed</Badge>}
                       </div>
                       <div className="text-right">
-                        <span className="font-mono">{occ.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        <span className="font-mono">{occ.time.toLocaleTimeString([], { hour12: settings.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })}</span>
                       </div>
                     </div>
                   ))}
@@ -480,7 +489,7 @@ export function TempoRoutine() {
                         <div className="flex justify-between items-center mt-auto">
                           <Badge variant={routine.enabled ? "default" : "secondary"} className="text-xs px-3 py-1 shadow-sm">
                             {routine.enabled && getNextOccurrences(routine, currentTime, 1).length > 0 
-                              ? `Next: ${getNextOccurrences(routine, currentTime, 1)[0].time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                              ? `Next: ${getNextOccurrences(routine, currentTime, 1)[0].time.toLocaleTimeString([], { hour12: settings.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })}`
                               : 'Inactive'}
                           </Badge>
                           <Button variant="ghost" size="icon" onClick={() => deleteRoutine(routine.id)} className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-full h-9 w-9">
@@ -579,7 +588,7 @@ export function TempoRoutine() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-mono text-sm">{new Date(entry.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                          <p className="font-mono text-sm">{new Date(entry.time).toLocaleTimeString([], { hour12: settings.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })}</p>
                           <p className="text-xs text-muted-foreground">{new Date(entry.time).toLocaleDateString()}</p>
                         </div>
                       </div>
@@ -592,6 +601,135 @@ export function TempoRoutine() {
                     <p className="text-sm">Complete, snooze, or skip routines to see them here.</p>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </motion.section>
+        )}
+
+        {/* SETTINGS TAB */}
+        {activeTab === 'settings' && (
+          <motion.section
+            key="settings"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-6"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <Settings2 className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+              <h2 className="text-xl md:text-2xl font-bold">Preferences</h2>
+            </div>
+            <Card className="border-border shadow-sm">
+              <CardContent className="p-6 space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider border-b pb-2">Audio & Alerts</h3>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base font-semibold">Alarm Sound</Label>
+                      <p className="text-sm text-muted-foreground">Select the alert tone</p>
+                    </div>
+                    <div className="flex gap-2">
+                      {['digital', 'chime', 'bells'].map((sound) => (
+                        <Badge 
+                          key={sound}
+                          variant={settings.soundPreset === sound ? 'default' : 'outline'}
+                          className="cursor-pointer capitalize px-3 py-1"
+                          onClick={() => setSettings({ ...settings, soundPreset: sound })}
+                        >
+                          {sound}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base font-semibold">Alarm Volume</Label>
+                      <p className="text-sm text-muted-foreground">Alert loudness (0 to 100%)</p>
+                    </div>
+                    <Input 
+                      type="range" 
+                      min="0" max="1" step="0.1" 
+                      value={settings.volume} 
+                      onChange={(e) => setSettings({ ...settings, volume: parseFloat(e.target.value) })}
+                      className="w-32"
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base font-semibold">Gradual Volume Increase</Label>
+                      <p className="text-sm text-muted-foreground">Start soft and get louder</p>
+                    </div>
+                    <Switch 
+                      checked={settings.gradualVolume}
+                      onCheckedChange={(c) => setSettings({ ...settings, gradualVolume: c })}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base font-semibold">Vibration</Label>
+                      <p className="text-sm text-muted-foreground">Vibrate on alert</p>
+                    </div>
+                    <Switch 
+                      checked={settings.vibrate}
+                      onCheckedChange={(c) => setSettings({ ...settings, vibrate: c })}
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-4 pt-4">
+                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider border-b pb-2">Timing & Display</h3>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base font-semibold">Time Format</Label>
+                      <p className="text-sm text-muted-foreground">12-hour or 24-hour clock</p>
+                    </div>
+                    <div className="flex gap-2">
+                      {['12h', '24h'].map((fmt) => (
+                        <Badge 
+                          key={fmt}
+                          variant={settings.timeFormat === fmt ? 'default' : 'outline'}
+                          className="cursor-pointer capitalize px-3 py-1"
+                          onClick={() => setSettings({ ...settings, timeFormat: fmt as '12h' | '24h' })}
+                        >
+                          {fmt}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base font-semibold">Alarm Duration (sec)</Label>
+                      <p className="text-sm text-muted-foreground">How long it rings</p>
+                    </div>
+                    <Input 
+                      type="number" 
+                      min="5" max="300"
+                      value={settings.alarmDuration} 
+                      onChange={(e) => setSettings({ ...settings, alarmDuration: parseInt(e.target.value) || 30 })}
+                      className="w-24 text-right"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base font-semibold">Snooze Duration (min)</Label>
+                      <p className="text-sm text-muted-foreground">Time before next alert</p>
+                    </div>
+                    <Input 
+                      type="number" 
+                      min="1" max="60"
+                      value={settings.snoozeDuration} 
+                      onChange={(e) => setSettings({ ...settings, snoozeDuration: parseInt(e.target.value) || 15 })}
+                      className="w-24 text-right"
+                    />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </motion.section>

@@ -1,4 +1,4 @@
-import { Routine, Occurrence } from "./types";
+import { Routine, Occurrence, UserSettings } from "./types";
 
 export const DAYS_OF_WEEK = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -97,10 +97,10 @@ export const initAudio = () => {
   }
 };
 
-export const playNotificationSound = () => {
+export const playNotificationSound = (settings: UserSettings) => {
   try {
     if (!audioCtx) initAudio();
-    if (!audioCtx) return;
+    if (!audioCtx || settings.volume === 0) return;
     
     // Check if state is suspended (iOS restriction if not resumed on interaction)
     if (audioCtx.state === 'suspended') {
@@ -111,26 +111,44 @@ export const playNotificationSound = () => {
     const gain = audioCtx.createGain();
     osc.connect(gain);
     gain.connect(audioCtx.destination);
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.1);
-    gain.gain.setValueAtTime(1, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+    osc.type = settings.soundPreset === 'bells' ? "square" : (settings.soundPreset === 'chime' ? "triangle" : "sine");
+    
+    const duration = settings.alarmDuration;
+    
+    if (settings.soundPreset === 'digital') {
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.1);
+    } else if (settings.soundPreset === 'chime') {
+      osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+      osc.frequency.linearRampToValueAtTime(400, audioCtx.currentTime + duration);
+    } else {
+      osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
+    }
+    
+    if (settings.gradualVolume) {
+      gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(settings.volume, audioCtx.currentTime + (duration / 2));
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    } else {
+      gain.gain.setValueAtTime(settings.volume, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    }
+
     osc.start();
-    osc.stop(audioCtx.currentTime + 0.5);
+    osc.stop(audioCtx.currentTime + duration);
   } catch (e) {
     console.warn("AudioContext not supported or blocked");
   }
 };
 
-export const sendNotification = (title: string, body: string) => {
+export const sendNotification = (title: string, body: string, vibrate: boolean) => {
   if (Notification.permission === "granted") {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then(registration => {
         registration.showNotification(title, {
           body,
           icon: '/bghome.png',
-          vibrate: [200, 100, 200],
+          vibrate: vibrate ? [200, 100, 200] : undefined,
           tag: 'tempo-routine',
           requireInteraction: true
         } as any);

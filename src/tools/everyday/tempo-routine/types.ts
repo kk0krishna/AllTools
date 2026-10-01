@@ -22,3 +22,14 @@ export interface Occurrence {
   time: Date;
   snoozed?: boolean;
 }
+
+export interface UserSettings {
+  volume: number;
+  vibrate: boolean;
+  soundPreset: string;
+  alarmDuration: number;
+  snoozeDuration: number;
+  timeFormat: '12h' | '24h';
+  gradualVolume: boolean;
+  theme: 'system' | 'light' | 'dark';
+}
