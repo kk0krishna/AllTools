@@ -102,12 +102,32 @@ export const initAudio = () => {
   }
 };
 
+const MP3_URLS: Record<string, string> = {
+  'mp3_harp': 'https://actions.google.com/sounds/v1/alarms/harp_melody.ogg',
+  'mp3_guitar': 'https://actions.google.com/sounds/v1/alarms/acoustic_guitar_melody.ogg',
+  'mp3_synth': 'https://actions.google.com/sounds/v1/alarms/spaceship_alarm.ogg'
+};
+
 export const playNotificationSound = (settings: UserSettings) => {
   try {
-    if (!audioCtx) initAudio();
-    if (!audioCtx || settings.volume === 0) return;
+    if (settings.volume === 0) return;
     
-    // Check if state is suspended (iOS restriction if not resumed on interaction)
+    // Check if it's an MP3 preset
+    if (settings.soundPreset.startsWith('mp3_') && MP3_URLS[settings.soundPreset]) {
+      const audio = new Audio(MP3_URLS[settings.soundPreset]);
+      audio.volume = settings.volume;
+      audio.play().catch(e => console.warn("Audio playback blocked", e));
+      setTimeout(() => {
+        audio.pause();
+        audio.currentTime = 0;
+      }, settings.alarmDuration * 1000);
+      return;
+    }
+
+    // Fallback to oscillator
+    if (!audioCtx) initAudio();
+    if (!audioCtx) return;
+    
     if (audioCtx.state === 'suspended') {
        audioCtx.resume();
     }
@@ -157,18 +177,30 @@ export const playNotificationSound = (settings: UserSettings) => {
 
 export const sendNotification = (title: string, body: string, vibrate: boolean) => {
   if (Notification.permission === "granted") {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then(registration => {
-        registration.showNotification(title, {
-          body,
-          icon: '/bghome.png',
-          vibrate: vibrate ? [200, 100, 200] : undefined,
-          tag: 'tempo-routine',
-          requireInteraction: true
-        } as any);
-      });
-    } else {
-      new Notification(title, { body, icon: '/bghome.png' });
+    try {
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready.then(registration => {
+          registration.showNotification(title, {
+            body,
+            icon: '/bghome.png',
+            vibrate: vibrate ? [200, 100, 200] : undefined,
+            tag: 'tempo-routine',
+            requireInteraction: true
+          } as any).catch(() => {
+            // Fallback if sw fails
+            new Notification(title, { body, icon: '/bghome.png' });
+          });
+        });
+      } else {
+        new Notification(title, { body, icon: '/bghome.png' });
+      }
+    } catch (e) {
+      console.error("Failed to show notification", e);
+      try {
+        new Notification(title, { body, icon: '/bghome.png' });
+      } catch (innerE) {
+        console.error("Fallback notification also failed", innerE);
+      }
     }
   }
 };

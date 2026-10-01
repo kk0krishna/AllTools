@@ -258,37 +258,7 @@ export function TempoRoutine() {
               </CardHeader>
               <CardContent>
                 <AnimatePresence mode="wait">
-                  {activeRoutine ? (
-                    <motion.div 
-                      key="active"
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      className="bg-primary text-primary-foreground p-6 sm:p-8 rounded-2xl shadow-lg flex flex-col md:flex-row items-center justify-between gap-6"
-                    >
-                      <div className="text-center md:text-left space-y-2 w-full md:w-auto">
-                        {activeRoutine.snoozed && <Badge variant="secondary" className="mb-2 text-primary">Snoozed</Badge>}
-                        <h3 className="text-2xl md:text-3xl font-black break-words">{activeRoutine.routineName}</h3>
-                        <p className="opacity-90 flex items-center justify-center md:justify-start gap-2 text-sm md:text-base">
-                          <Clock className="w-4 h-4" />
-                          Scheduled at {activeRoutine.time.toLocaleTimeString([], { hour12: settings.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                      </div>
-                      <div className="flex flex-col justify-center gap-3 w-full md:w-auto mt-4 md:mt-0">
-                        <div className="flex flex-col sm:flex-row gap-2">
-                          <Button size="lg" variant="secondary" className="w-full sm:w-auto font-bold text-lg text-primary hover:text-primary hover:bg-white" onClick={() => handleActionClick(activeRoutine.routineId, 'done', activeRoutine.time)}>
-                            <CheckCircle2 className="w-5 h-5 mr-2" /> Done
-                          </Button>
-                          <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-primary-foreground/30 hover:bg-primary-foreground/10 text-primary-foreground" onClick={() => handleActionClick(activeRoutine.routineId, 'snooze', activeRoutine.time)}>
-                            Snooze
-                          </Button>
-                          <Button size="lg" variant="ghost" className="w-full sm:w-auto hover:bg-primary-foreground/10 text-primary-foreground" onClick={() => handleActionClick(activeRoutine.routineId, 'skip', activeRoutine.time)} title="Skip this occurrence">
-                            <Ban className="w-5 h-5 mr-2 sm:mr-0" /> <span className="sm:hidden">Skip</span>
-                          </Button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ) : nextOccurrences.length > 0 ? (
+                  {nextOccurrences.length > 0 ? (
                     <motion.div 
                       key="upcoming"
                       initial={{ opacity: 0 }}
@@ -508,12 +478,15 @@ export function TempoRoutine() {
                               value={routineSettings?.soundPreset || ''}
                               onChange={(e) => setRoutineSettings({...routineSettings, soundPreset: e.target.value as any || undefined})}
                             >
-                              <option value="">Default (Digital)</option>
+                              <option value="">Default</option>
                               <option value="digital">Digital</option>
                               <option value="chime">Chime</option>
                               <option value="bells">Bells</option>
                               <option value="radar">Radar</option>
                               <option value="soft">Soft</option>
+                              <option value="mp3_harp">Harp (MP3)</option>
+                              <option value="mp3_guitar">Guitar (MP3)</option>
+                              <option value="mp3_synth">Synth (MP3)</option>
                             </select>
                           </div>
                           <div className="space-y-2">
@@ -863,6 +836,59 @@ export function TempoRoutine() {
               </div>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+      {/* FULL-SCREEN ACTIVE ALARM MODAL */}
+      <AnimatePresence>
+        {activeRoutine && !actionDialog.isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: "100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-[100] flex flex-col bg-white overflow-hidden shadow-2xl"
+          >
+            {/* Diagonal background - reference image style */}
+            <div className="absolute inset-0 z-0 bg-[#5D737E]" style={{ clipPath: 'polygon(0 60%, 100% 30%, 100% 100%, 0% 100%)' }} />
+            
+            <div className="relative z-10 flex flex-col h-full p-8 text-center max-w-lg mx-auto w-full">
+              <div className="mt-12 space-y-2">
+                <p className="text-xl font-medium text-[#5D737E]">Current Alarm</p>
+                <p className="text-lg font-bold text-[#5D737E]/80">
+                  {activeRoutine.time.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' })}
+                </p>
+                <h1 className="text-5xl md:text-7xl font-black text-[#5D737E]">
+                  {activeRoutine.time.toLocaleTimeString([], { hour12: settings?.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })}
+                </h1>
+              </div>
+
+              <div className="flex-1 flex items-center justify-center w-full">
+                <motion.div 
+                  animate={{ scale: [1, 1.05, 1], boxShadow: ["0px 10px 30px rgba(0,0,0,0.1)", "0px 20px 40px rgba(0,0,0,0.2)", "0px 10px 30px rgba(0,0,0,0.1)"] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                  className="bg-white/90 backdrop-blur-md px-8 py-8 rounded-2xl shadow-2xl border-b-4 border-[#5D737E]/20 w-full"
+                >
+                  <h2 className="text-2xl md:text-3xl font-bold text-[#5D737E] leading-tight">
+                    {activeRoutine.routineName}
+                  </h2>
+                </motion.div>
+              </div>
+
+              <div className="mb-12 flex flex-col gap-4 w-full">
+                 <div className="grid grid-cols-2 gap-3">
+                    <Button size="lg" className="h-16 text-xl rounded-xl bg-white text-[#5D737E] hover:bg-slate-100 shadow-md font-bold" onClick={() => handleActionClick(activeRoutine.routineId, 'done', activeRoutine.time)}>
+                      <CheckCircle2 className="w-6 h-6 mr-2 text-green-500" /> Done
+                    </Button>
+                    <Button size="lg" variant="outline" className="h-16 text-xl rounded-xl border-white/50 text-white hover:bg-white/10 font-bold backdrop-blur-sm" onClick={() => handleActionClick(activeRoutine.routineId, 'snooze', activeRoutine.time)}>
+                      Snooze
+                    </Button>
+                 </div>
+                 <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10 h-12" onClick={() => handleActionClick(activeRoutine.routineId, 'skip', activeRoutine.time)}>
+                    Skip this occurrence
+                 </Button>
+              </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
