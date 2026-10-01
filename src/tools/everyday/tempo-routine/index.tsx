@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -74,6 +74,43 @@ export function TempoRoutine() {
     time?: Date;
   }>({ isOpen: false, action: 'done' });
   const [actionNote, setActionNote] = useState("");
+  const [completionMessage, setCompletionMessage] = useState("");
+
+  const todayProgress = useMemo(() => {
+    const start = new Date(currentTime);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+    const due = routines.filter((r) => r.enabled && r.intervalMinutes > 0 && r.days.includes(currentTime.getDay())).reduce((sum, r) => {
+      const [sh, sm] = r.startTime.split(":").map(Number);
+      const [eh, em] = r.endTime.split(":").map(Number);
+      const from = sh * 60 + sm;
+      let to = eh * 60 + em;
+      if (to < from) to += 24 * 60;
+      return sum + Math.floor((to - from) / r.intervalMinutes) + 1;
+    }, 0);
+    const done = allHistory.filter((event) => event.action === "done" && event.time >= start.getTime() && event.time < end.getTime()).length;
+    return { due, done: Math.min(done, due), percent: due ? Math.min(100, Math.round((done / due) * 100)) : 0 };
+  }, [routines, currentTime, allHistory]);
+
+  const schedulePreview = useMemo(() => {
+    if (!Number.isFinite(intervalMinutes) || intervalMinutes <= 0) return [];
+    const [sh, sm] = startTime.split(":").map(Number);
+    const [eh, em] = endTime.split(":").map(Number);
+    const from = (sh * 60 + sm) * 60;
+    let to = (eh * 60 + em) * 60;
+    if (to < from) to += 86400;
+    const intervalSeconds = Math.max(1, Math.round(intervalMinutes * 60));
+    const times: string[] = [];
+    for (let second = from; second <= to && times.length < 12; second += intervalSeconds) {
+      const wrapped = second % 86400;
+      const hour = Math.floor(wrapped / 3600);
+      const minute = Math.floor((wrapped % 3600) / 60);
+      const seconds = wrapped % 60;
+      times.push(`${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}${intervalSeconds % 60 ? `:${String(seconds).padStart(2, "0")}` : ""}`);
+    }
+    return times;
+  }, [startTime, endTime, intervalMinutes]);
 
   // Theme effect
   useEffect(() => {
@@ -94,6 +131,7 @@ export function TempoRoutine() {
 
   const handleAddRoutine = () => {
     if (!name.trim()) return;
+    if (!Number.isFinite(intervalMinutes) || intervalMinutes <= 0 || days.length === 0) return;
     
     if (editingId) {
       editRoutine(editingId, { name, category, startTime, endTime, intervalMinutes, days, settings: routineSettings });
@@ -170,49 +208,58 @@ export function TempoRoutine() {
     setActionDialog({ isOpen: true, action, routineId: id, time });
   };
 
+  const completeOccurrence = (id: string, time: Date, action: 'done' | 'snooze' | 'skip') => {
+    handleAction(id, action, time, actionNote.trim() || undefined);
+    setActionNote("");
+    if (action === 'done') {
+      setCompletionMessage("Nice work. You showed up for yourself.");
+      window.setTimeout(() => setCompletionMessage(""), 4200);
+    }
+  };
+
   if (!isClient) return <div className="min-h-[400px] flex items-center justify-center text-primary"><RotateCcw className="w-8 h-8 animate-spin" /></div>;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 md:space-y-8 pb-12 px-2 md:px-0">
+    <div className="max-w-5xl mx-auto space-y-5 md:space-y-8 pb-24 md:pb-12 px-0 sm:px-3">
       
       {/* Header Section */}
-      <div className="text-center space-y-2 mb-4">
-        <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-2">
+      <div className="text-left sm:text-center flex items-center sm:block gap-3 px-4 sm:px-0 pt-2 sm:pt-0">
+        <div className="inline-flex items-center justify-center p-2.5 sm:p-3 bg-primary/10 rounded-2xl sm:rounded-full">
           <Clock className="w-6 h-6 md:w-8 md:h-8 text-primary" />
         </div>
-        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Tempo</h1>
-        <p className="text-muted-foreground text-base md:text-lg">Your smart recurring routine engine</p>
+        <div><h1 className="text-2xl md:text-4xl font-extrabold tracking-tight">Tempo</h1>
+        <p className="text-muted-foreground text-sm md:text-lg">Small reminders. Steadier days.</p></div>
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap sm:flex-nowrap justify-center bg-muted/30 p-1 md:p-1.5 rounded-2xl md:rounded-full w-full sm:w-max mx-auto border border-border gap-1 md:gap-0">
+      <div className="sticky top-0 z-30 flex flex-nowrap justify-start sm:justify-center overflow-x-auto bg-background/90 backdrop-blur-md p-1 md:p-1.5 rounded-none sm:rounded-2xl md:rounded-full w-full sm:w-max mx-auto border-y sm:border border-border gap-1 md:gap-0 [scrollbar-width:none]">
         <Button 
           variant={activeTab === 'dashboard' ? 'default' : 'ghost'} 
-          className="rounded-xl md:rounded-full px-3 md:px-6 transition-all text-xs md:text-sm flex-1 sm:flex-none" 
+          className="rounded-xl md:rounded-full px-3 md:px-6 transition-all text-xs md:text-sm flex-1 sm:flex-none min-w-fit h-11"
           onClick={() => handleTabChange('dashboard')}
         >
-          <LayoutDashboard className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" /> Dashboard
+          <LayoutDashboard className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5" /> Today
         </Button>
         <Button 
           variant={activeTab === 'routines' ? 'default' : 'ghost'} 
-          className="rounded-xl md:rounded-full px-3 md:px-6 transition-all text-xs md:text-sm flex-1 sm:flex-none" 
+          className="rounded-xl md:rounded-full px-3 md:px-6 transition-all text-xs md:text-sm flex-1 sm:flex-none min-w-fit h-11"
           onClick={() => handleTabChange('routines')}
         >
-          <Settings2 className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" /> Routines
+          <Settings2 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5" /> Routines
         </Button>
         <Button 
           variant={activeTab === 'history' ? 'default' : 'ghost'} 
-          className="rounded-xl md:rounded-full px-3 md:px-6 transition-all text-xs md:text-sm flex-1 sm:flex-none" 
+          className="rounded-xl md:rounded-full px-3 md:px-6 transition-all text-xs md:text-sm flex-1 sm:flex-none min-w-fit h-11"
           onClick={() => handleTabChange('history')}
         >
-          <History className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" /> History
+          <History className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5" /> History
         </Button>
         <Button 
           variant={activeTab === 'settings' ? 'default' : 'ghost'} 
-          className="rounded-xl md:rounded-full px-3 md:px-6 transition-all text-xs md:text-sm flex-1 sm:flex-none" 
+          className="rounded-xl md:rounded-full px-3 md:px-6 transition-all text-xs md:text-sm flex-1 sm:flex-none min-w-fit h-11"
           onClick={() => handleTabChange('settings')}
         >
-          <Settings2 className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" /> Settings
+          <Settings2 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5" /> Settings
         </Button>
       </div>
 
@@ -241,6 +288,22 @@ export function TempoRoutine() {
             exit={{ opacity: 0, y: -10 }}
             className="space-y-6"
           >
+            <div className="flex items-end justify-between px-4 sm:px-0">
+              <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+                <h2 className="text-2xl sm:text-3xl font-bold mt-1">Your day, at your pace</h2></div>
+              <Button size="sm" className="rounded-full h-10 px-4" onClick={() => { setActiveTab('routines'); handleAddBtnClick(); }}><Plus className="w-4 h-4 mr-1"/> Add</Button>
+            </div>
+
+            {completionMessage && <div role="status" className="mx-4 sm:mx-0 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-700 dark:text-emerald-300"><CheckCircle2 className="inline w-4 h-4 mr-2"/>{completionMessage}</div>}
+
+            <Card className="mx-4 sm:mx-0 border-border/70 shadow-sm rounded-3xl">
+              <CardContent className="p-5 sm:p-6">
+                <div className="flex justify-between items-end gap-3"><div><p className="text-sm font-medium text-muted-foreground">Today’s rhythm</p><p className="text-2xl font-bold mt-1">{todayProgress.done}<span className="text-muted-foreground text-lg font-medium"> / {todayProgress.due}</span></p></div><p className="text-sm text-muted-foreground">{todayProgress.due ? 'reminders completed' : 'No reminders scheduled today'}</p></div>
+                <div className="mt-4 h-2.5 rounded-full bg-muted overflow-hidden" role="progressbar" aria-label="Today's reminders completed" aria-valuenow={todayProgress.percent} aria-valuemin={0} aria-valuemax={100}><div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${todayProgress.percent}%` }}/></div>
+                <p className="text-xs text-muted-foreground mt-2">{todayProgress.percent === 100 && todayProgress.due ? 'You made space for every reminder today.' : 'Every small action counts. Pick up wherever you are.'}</p>
+              </CardContent>
+            </Card>
+
             {isGloballyPaused && (
               <Card className="bg-primary/10 border-none shadow-sm">
                 <CardContent className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -255,12 +318,12 @@ export function TempoRoutine() {
               </Card>
             )}
 
-            <Card className="border-none shadow-xl bg-gradient-to-br from-primary/10 via-background to-background overflow-hidden relative">
-              <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+            <Card className="mx-4 sm:mx-0 border border-primary/10 shadow-lg bg-gradient-to-br from-primary/10 via-background to-background overflow-hidden relative rounded-3xl">
+              <div className="absolute top-0 left-0 w-1.5 h-full bg-primary" />
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-2xl font-bold">
-                  <Bell className="w-6 h-6 text-primary" />
-                  Up Next
+                <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl font-bold">
+                  <Bell className="w-5 h-5 text-primary" />
+                  {activeRoutine ? 'A moment for you' : 'Coming up'}
                 </CardTitle>
                 <div className="flex gap-2">
                   {nextOccurrences.some(o => o.time.getTime() < currentTime.getTime()) && (
@@ -283,7 +346,7 @@ export function TempoRoutine() {
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className="bg-primary text-primary-foreground p-6 sm:p-8 rounded-2xl shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden"
+                      className="bg-primary text-primary-foreground p-5 sm:p-8 rounded-2xl shadow-lg flex flex-col md:flex-row items-center justify-between gap-5 relative overflow-hidden"
                     >
                       {/* Subtly pulsating background for active alarm */}
                       <motion.div 
@@ -294,7 +357,7 @@ export function TempoRoutine() {
                       
                       <div className="relative z-10 text-center md:text-left space-y-2 w-full md:w-auto flex-1">
                         {activeRoutine.snoozed && <Badge variant="secondary" className="mb-2 text-primary font-bold">Snoozed</Badge>}
-                        <h3 className="text-3xl md:text-4xl font-black break-words leading-tight">{activeRoutine.routineName}</h3>
+                        <p className="text-xs uppercase tracking-[0.2em] font-semibold opacity-75">Right now</p><h3 className="text-2xl sm:text-4xl font-black break-words leading-tight">{activeRoutine.routineName}</h3>
                         <p className="opacity-90 flex items-center justify-center md:justify-start gap-2 text-sm md:text-base font-medium">
                           <Clock className="w-4 h-4" />
                           Time for action! ({activeRoutine.time.toLocaleTimeString([], { hour12: settings.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })})
@@ -308,14 +371,14 @@ export function TempoRoutine() {
                           className="w-full bg-white/20 border-white/30 text-white placeholder:text-white/70 h-11 rounded-xl backdrop-blur-md focus-visible:ring-white/50 focus-visible:border-white/50"
                         />
                         <div className="flex flex-col sm:flex-row gap-2 w-full">
-                          <Button size="lg" variant="secondary" className="flex-1 font-bold text-base text-primary hover:text-primary hover:bg-white/90 shadow-md h-12" onClick={() => { handleAction(activeRoutine.routineId, 'done', activeRoutine.time, actionNote.trim() || undefined); setActionNote(""); }}>
+                          <Button size="lg" variant="secondary" className="flex-1 font-bold text-base text-primary hover:text-primary hover:bg-white/90 shadow-md h-12" onClick={() => completeOccurrence(activeRoutine.routineId, activeRoutine.time, 'done')}>
                             <CheckCircle2 className="w-5 h-5 mr-2" /> Done
                           </Button>
-                          <Button size="lg" variant="outline" className="flex-1 bg-transparent border-white/40 hover:bg-white/10 text-white font-bold h-12" onClick={() => { handleAction(activeRoutine.routineId, 'snooze', activeRoutine.time, actionNote.trim() || undefined); setActionNote(""); }}>
-                            Snooze
+                          <Button size="lg" variant="outline" className="flex-1 bg-transparent border-white/40 hover:bg-white/10 text-white font-bold h-12" onClick={() => completeOccurrence(activeRoutine.routineId, activeRoutine.time, 'snooze')}>
+                            Snooze {settings.snoozeDuration}m
                           </Button>
                         </div>
-                        <Button variant="ghost" className="w-full hover:bg-white/10 text-white/80 hover:text-white mt-1" onClick={() => { handleAction(activeRoutine.routineId, 'skip', activeRoutine.time, actionNote.trim() || undefined); setActionNote(""); }} title="Skip this occurrence">
+                        <Button variant="ghost" className="w-full hover:bg-white/10 text-white/80 hover:text-white mt-1" onClick={() => completeOccurrence(activeRoutine.routineId, activeRoutine.time, 'skip')} title="Skip this occurrence">
                           Skip this time
                         </Button>
                       </div>
@@ -326,7 +389,7 @@ export function TempoRoutine() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 bg-card rounded-2xl border border-border shadow-sm"
+                      className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:p-6 bg-card rounded-2xl border border-border shadow-sm"
                     >
                       <div className="flex items-center gap-4">
                         <div className="bg-muted p-4 rounded-full">
@@ -431,12 +494,12 @@ export function TempoRoutine() {
                     <CardHeader>
                       <CardTitle className="text-lg md:text-xl">{editingId ? 'Edit Routine' : 'Create New Routine'}</CardTitle>
                       <CardDescription className="text-xs md:text-sm">Set the rules for your repetitive task or pick a preset.</CardDescription>
-                      <div className="flex flex-wrap gap-2 pt-2">
+                      <div className="flex gap-2 pt-2 overflow-x-auto pb-1 [scrollbar-width:none]">
                         {PRESETS.map((preset, idx) => (
                           <Badge 
                             key={idx} 
                             variant="secondary" 
-                            className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors py-1 px-2 md:py-1.5 md:px-3 text-xs md:text-sm"
+                            className="cursor-pointer shrink-0 hover:bg-primary hover:text-primary-foreground transition-colors py-1.5 px-3 text-xs md:text-sm rounded-full"
                             onClick={() => handleApplyPreset(preset)}
                           >
                             {preset.name}
@@ -453,7 +516,7 @@ export function TempoRoutine() {
                             placeholder="e.g., Drink 200ml Water" 
                             value={name} 
                             onChange={(e) => setName(e.target.value)}
-                            className="text-lg p-6 bg-background/80"
+                            className="text-base sm:text-lg h-12 sm:h-14 bg-background/80 rounded-xl"
                           />
                         </div>
                         <div className="space-y-3">
@@ -521,18 +584,32 @@ export function TempoRoutine() {
 
                       <div className="space-y-3">
                         <Label className="text-base">Repeat Days</Label>
-                        <div className="flex flex-wrap gap-3">
+                        <div className="grid grid-cols-7 gap-2 max-w-md">
                           {DAYS_OF_WEEK.map((day, idx) => (
                             <Button 
                               key={idx}
                               variant={days.includes(idx) ? "default" : "outline"}
-                              className={`w-12 h-12 p-0 rounded-full text-lg transition-colors ${days.includes(idx) ? "font-bold shadow-md" : "text-muted-foreground hover:bg-muted"}`}
+                              aria-label={`Repeat on ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][idx]}`}
+                              aria-pressed={days.includes(idx)}
+                              className={`w-full aspect-square max-w-12 p-0 rounded-full text-base sm:text-lg transition-colors ${days.includes(idx) ? "font-bold shadow-md" : "text-muted-foreground hover:bg-muted"}`}
                               onClick={() => toggleDay(idx)}
                             >
                               {day}
                             </Button>
                           ))}
                         </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2" aria-label="Quick repeat day choices">
+                        <Button type="button" size="sm" variant="outline" className="rounded-full" onClick={() => setDays([0,1,2,3,4,5,6])}>Every day</Button>
+                        <Button type="button" size="sm" variant="outline" className="rounded-full" onClick={() => setDays([1,2,3,4,5])}>Weekdays</Button>
+                        <Button type="button" size="sm" variant="outline" className="rounded-full" onClick={() => setDays([0,6])}>Weekends</Button>
+                      </div>
+
+                      <div className="rounded-2xl border border-primary/15 bg-primary/5 p-4 sm:p-5">
+                        <div className="flex items-start justify-between gap-3"><div><p className="text-sm font-semibold">Your reminder rhythm</p><p className="text-xs text-muted-foreground mt-1">{days.length ? `${days.length === 7 ? 'Every day' : days.length === 5 && [1,2,3,4,5].every(d => days.includes(d)) ? 'Weekdays' : days.map(d => ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d]).join(', ')} · ` : 'Choose at least one day · '}{formatInterval(intervalMinutes)} from {startTime} to {endTime}</p></div><RotateCcw className="w-4 h-4 text-primary shrink-0 mt-0.5"/></div>
+                        {schedulePreview.length ? <div className="flex gap-2 overflow-x-auto mt-4 pb-1 [scrollbar-width:none]">{schedulePreview.map((time, idx) => <div key={`${time}-${idx}`} className="shrink-0 rounded-xl border bg-background px-3 py-2 text-center min-w-[66px]"><p className="text-[10px] uppercase tracking-wider text-muted-foreground">{idx === 0 ? 'First' : idx === schedulePreview.length - 1 ? 'Last' : `#${idx + 1}`}</p><p className="font-mono text-sm font-semibold mt-0.5">{time}</p></div>)}{schedulePreview.length === 12 && <div className="shrink-0 rounded-xl border bg-background px-3 py-2 text-xs text-muted-foreground flex items-center">More times follow</div>}</div> : <p className="text-xs text-destructive mt-3">Choose an interval longer than zero to preview reminders.</p>}
+                        <p className="text-xs text-muted-foreground mt-3">Reminders land on the interval, up to the end time.</p>
                       </div>
                       
                       <div className="space-y-3 pt-4 border-t border-border/50">
@@ -630,7 +707,7 @@ export function TempoRoutine() {
                         </div>
                       </div>
                       
-                      <Button onClick={handleAddRoutine} className="w-full h-14 text-lg font-bold rounded-xl shadow-lg" disabled={!name.trim()}>
+                      <Button onClick={handleAddRoutine} className="w-full h-12 sm:h-14 text-base sm:text-lg font-bold rounded-xl shadow-lg" disabled={!name.trim() || intervalMinutes <= 0 || days.length === 0}>
                         {editingId ? 'Update Routine' : 'Save Routine'}
                       </Button>
                     </CardContent>

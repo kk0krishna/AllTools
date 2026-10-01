@@ -29,7 +29,7 @@ export const formatInterval = (mins: number) => {
 };
 
 export const getNextOccurrences = (routine: Routine, now: Date, limit: number = 5): Occurrence[] => {
-  if (!routine.enabled) return [];
+  if (!routine.enabled || !Number.isFinite(routine.intervalMinutes) || routine.intervalMinutes <= 0) return [];
   
   const occurrences: Occurrence[] = [];
   
@@ -69,12 +69,14 @@ export const getNextOccurrences = (routine: Routine, now: Date, limit: number = 
 
     let nextTime = new Date(start);
     while (nextTime <= end) {
-      if (nextTime > now) {
+      // Keep a due occurrence visible for five minutes so a reminder can
+      // become actionable after its scheduled instant instead of vanishing.
+      if (nextTime > now || now.getTime() - nextTime.getTime() < 5 * 60000) {
         const eventWithinWindow = routine.events.find(
           e => Math.abs(e.time - nextTime.getTime()) < 5 * 60000
         );
 
-        if (!eventWithinWindow || eventWithinWindow.action === 'snooze') {
+        if (!eventWithinWindow) {
           const isDuplicateOfSnooze = activeSnooze && Math.abs(activeSnooze.time - nextTime.getTime()) < 5 * 60000;
           if (!isDuplicateOfSnooze) {
             occurrences.push({
