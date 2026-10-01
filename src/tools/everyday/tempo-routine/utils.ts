@@ -21,6 +21,13 @@ export const parseTime = (timeStr: string): { h: number; m: number } => {
   return { h, m };
 };
 
+export const formatInterval = (mins: number) => {
+  const h = Math.floor(mins / 60);
+  const m = Math.floor(mins % 60);
+  const s = Math.round((mins * 60) % 60);
+  return [h ? `${h}h` : null, m ? `${m}m` : null, s ? `${s}s` : null].filter(Boolean).join(' ') || '0s';
+};
+
 export const getNextOccurrences = (routine: Routine, now: Date, limit: number = 5): Occurrence[] => {
   if (!routine.enabled) return [];
   

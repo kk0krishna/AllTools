@@ -181,6 +181,27 @@ export function useTempoRoutines() {
     return { done, snoozed, skipped, completionRate, total };
   }, [allHistory]);
 
+  const dismissOverdue = () => {
+    // Find all occurrences that are in the past
+    const overdue = nextOccurrences.filter(occ => occ.time.getTime() < currentTime.getTime());
+    if (overdue.length === 0) return;
+    
+    setRoutines(prev => prev.map(r => {
+      const overdueForRoutine = overdue.filter(o => o.routineId === r.id);
+      if (overdueForRoutine.length === 0) return r;
+      
+      const newEvents = [...r.events];
+      overdueForRoutine.forEach(occ => {
+        newEvents.push({
+          time: occ.time.getTime(),
+          action: 'skip',
+          note: 'Auto-dismissed'
+        });
+      });
+      return { ...r, events: newEvents.slice(-100) };
+    }));
+  };
+
   return {
     routines,
     isClient,
@@ -204,5 +225,6 @@ export function useTempoRoutines() {
     importData,
     settings,
     setSettings,
+    dismissOverdue,
   };
 }

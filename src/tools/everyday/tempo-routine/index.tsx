@@ -12,7 +12,7 @@ import {
   Clock, Plus, Trash2, CalendarDays, CheckCircle2, Play, Bell, Settings2, 
   RotateCcw, Ban, LayoutDashboard, History, Zap, ShieldAlert, Download, Upload, LineChart, Moon, Sun, Edit3, PlayCircle
 } from "lucide-react";
-import { PRESETS, DAYS_OF_WEEK, CATEGORIES, formatCountdown, getNextOccurrences, initAudio, playNotificationSound } from "./utils";
+import { PRESETS, DAYS_OF_WEEK, CATEGORIES, formatCountdown, getNextOccurrences, initAudio, playNotificationSound, formatInterval } from "./utils";
 import { useTempoRoutines } from "./hooks";
 import { Routine } from "./types";
 
@@ -40,6 +40,7 @@ export function TempoRoutine() {
     importData,
     settings,
     setSettings,
+    dismissOverdue,
   } = useTempoRoutines();
 
   const [activeTab, setActiveTab] = useState<'dashboard' | 'routines' | 'history' | 'settings'>('dashboard');
@@ -54,6 +55,17 @@ export function TempoRoutine() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [routineSettings, setRoutineSettings] = useState<Partial<Routine['settings']>>({});
+  
+  const intervalHours = Math.floor(intervalMinutes / 60);
+  const intervalMins = Math.floor(intervalMinutes % 60);
+  const intervalSecs = Math.round((intervalMinutes * 60) % 60);
+  const updateInterval = (h: number, m: number, s: number) => setIntervalMinutes(h * 60 + m + s / 60);
+
+  const ringDuration = routineSettings?.alarmDuration !== undefined ? routineSettings.alarmDuration : (settings?.alarmDuration || 5);
+  const updateRing = (h: number, m: number, s: number) => setRoutineSettings({...routineSettings, alarmDuration: h * 3600 + m * 60 + s});
+
+  const snoozeDuration = routineSettings?.snoozeDuration !== undefined ? routineSettings.snoozeDuration : (settings?.snoozeDuration || 10);
+  const updateSnooze = (h: number, m: number, s: number) => setRoutineSettings({...routineSettings, snoozeDuration: h * 60 + m + s / 60});
   
   const [actionDialog, setActionDialog] = useState<{
     isOpen: boolean;
@@ -250,15 +262,65 @@ export function TempoRoutine() {
                   <Bell className="w-6 h-6 text-primary" />
                   Up Next
                 </CardTitle>
-                {!isGloballyPaused && (
-                  <Button variant="ghost" size="sm" onClick={() => pauseAll(1)} className="text-muted-foreground hover:text-primary" title="Pause notifications for 1 hour">
-                    <Moon className="w-4 h-4 mr-2" /> Pause 1h
-                  </Button>
-                )}
+                <div className="flex gap-2">
+                  {nextOccurrences.some(o => o.time.getTime() < currentTime.getTime()) && (
+                    <Button variant="destructive" size="sm" onClick={dismissOverdue} className="shadow-sm">
+                      Dismiss Overdue
+                    </Button>
+                  )}
+                  {!isGloballyPaused && (
+                    <Button variant="ghost" size="sm" onClick={() => pauseAll(1)} className="text-muted-foreground hover:text-primary" title="Pause notifications for 1 hour">
+                      <Moon className="w-4 h-4 mr-2" /> Pause 1h
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 <AnimatePresence mode="wait">
-                  {nextOccurrences.length > 0 ? (
+                  {activeRoutine ? (
+                    <motion.div 
+                      key="active"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="bg-primary text-primary-foreground p-6 sm:p-8 rounded-2xl shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden"
+                    >
+                      {/* Subtly pulsating background for active alarm */}
+                      <motion.div 
+                        animate={{ opacity: [0.1, 0.25, 0.1] }} 
+                        transition={{ repeat: Infinity, duration: 2 }} 
+                        className="absolute inset-0 bg-white pointer-events-none" 
+                      />
+                      
+                      <div className="relative z-10 text-center md:text-left space-y-2 w-full md:w-auto flex-1">
+                        {activeRoutine.snoozed && <Badge variant="secondary" className="mb-2 text-primary font-bold">Snoozed</Badge>}
+                        <h3 className="text-3xl md:text-4xl font-black break-words leading-tight">{activeRoutine.routineName}</h3>
+                        <p className="opacity-90 flex items-center justify-center md:justify-start gap-2 text-sm md:text-base font-medium">
+                          <Clock className="w-4 h-4" />
+                          Time for action! ({activeRoutine.time.toLocaleTimeString([], { hour12: settings.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })})
+                        </p>
+                      </div>
+                      <div className="relative z-10 flex flex-col justify-center gap-3 w-full md:w-auto md:min-w-[320px]">
+                        <Input 
+                          placeholder="Add a note (optional)" 
+                          value={actionNote} 
+                          onChange={(e) => setActionNote(e.target.value)}
+                          className="w-full bg-white/20 border-white/30 text-white placeholder:text-white/70 h-11 rounded-xl backdrop-blur-md focus-visible:ring-white/50 focus-visible:border-white/50"
+                        />
+                        <div className="flex flex-col sm:flex-row gap-2 w-full">
+                          <Button size="lg" variant="secondary" className="flex-1 font-bold text-base text-primary hover:text-primary hover:bg-white/90 shadow-md h-12" onClick={() => { handleAction(activeRoutine.routineId, 'done', activeRoutine.time, actionNote.trim() || undefined); setActionNote(""); }}>
+                            <CheckCircle2 className="w-5 h-5 mr-2" /> Done
+                          </Button>
+                          <Button size="lg" variant="outline" className="flex-1 bg-transparent border-white/40 hover:bg-white/10 text-white font-bold h-12" onClick={() => { handleAction(activeRoutine.routineId, 'snooze', activeRoutine.time, actionNote.trim() || undefined); setActionNote(""); }}>
+                            Snooze
+                          </Button>
+                        </div>
+                        <Button variant="ghost" className="w-full hover:bg-white/10 text-white/80 hover:text-white mt-1" onClick={() => { handleAction(activeRoutine.routineId, 'skip', activeRoutine.time, actionNote.trim() || undefined); setActionNote(""); }} title="Skip this occurrence">
+                          Skip this time
+                        </Button>
+                      </div>
+                    </motion.div>
+                  ) : nextOccurrences.length > 0 ? (
                     <motion.div 
                       key="upcoming"
                       initial={{ opacity: 0 }}
@@ -433,15 +495,27 @@ export function TempoRoutine() {
                           />
                         </div>
                         <div className="space-y-2 col-span-2 md:col-span-1">
-                          <Label htmlFor="interval">Interval (mins)</Label>
-                          <Input 
-                            id="interval" 
-                            type="number" 
-                            min="1" 
-                            value={intervalMinutes} 
-                            onChange={(e) => setIntervalMinutes(Number(e.target.value))}
-                            className="bg-background"
-                          />
+                          <Label>Interval</Label>
+                          <div className="flex gap-1 items-center bg-background border rounded-md p-1 h-[42px]">
+                            <Input 
+                              type="number" min="0" placeholder="H"
+                              value={intervalHours || ''} 
+                              onChange={(e) => updateInterval(Number(e.target.value) || 0, intervalMins, intervalSecs)}
+                              className="w-full h-8 border-none bg-transparent px-1 text-center font-mono text-sm shadow-none focus-visible:ring-0"
+                            /><span className="text-xs text-muted-foreground mr-1">h</span>
+                            <Input 
+                              type="number" min="0" max="59" placeholder="M"
+                              value={intervalMins || ''} 
+                              onChange={(e) => updateInterval(intervalHours, Number(e.target.value) || 0, intervalSecs)}
+                              className="w-full h-8 border-none bg-transparent px-1 text-center font-mono text-sm shadow-none focus-visible:ring-0"
+                            /><span className="text-xs text-muted-foreground mr-1">m</span>
+                            <Input 
+                              type="number" min="0" max="59" placeholder="S"
+                              value={intervalSecs || ''} 
+                              onChange={(e) => updateInterval(intervalHours, intervalMins, Number(e.target.value) || 0)}
+                              className="w-full h-8 border-none bg-transparent px-1 text-center font-mono text-sm shadow-none focus-visible:ring-0"
+                            /><span className="text-xs text-muted-foreground pr-1">s</span>
+                          </div>
                         </div>
                       </div>
 
@@ -514,22 +588,44 @@ export function TempoRoutine() {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-xs">Ring (s)</Label>
-                            <Input 
-                              type="number" min="1" max="300"
-                              value={routineSettings?.alarmDuration !== undefined ? routineSettings.alarmDuration : settings.alarmDuration}
-                              onChange={(e) => setRoutineSettings({...routineSettings, alarmDuration: parseInt(e.target.value) || 5})}
-                              className="w-full bg-background border p-2 rounded-md text-sm h-[38px]"
-                            />
+                            <Label className="text-xs">Ring Duration</Label>
+                            <div className="flex gap-1 items-center bg-background border rounded-md p-1 h-[38px]">
+                              <Input 
+                                type="number" min="0" placeholder="M"
+                                value={Math.floor(ringDuration / 60) || ''} 
+                                onChange={(e) => updateRing(0, Number(e.target.value) || 0, ringDuration % 60)}
+                                className="w-full h-6 border-none bg-transparent px-0 text-center font-mono text-xs shadow-none focus-visible:ring-0"
+                              /><span className="text-[10px] text-muted-foreground mr-1">m</span>
+                              <Input 
+                                type="number" min="0" max="59" placeholder="S"
+                                value={ringDuration % 60 || ''} 
+                                onChange={(e) => updateRing(0, Math.floor(ringDuration / 60), Number(e.target.value) || 0)}
+                                className="w-full h-6 border-none bg-transparent px-0 text-center font-mono text-xs shadow-none focus-visible:ring-0"
+                              /><span className="text-[10px] text-muted-foreground pr-1">s</span>
+                            </div>
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-xs">Snooze (m)</Label>
-                            <Input 
-                              type="number" min="1" max="60"
-                              value={routineSettings?.snoozeDuration !== undefined ? routineSettings.snoozeDuration : settings.snoozeDuration}
-                              onChange={(e) => setRoutineSettings({...routineSettings, snoozeDuration: parseInt(e.target.value) || 10})}
-                              className="w-full bg-background border p-2 rounded-md text-sm h-[38px]"
-                            />
+                            <Label className="text-xs">Snooze</Label>
+                            <div className="flex gap-1 items-center bg-background border rounded-md p-1 h-[38px]">
+                              <Input 
+                                type="number" min="0" placeholder="H"
+                                value={Math.floor(snoozeDuration / 60) || ''} 
+                                onChange={(e) => updateSnooze(Number(e.target.value) || 0, Math.floor(snoozeDuration % 60), Math.round((snoozeDuration * 60) % 60))}
+                                className="w-full h-6 border-none bg-transparent px-0 text-center font-mono text-xs shadow-none focus-visible:ring-0"
+                              /><span className="text-[10px] text-muted-foreground mr-1">h</span>
+                              <Input 
+                                type="number" min="0" max="59" placeholder="M"
+                                value={Math.floor(snoozeDuration % 60) || ''} 
+                                onChange={(e) => updateSnooze(Math.floor(snoozeDuration / 60), Number(e.target.value) || 0, Math.round((snoozeDuration * 60) % 60))}
+                                className="w-full h-6 border-none bg-transparent px-0 text-center font-mono text-xs shadow-none focus-visible:ring-0"
+                              /><span className="text-[10px] text-muted-foreground mr-1">m</span>
+                              <Input 
+                                type="number" min="0" max="59" placeholder="S"
+                                value={Math.round((snoozeDuration * 60) % 60) || ''} 
+                                onChange={(e) => updateSnooze(Math.floor(snoozeDuration / 60), Math.floor(snoozeDuration % 60), Number(e.target.value) || 0)}
+                                className="w-full h-6 border-none bg-transparent px-0 text-center font-mono text-xs shadow-none focus-visible:ring-0"
+                              /><span className="text-[10px] text-muted-foreground pr-1">s</span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -575,7 +671,7 @@ export function TempoRoutine() {
                           <div className="flex justify-between items-center">
                             <span className="font-medium text-foreground flex items-center gap-1.5">
                               <RotateCcw className="w-3.5 h-3.5 text-primary" />
-                              Every {routine.intervalMinutes}m
+                              Every {formatInterval(routine.intervalMinutes)}
                             </span>
                             <span className="bg-background px-2 py-1 rounded-md text-xs border">{routine.startTime} - {routine.endTime}</span>
                           </div>
@@ -836,59 +932,6 @@ export function TempoRoutine() {
               </div>
             </motion.div>
           </div>
-        )}
-      </AnimatePresence>
-      {/* FULL-SCREEN ACTIVE ALARM MODAL */}
-      <AnimatePresence>
-        {activeRoutine && !actionDialog.isOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: "100%" }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-[100] flex flex-col bg-white overflow-hidden shadow-2xl"
-          >
-            {/* Diagonal background - reference image style */}
-            <div className="absolute inset-0 z-0 bg-[#5D737E]" style={{ clipPath: 'polygon(0 60%, 100% 30%, 100% 100%, 0% 100%)' }} />
-            
-            <div className="relative z-10 flex flex-col h-full p-8 text-center max-w-lg mx-auto w-full">
-              <div className="mt-12 space-y-2">
-                <p className="text-xl font-medium text-[#5D737E]">Current Alarm</p>
-                <p className="text-lg font-bold text-[#5D737E]/80">
-                  {activeRoutine.time.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' })}
-                </p>
-                <h1 className="text-5xl md:text-7xl font-black text-[#5D737E]">
-                  {activeRoutine.time.toLocaleTimeString([], { hour12: settings?.timeFormat === '12h', hour: '2-digit', minute: '2-digit' })}
-                </h1>
-              </div>
-
-              <div className="flex-1 flex items-center justify-center w-full">
-                <motion.div 
-                  animate={{ scale: [1, 1.05, 1], boxShadow: ["0px 10px 30px rgba(0,0,0,0.1)", "0px 20px 40px rgba(0,0,0,0.2)", "0px 10px 30px rgba(0,0,0,0.1)"] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className="bg-white/90 backdrop-blur-md px-8 py-8 rounded-2xl shadow-2xl border-b-4 border-[#5D737E]/20 w-full"
-                >
-                  <h2 className="text-2xl md:text-3xl font-bold text-[#5D737E] leading-tight">
-                    {activeRoutine.routineName}
-                  </h2>
-                </motion.div>
-              </div>
-
-              <div className="mb-12 flex flex-col gap-4 w-full">
-                 <div className="grid grid-cols-2 gap-3">
-                    <Button size="lg" className="h-16 text-xl rounded-xl bg-white text-[#5D737E] hover:bg-slate-100 shadow-md font-bold" onClick={() => handleActionClick(activeRoutine.routineId, 'done', activeRoutine.time)}>
-                      <CheckCircle2 className="w-6 h-6 mr-2 text-green-500" /> Done
-                    </Button>
-                    <Button size="lg" variant="outline" className="h-16 text-xl rounded-xl border-white/50 text-white hover:bg-white/10 font-bold backdrop-blur-sm" onClick={() => handleActionClick(activeRoutine.routineId, 'snooze', activeRoutine.time)}>
-                      Snooze
-                    </Button>
-                 </div>
-                 <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10 h-12" onClick={() => handleActionClick(activeRoutine.routineId, 'skip', activeRoutine.time)}>
-                    Skip this occurrence
-                 </Button>
-              </div>
-            </div>
-          </motion.div>
         )}
       </AnimatePresence>
     </div>
