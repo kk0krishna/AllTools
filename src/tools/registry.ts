@@ -29,6 +29,7 @@ import { barcodeGeneratorEntry } from "./everyday/barcode-generator/metadata";
 import { imageConverterEntry } from "./everyday/image-converter/metadata";
 import { pdfCompressorEntry } from "./everyday/pdf-compressor/metadata";
 import { tempoRoutineEntry } from "./everyday/tempo-routine/metadata";
+import { sendToPcEntry } from "./everyday/send-to-pc/metadata";
 import { audioSpectrumAnalyzerEntry } from "./audio/audio-spectrum-analyzer/metadata";
 import { pregnancyCalculatorEntry } from "./obstetrics/pregnancy-calculator/metadata";
 import { pregnancyTimelineEntry } from "./obstetrics/pregnancy-timeline/metadata";
@@ -76,6 +77,7 @@ export const toolsRegistry: ToolEntry[] = [
   imageConverterEntry,
   pdfCompressorEntry,
   tempoRoutineEntry,
+  sendToPcEntry,
   audioSpectrumAnalyzerEntry,
   pregnancyCalculatorEntry,
   pregnancyTimelineEntry,

@@ -644,7 +644,7 @@ export function TempoRoutine() {
                       <div className="space-y-3 pt-4 border-t border-border/50">
                         <div className="flex items-center justify-between gap-4 rounded-2xl border border-primary/15 bg-primary/5 p-4">
                           <div className="min-w-0"><Label htmlFor="full-screen-alert" className="text-sm font-semibold">Full-screen alert</Label><p className="text-xs text-muted-foreground mt-1">Bring Tempo to the front with a focused alert while this page is open.</p></div>
-                          <Switch id="full-screen-alert" checked={Boolean(routineSettings.fullScreenAlert)} onCheckedChange={(checked) => setRoutineSettings({ ...routineSettings, fullScreenAlert: checked })} aria-label="Show a full-screen alert for this routine" />
+                          <Switch id="full-screen-alert" checked={Boolean(routineSettings?.fullScreenAlert)} onCheckedChange={(checked) => setRoutineSettings({ ...routineSettings, fullScreenAlert: checked })} aria-label="Show a full-screen alert for this routine" />
                         </div>
                         <Label className="text-base font-bold flex items-center justify-between">
                           <span>Sound & alert <span className="block text-xs font-normal text-muted-foreground mt-1">Overrides global defaults. Preview sounds before saving.</span></span>

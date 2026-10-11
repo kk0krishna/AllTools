@@ -142,12 +142,14 @@ Because this project uses Next.js Static Export, it is perfectly compatible with
 - [**YouTube Transcript Downloader**](https://clinikkit.web.app/tools/developer/youtube-transcript): Extract, search, read, and download full text transcripts from any accessible YouTube video in TXT, Markdown, JSON, CSV, SRT, and VTT formats.
 
 ### Entertainment
-- [**FilmiYaar (Formerly MovieVerse)**](https://clinikkit.web.app/tools/entertainment/movieverse): MovieVerse has moved to a dedicated platform. Click here to be redirected to FilmiYaar. (https://filmiyaar.web.app/)
+- [**MovieVerse (Now Filmiyaar)**](https://clinikkit.web.app/tools/entertainment/movieverse): MovieVerse has been moved to a separate platform: Filmiyaar.
 
 ### Everyday
 - [**Barcode Generator**](https://clinikkit.web.app/tools/everyday/barcode-generator): Generate high-quality barcodes for products, inventory, and more.
 - [**Instant QR Code Generator**](https://clinikkit.web.app/tools/everyday/qr-code-generator): Generate high-quality QR codes for URLs, text, or contacts instantly.
 - [**PDF Compressor**](https://clinikkit.web.app/tools/everyday/pdf-compressor): Compress PDFs to specific size limits by optimizing and rasterizing pages.
+- [**Send to PC: Wireless Phone-to-PC Transfer & Clipboard Bridge**](https://clinikkit.web.app/tools/everyday/send-to-pc): Instantly send photos, camera scans, documents, passwords, and clipboard notes between your phone and PC. Encrypted P2P with self-destruct secrets.
+- [**Tempo: Routine Engine**](https://clinikkit.web.app/tools/everyday/tempo-routine): A recurring routine engine to schedule and manage your repeating tasks without setting multiple alarms.
 - [**Upload Ready: Image Requirements Solver**](https://clinikkit.web.app/tools/everyday/image-converter): Precise KB compression, dimension resizing, and format conversion.
 
 ### Neurology
