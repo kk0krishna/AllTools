@@ -1,31 +1,38 @@
 {
-  "name": "Favicon Generator",
-  "short_name": "Favicon Gene",
-  "description": "Generate a complete favicon package for your website from an image, text, or emoji. Includes ICO, PNG, and web manifest.",
-  "start_url": "/tools/developer/favicon-generator",
+  "name": "Favicon & Web App Manifest Generator",
+  "short_name": "Favicon Maker",
+  "description": "Generate complete multi-resolution favicon packages, ICO files, Android Chrome icons, and Web App Manifests in your browser.",
+  "start_url": "/tools/developer/favicon-generator/",
+  "scope": "/tools/developer/favicon-generator/",
+  "id": "/tools/developer/favicon-generator/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#F59E0B",
   "icons": [
     {
       "src": "/tools-icons/favicon-generator/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/favicon-generator/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/tools-icons/favicon-generator/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/logo/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/logo/android-chrome-512x512.png",
+      "src": "/tools-icons/favicon-generator/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

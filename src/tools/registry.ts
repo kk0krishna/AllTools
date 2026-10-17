@@ -37,6 +37,8 @@ import { eddReverseCalculatorEntry } from "./obstetrics/edd-reverse-calculator/m
 import { gestationalAgeCalculatorEntry } from "./obstetrics/gestational-age-calculator/metadata";
 import { bishopScoreEntry } from "./obstetrics/bishop-score/metadata";
 import { preeclampsiaRiskEntry } from "./obstetrics/preeclampsia-risk/metadata";
+import { whoMecWheelEntry } from "./obstetrics/who-mec-wheel/metadata";
+import { indiaMecWheelEntry } from "./obstetrics/india-mec-wheel/metadata";
 
 // Psychology
 import { emotionCompassEntry } from "./psychology/emotion-compass/metadata";
@@ -85,6 +87,8 @@ export const toolsRegistry: ToolEntry[] = [
   gestationalAgeCalculatorEntry,
   bishopScoreEntry,
   preeclampsiaRiskEntry,
+  whoMecWheelEntry,
+  indiaMecWheelEntry,
   emotionCompassEntry,
   packYearsCalculatorEntry,
   mmrcDyspneaScaleEntry,

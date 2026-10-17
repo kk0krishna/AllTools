@@ -1,0 +1,38 @@
+{
+  "name": "Tempo: Recurring Routine & Habit Engine",
+  "short_name": "Tempo Routine",
+  "description": "Automate recurring routines, hydration reminders, medication intervals, and repeating alarms without setting dozens of manual timers.",
+  "start_url": "/tools/everyday/tempo-routine/",
+  "scope": "/tools/everyday/tempo-routine/",
+  "id": "/tools/everyday/tempo-routine/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#0D9488",
+  "icons": [
+    {
+      "src": "/tools-icons/tempo-routine/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/tempo-routine/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/tools-icons/tempo-routine/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/tempo-routine/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

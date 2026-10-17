@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!tool) {
     return {
-      title: "Tool Not Found | Clinikkit",
+      title: "Clinikkit",
     };
   }
 
@@ -35,6 +35,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     keywords: tool.metadata.keywords.join(", "),
     alternates: { canonical: `/tools/${resolvedParams.category}/${resolvedParams.slug}` },
     manifest: `/tools-icons/${resolvedParams.slug}/manifest.json`,
+    icons: {
+      icon: [
+        { url: `/tools-icons/${resolvedParams.slug}/icon-192x192.png`, sizes: "192x192", type: "image/png" },
+        { url: `/tools-icons/${resolvedParams.slug}/icon-512x512.png`, sizes: "512x512", type: "image/png" },
+      ],
+      shortcut: `/tools-icons/${resolvedParams.slug}/icon-192x192.png`,
+      apple: [
+        { url: `/tools-icons/${resolvedParams.slug}/icon-192x192.png`, sizes: "192x192", type: "image/png" },
+        { url: `/tools-icons/${resolvedParams.slug}/icon-512x512.png`, sizes: "512x512", type: "image/png" },
+      ],
+    },
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: tool.metadata.name,
+    },
     openGraph: {
       title: tool.metadata.name,
       description: tool.metadata.description,
@@ -77,8 +93,8 @@ export default async function ToolPage({ params }: Props) {
       {/* Breadcrumbs - Compact on mobile, full on desktop */}
       <nav className="mb-4 sm:mb-8">
         {/* Mobile: Simple Back Link */}
-        <Link 
-          href={`/categories/${metadata.category}`} 
+        <Link
+          href={`/categories/${metadata.category}`}
           className="inline-flex sm:hidden items-center text-xs font-semibold text-muted-foreground hover:text-primary transition-colors bg-muted/50 px-2.5 py-1 rounded-lg border border-border/40 capitalize"
         >
           ← {metadata.category}

@@ -148,7 +148,7 @@ Because this project uses Next.js Static Export, it is perfectly compatible with
 - [**Barcode Generator**](https://clinikkit.web.app/tools/everyday/barcode-generator): Generate high-quality barcodes for products, inventory, and more.
 - [**Instant QR Code Generator**](https://clinikkit.web.app/tools/everyday/qr-code-generator): Generate high-quality QR codes for URLs, text, or contacts instantly.
 - [**PDF Compressor**](https://clinikkit.web.app/tools/everyday/pdf-compressor): Compress PDFs to specific size limits by optimizing and rasterizing pages.
-- [**Send to PC: Wireless Phone-to-PC Transfer & Clipboard Bridge**](https://clinikkit.web.app/tools/everyday/send-to-pc): Instantly send photos, camera scans, documents, passwords, and clipboard notes between your phone and PC. Encrypted P2P with self-destruct secrets.
+- [**Send to PC: Wireless Transfer & Clipboard Bridge**](https://clinikkit.web.app/tools/everyday/send-to-pc): Instantly send photos, camera scans, documents, passwords, and clipboard notes between your phone and PC. Direct encrypted P2P with self-destruct secrets.
 - [**Tempo: Routine Engine**](https://clinikkit.web.app/tools/everyday/tempo-routine): A recurring routine engine to schedule and manage your repeating tasks without setting multiple alarms.
 - [**Upload Ready: Image Requirements Solver**](https://clinikkit.web.app/tools/everyday/image-converter): Precise KB compression, dimension resizing, and format conversion.
 
@@ -156,12 +156,14 @@ Because this project uses Next.js Static Export, it is perfectly compatible with
 - [**Glasgow Coma Scale (GCS)**](https://clinikkit.web.app/tools/neurology/glasgow-coma-scale): Assess level of consciousness in trauma and acute medical patients.
 
 ### Obstetrics
+- [**India-Adapted WHO MEC Wheel**](https://clinikkit.web.app/tools/obstetrics/india-mec-wheel): Official India-adapted WHO Medical Eligibility Criteria (MEC) Wheel for Contraceptive Use (MoHFW & WHO India). Features Centchroman (Chhaya / Saheli), Antara (DMPA), Cu-IUCD 380A & 375, and sterilization guidance.
 - [**Instant Gestational Age (GA) Calculator**](https://clinikkit.web.app/tools/obstetrics/gestational-age-calculator): Rapid clinical calculator to determine exact gestational age in weeks and days on today's date or any target clinic visit/surgery date from LMP, EDD, or ultrasound scan.
 - [**Interactive Gestational Timeline & Protocol Guide**](https://clinikkit.web.app/tools/obstetrics/pregnancy-timeline): Week-by-week clinical milestone tracker detailing required ultrasound scans, laboratory screening tests, vaccinations, and patient counselling guidelines from Week 4 to 42.
 - [**Modified Bishop Score**](https://clinikkit.web.app/tools/obstetrics/bishop-score): Assess cervical favorability and probability of successful induction of labor.
 - [**Preeclampsia Risk Assessment**](https://clinikkit.web.app/tools/obstetrics/preeclampsia-risk): ACOG Practice Bulletin 222-based preeclampsia risk stratification with low-dose aspirin recommendation for high-risk patients.
 - [**Pregnancy Dating & Due Date Engine**](https://clinikkit.web.app/tools/obstetrics/pregnancy-calculator): Advanced obstetric calculator for estimating due date (EDD), gestational age (GA), viability milestones, and trimester progress by LMP, ultrasound scan, IVF transfer, or conception date.
 - [**Reverse Due Date & Conception Estimator**](https://clinikkit.web.app/tools/obstetrics/edd-reverse-calculator): Reverse obstetric calculator to determine exact conception window, ovulation date, LMP, and IVF embryo transfer schedule from any target Estimated Due Date (EDD).
+- [**WHO MEC Wheel (Contraceptive Eligibility)**](https://clinikkit.web.app/tools/obstetrics/who-mec-wheel): Official interactive digital edition of the World Health Organization (WHO) Medical Eligibility Criteria Wheel for Contraceptive Use (5th Edition). Quickly assess clinical safety across 6 contraceptive tracks and 36 medical conditions.
 
 ### Oncology
 - [**Gleason Score**](https://clinikkit.web.app/tools/oncology/gleason-score): Determine the histologic grade and prognostic group for prostate cancer.

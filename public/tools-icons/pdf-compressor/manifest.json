@@ -1,31 +1,38 @@
 {
-  "name": "PDF Compressor",
+  "name": "Client-Side PDF Compressor",
   "short_name": "PDF Compress",
-  "description": "Compress PDFs to specific size limits by optimizing and rasterizing pages.",
-  "start_url": "/tools/everyday/pdf-compressor",
+  "description": "Compress and reduce PDF file sizes securely in your browser with multiple quality presets and full document privacy.",
+  "start_url": "/tools/everyday/pdf-compressor/",
+  "scope": "/tools/everyday/pdf-compressor/",
+  "id": "/tools/everyday/pdf-compressor/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#EF4444",
   "icons": [
     {
       "src": "/tools-icons/pdf-compressor/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/pdf-compressor/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/tools-icons/pdf-compressor/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/logo/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/logo/android-chrome-512x512.png",
+      "src": "/tools-icons/pdf-compressor/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

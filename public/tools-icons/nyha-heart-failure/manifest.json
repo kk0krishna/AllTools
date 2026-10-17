@@ -1,31 +1,38 @@
 {
-  "name": "NYHA Heart Failure Classification",
-  "short_name": "NYHA Heart F",
-  "description": "Stratify the severity of heart failure based on functional capacity.",
-  "start_url": "/tools/cardiology/nyha-heart-failure",
+  "name": "NYHA Functional Heart Failure Classification",
+  "short_name": "NYHA Class",
+  "description": "Stratify heart failure severity (Class I–IV) based on patient symptoms and physical activity limitations.",
+  "start_url": "/tools/cardiology/nyha-heart-failure/",
+  "scope": "/tools/cardiology/nyha-heart-failure/",
+  "id": "/tools/cardiology/nyha-heart-failure/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#E11D48",
   "icons": [
     {
       "src": "/tools-icons/nyha-heart-failure/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/nyha-heart-failure/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/tools-icons/nyha-heart-failure/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/logo/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/logo/android-chrome-512x512.png",
+      "src": "/tools-icons/nyha-heart-failure/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

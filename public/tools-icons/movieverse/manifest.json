@@ -1,0 +1,38 @@
+{
+  "name": "MovieVerse: Discovery & Cinematic Hub",
+  "short_name": "MovieVerse",
+  "description": "Discover trending films, track ratings, watch trailers, and explore cinematic recommendations across all genres.",
+  "start_url": "/tools/entertainment/movieverse/",
+  "scope": "/tools/entertainment/movieverse/",
+  "id": "/tools/entertainment/movieverse/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#E11D48",
+  "icons": [
+    {
+      "src": "/tools-icons/movieverse/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/movieverse/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/tools-icons/movieverse/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/movieverse/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

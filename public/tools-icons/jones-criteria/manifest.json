@@ -1,31 +1,38 @@
 {
-  "name": "Jones Criteria for ARF",
-  "short_name": "Jones Criter",
-  "description": "Diagnose Acute Rheumatic Fever (ARF) based on major and minor criteria.",
-  "start_url": "/tools/cardiology/jones-criteria",
+  "name": "Jones Criteria for Acute Rheumatic Fever",
+  "short_name": "Jones Criteria",
+  "description": "Evidence-based guideline calculator for diagnosing Acute Rheumatic Fever (ARF) with major and minor manifestations.",
+  "start_url": "/tools/cardiology/jones-criteria/",
+  "scope": "/tools/cardiology/jones-criteria/",
+  "id": "/tools/cardiology/jones-criteria/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#BE123C",
   "icons": [
     {
       "src": "/tools-icons/jones-criteria/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/jones-criteria/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/tools-icons/jones-criteria/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/logo/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/logo/android-chrome-512x512.png",
+      "src": "/tools-icons/jones-criteria/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

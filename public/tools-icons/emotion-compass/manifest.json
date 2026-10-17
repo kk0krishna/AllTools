@@ -1,31 +1,38 @@
 {
-  "name": "Feelings Wheel",
-  "short_name": "Feelings Whe",
-  "description": "Navigate your feelings with an interactive emotion wheel. Identify what you are really feeling and connect with yourself.",
-  "start_url": "/tools/psychology/emotion-compass",
+  "name": "Feelings Wheel & Emotion Compass",
+  "short_name": "Feelings Wheel",
+  "description": "Interactive multi-tiered emotion wheel based on psychological frameworks to identify, reflect on, and articulate emotional states.",
+  "start_url": "/tools/psychology/emotion-compass/",
+  "scope": "/tools/psychology/emotion-compass/",
+  "id": "/tools/psychology/emotion-compass/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#6366F1",
   "icons": [
     {
       "src": "/tools-icons/emotion-compass/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/emotion-compass/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/tools-icons/emotion-compass/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/logo/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/logo/android-chrome-512x512.png",
+      "src": "/tools-icons/emotion-compass/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

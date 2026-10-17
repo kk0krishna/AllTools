@@ -1,31 +1,38 @@
 {
-  "name": "Modified Bishop Score",
-  "short_name": "Modified Bis",
-  "description": "Assess cervical favorability and probability of successful induction of labor.",
-  "start_url": "/tools/obstetrics/bishop-score",
+  "name": "Modified Bishop Score Calculator",
+  "short_name": "Bishop Score",
+  "description": "Clinical pre-labor scoring system evaluating cervical dilation, effacement, station, consistency, and cervical position.",
+  "start_url": "/tools/obstetrics/bishop-score/",
+  "scope": "/tools/obstetrics/bishop-score/",
+  "id": "/tools/obstetrics/bishop-score/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#8B5CF6",
   "icons": [
     {
       "src": "/tools-icons/bishop-score/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/bishop-score/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/tools-icons/bishop-score/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/logo/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/logo/android-chrome-512x512.png",
+      "src": "/tools-icons/bishop-score/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

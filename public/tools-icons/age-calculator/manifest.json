@@ -1,31 +1,38 @@
 {
-  "name": "Age Calculator",
-  "short_name": "Age Calculat",
-  "description": "Calculate your exact age in years, months, and days from your date of birth.",
-  "start_url": "/tools/calculators/age-calculator",
+  "name": "Age & Chronological Milestone Calculator",
+  "short_name": "Age Calculator",
+  "description": "Calculate exact chronological age in years, months, weeks, days, hours, and minutes with upcoming milestone countdowns.",
+  "start_url": "/tools/calculators/age-calculator/",
+  "scope": "/tools/calculators/age-calculator/",
+  "id": "/tools/calculators/age-calculator/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#3B82F6",
   "icons": [
     {
       "src": "/tools-icons/age-calculator/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/age-calculator/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/tools-icons/age-calculator/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/logo/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/logo/android-chrome-512x512.png",
+      "src": "/tools-icons/age-calculator/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

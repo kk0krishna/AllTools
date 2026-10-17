@@ -1,0 +1,21 @@
+{
+  "name": "WHO MEC Wheel",
+  "short_name": "WHO MEC",
+  "description": "Interactive WHO Medical Eligibility Criteria for Contraceptive Use Wheel",
+  "start_url": "/tools/obstetrics/who-mec-wheel",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0284c7",
+  "icons": [
+    {
+      "src": "/tools-icons/who-mec-wheel/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools-icons/who-mec-wheel/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     shortcut: "/logo/favicon-32x32.png",
     apple: "/logo/apple-touch-icon.png",
   },
-  manifest: "/logo/site.webmanifest",
+  manifest: "/manifest.json",
   twitter: {
     card: "summary_large_image",
     title: `${siteConfig.name} | Professional Online Tools`,

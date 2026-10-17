@@ -1,0 +1,38 @@
+{
+  "name": "YouTube Transcript & Subtitle Downloader",
+  "short_name": "YT Transcript",
+  "description": "Extract, search, read, and export transcripts from YouTube videos in TXT, Markdown, JSON, CSV, SRT, and VTT formats.",
+  "start_url": "/tools/developer/youtube-transcript/",
+  "scope": "/tools/developer/youtube-transcript/",
+  "id": "/tools/developer/youtube-transcript/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#EF4444",
+  "icons": [
+    {
+      "src": "/tools-icons/youtube-transcript/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/youtube-transcript/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/tools-icons/youtube-transcript/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/youtube-transcript/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

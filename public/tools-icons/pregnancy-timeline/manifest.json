@@ -1,31 +1,38 @@
 {
-  "name": "Interactive Gestational Timeline & Protocol Guide",
-  "short_name": "Interactive ",
-  "description": "Week-by-week clinical milestone tracker detailing required ultrasound scans, laboratory screening tests, vaccinations, and patient counselling guidelines from Week 4 to 42.",
-  "start_url": "/tools/obstetrics/pregnancy-timeline",
+  "name": "Gestational Timeline & Trimester Guide",
+  "short_name": "Pregnancy Guide",
+  "description": "Interactive week-by-week fetal development timeline with clinical testing milestones, screening windows, and anatomical scans.",
+  "start_url": "/tools/obstetrics/pregnancy-timeline/",
+  "scope": "/tools/obstetrics/pregnancy-timeline/",
+  "id": "/tools/obstetrics/pregnancy-timeline/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#F43F5E",
   "icons": [
     {
       "src": "/tools-icons/pregnancy-timeline/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/pregnancy-timeline/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/tools-icons/pregnancy-timeline/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/logo/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/logo/android-chrome-512x512.png",
+      "src": "/tools-icons/pregnancy-timeline/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

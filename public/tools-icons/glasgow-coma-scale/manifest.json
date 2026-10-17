@@ -1,31 +1,38 @@
 {
-  "name": "Glasgow Coma Scale (GCS)",
-  "short_name": "Glasgow Coma",
-  "description": "Assess level of consciousness in trauma and acute medical patients.",
-  "start_url": "/tools/neurology/glasgow-coma-scale",
+  "name": "Glasgow Coma Scale (GCS) Assessment",
+  "short_name": "GCS Scale",
+  "description": "Standardized objective clinical tool to evaluate levels of consciousness based on eye, verbal, and motor responses.",
+  "start_url": "/tools/neurology/glasgow-coma-scale/",
+  "scope": "/tools/neurology/glasgow-coma-scale/",
+  "id": "/tools/neurology/glasgow-coma-scale/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#7C3AED",
   "icons": [
     {
       "src": "/tools-icons/glasgow-coma-scale/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools-icons/glasgow-coma-scale/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/tools-icons/glasgow-coma-scale/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/logo/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/logo/android-chrome-512x512.png",
+      "src": "/tools-icons/glasgow-coma-scale/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
