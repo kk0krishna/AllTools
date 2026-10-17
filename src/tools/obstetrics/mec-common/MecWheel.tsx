@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { MecDataset, MecSectorData } from "./types";
-import { Volume2, VolumeX, RotateCcw, ZoomIn, ZoomOut, Maximize2, Minimize2, ChevronLeft, ChevronRight, Compass } from "lucide-react";
+import { Volume2, VolumeX, RotateCcw, ZoomIn, ZoomOut, Maximize2, Minimize2, ChevronLeft, ChevronRight, Compass, Scan } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface MecWheelProps {
@@ -24,6 +24,16 @@ export function MecWheel({
   const containerRef = useRef<HTMLDivElement>(null);
   const wheelGroupRef = useRef<HTMLDivElement>(null);
   const svgOverlayRef = useRef<SVGSVGElement>(null);
+
+  // View Mode: 'semicircle' (focused top half with large fonts for small screens) or 'full' (full 360 circle)
+  const [viewMode, setViewMode] = useState<"semicircle" | "full">("full");
+
+  // Automatically default to semicircle mode on small screens (< 640px)
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 640) {
+      setViewMode("semicircle");
+    }
+  }, []);
 
   // Sound effects toggle
   const [soundEnabled, setSoundEnabled] = useState(false);
@@ -149,8 +159,9 @@ export function MecWheel({
 
   // Pointer angle calculation
   const getAngle = useCallback((clientX: number, clientY: number) => {
-    if (!containerRef.current) return 0;
-    const rect = containerRef.current.getBoundingClientRect();
+    const el = wheelGroupRef.current || containerRef.current;
+    if (!el) return 0;
+    const rect = el.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
     const dx = clientX - cx;
@@ -326,8 +337,25 @@ export function MecWheel({
           </Button>
         </div>
 
-        {/* Right: Sound, Zoom, Reset, Fullscreen */}
+        {/* Right: View Mode, Sound, Zoom, Reset, Fullscreen */}
         <div className="flex items-center gap-0.5 sm:gap-1">
+          <Button
+            variant={viewMode === "semicircle" ? "secondary" : "ghost"}
+            size="sm"
+            className="h-8 px-2 text-xs font-semibold rounded-lg flex items-center gap-1 text-foreground"
+            onClick={() => setViewMode((prev) => (prev === "semicircle" ? "full" : "semicircle"))}
+            title={
+              viewMode === "semicircle"
+                ? "Show full 360° wheel"
+                : "Focus top semicircle (large fonts for small screens)"
+            }
+          >
+            <Scan className="h-3.5 w-3.5 text-primary" />
+            <span className="hidden xs:inline">
+              {viewMode === "semicircle" ? "Full Wheel" : "Large Arc"}
+            </span>
+          </Button>
+
           <Button
             variant="ghost"
             size="icon"
@@ -394,78 +422,90 @@ export function MecWheel({
 
       {/* Main Wheel Responsive Scaled Container with Physics Rotation */}
       <div
-        className="relative w-full max-w-[340px] xs:max-w-[380px] sm:max-w-[460px] md:max-w-[520px] lg:max-w-[560px] aspect-square flex items-center justify-center cursor-grab active:cursor-grabbing transition-transform duration-200"
-        style={{ transform: `scale(${zoom})` }}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
+        className={`relative w-full flex justify-center items-start overflow-hidden transition-all duration-300 ${
+          viewMode === "semicircle"
+            ? "h-[270px] xs:h-[310px] sm:h-[360px] md:h-[400px]"
+            : "aspect-square max-w-[340px] xs:max-w-[380px] sm:max-w-[460px] md:max-w-[520px] lg:max-w-[560px]"
+        }`}
       >
-        {/* ROTATING BASE WHEEL (Lower disc with conditions & concentric scores) */}
         <div
-          ref={wheelGroupRef}
-          className="absolute inset-0 w-full h-full will-change-transform rounded-full shadow-2xl overflow-hidden"
-          style={{
-            transform: `rotate(${currentRotationRef.current}deg)`,
-            transition: isDragging.current ? "none" : undefined
-          }}
+          className={`relative aspect-square flex items-center justify-center cursor-grab active:cursor-grabbing transition-transform duration-200 shrink-0 ${
+            viewMode === "semicircle"
+              ? "w-[440px] xs:w-[500px] sm:w-[560px] md:w-[620px] -mt-1"
+              : "w-full h-full"
+          }`}
+          style={{ transform: `scale(${zoom})` }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
         >
-          <Image
-            src={dataset.lowerWheelImage}
-            alt="MEC Lower Wheel Disc"
-            fill
-            sizes="(max-width: 640px) 340px, (max-width: 768px) 460px, 560px"
-            priority
-            className="object-contain pointer-events-none"
-          />
-
-          {/* SVG Clickable Sector Overlays on Lower Wheel */}
-          <svg
-            ref={svgOverlayRef}
-            viewBox="0 0 800 800"
-            className="absolute inset-0 w-full h-full pointer-events-auto"
+          {/* ROTATING BASE WHEEL (Lower disc with conditions & concentric scores) */}
+          <div
+            ref={wheelGroupRef}
+            className="absolute inset-0 w-full h-full will-change-transform rounded-full shadow-2xl overflow-hidden"
+            style={{
+              transform: `rotate(${currentRotationRef.current}deg)`,
+              transition: isDragging.current ? "none" : undefined
+            }}
           >
-            {svgSectors.map(({ index, pathData, sector }) => {
-              const isSelected = activeSectorIndex === index;
-              const isHighlighted = highlightedSectorIndex === index;
-              return (
-                <path
-                  key={sector.id}
-                  d={pathData}
-                  className={`transition-colors cursor-pointer ${
-                    isSelected
-                      ? "fill-primary/25 stroke-primary stroke-[3]"
-                      : isHighlighted
-                      ? "fill-amber-400/35 stroke-amber-400 stroke-[3] animate-pulse"
-                      : "fill-transparent hover:fill-primary/10 stroke-transparent"
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    spinToSector(index);
-                  }}
-                >
-                  <title>{`${sector.categoryName}: ${sector.conditionName}`}</title>
-                </path>
-              );
-            })}
-          </svg>
-        </div>
+            <Image
+              src={dataset.lowerWheelImage}
+              alt="MEC Lower Wheel Disc"
+              fill
+              sizes="(max-width: 640px) 460px, (max-width: 768px) 520px, 600px"
+              priority
+              className="object-contain pointer-events-none"
+            />
 
-        {/* STATIC COVER DISC (Upper wheel with transparent viewing window slot at 12 o'clock) */}
-        <div className="absolute inset-0 w-full h-full pointer-events-none rounded-full overflow-hidden">
-          <Image
-            src={dataset.upperWheelImage}
-            alt="MEC Upper Wheel Viewing Slot"
-            fill
-            sizes="(max-width: 640px) 340px, (max-width: 768px) 460px, 560px"
-            priority
-            className="object-contain"
-          />
-        </div>
+            {/* SVG Clickable Sector Overlays on Lower Wheel */}
+            <svg
+              ref={svgOverlayRef}
+              viewBox="0 0 800 800"
+              className="absolute inset-0 w-full h-full pointer-events-auto"
+            >
+              {svgSectors.map(({ index, pathData, sector }) => {
+                const isSelected = activeSectorIndex === index;
+                const isHighlighted = highlightedSectorIndex === index;
+                return (
+                  <path
+                    key={sector.id}
+                    d={pathData}
+                    className={`transition-colors cursor-pointer ${
+                      isSelected
+                        ? "fill-primary/25 stroke-primary stroke-[3]"
+                        : isHighlighted
+                        ? "fill-amber-400/35 stroke-amber-400 stroke-[3] animate-pulse"
+                        : "fill-transparent hover:fill-primary/10 stroke-transparent"
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      spinToSector(index);
+                    }}
+                  >
+                    <title>{`${sector.categoryName}: ${sector.conditionName}`}</title>
+                  </path>
+                );
+              })}
+            </svg>
+          </div>
 
-        {/* Center Pivot Pin Graphic */}
-        <div className="absolute w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-slate-800 via-slate-600 to-slate-200 border-2 border-white shadow-xl flex items-center justify-center pointer-events-none z-10">
-          <div className="w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-white/50" />
+          {/* STATIC COVER DISC (Upper wheel with transparent viewing window slot at 12 o'clock) */}
+          <div className="absolute inset-0 w-full h-full pointer-events-none rounded-full overflow-hidden">
+            <Image
+              src={dataset.upperWheelImage}
+              alt="MEC Upper Wheel Viewing Slot"
+              fill
+              sizes="(max-width: 640px) 460px, (max-width: 768px) 520px, 600px"
+              priority
+              className="object-contain"
+            />
+          </div>
+
+          {/* Center Pivot Pin Graphic */}
+          <div className="absolute w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-slate-800 via-slate-600 to-slate-200 border-2 border-white shadow-xl flex items-center justify-center pointer-events-none z-10">
+            <div className="w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-white/50" />
+          </div>
         </div>
       </div>
 

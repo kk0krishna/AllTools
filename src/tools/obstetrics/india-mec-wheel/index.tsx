@@ -231,7 +231,7 @@ export function IndiaMecWheelTool() {
           {/* Dual Layout: Large Interactive Physics Wheel + Live Active Sector Card */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Left: Interactive Wheel */}
-            <div className="lg:col-span-7 flex flex-col items-center justify-center p-3 sm:p-5 rounded-3xl border border-border/70 bg-card/60 backdrop-blur-md shadow-sm">
+            <div className="lg:col-span-6 xl:col-span-5 flex flex-col items-center justify-center p-3 sm:p-5 rounded-3xl border border-border/70 bg-card/60 backdrop-blur-md shadow-sm">
               <MecWheel
                 dataset={indiaMecData}
                 activeSectorIndex={activeSectorIndex}
@@ -241,7 +241,7 @@ export function IndiaMecWheelTool() {
             </div>
 
             {/* Right: Active Sector Card & Quick Actions */}
-            <div className="lg:col-span-5 space-y-4">
+            <div className="lg:col-span-6 xl:col-span-7 space-y-4">
               <MecActiveSectorCard
                 dataset={indiaMecData}
                 sector={activeSector}
