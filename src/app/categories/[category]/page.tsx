@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { ObstetricsCategoryDashboard } from "@/components/obstetrics/ObstetricsCategoryDashboard";
 
 // Generate static params for all categories
 export function generateStaticParams() {
@@ -28,15 +27,6 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
 
   if (categoryTools.length === 0) {
     notFound();
-  }
-
-  // Render specialized high-density clinical dashboard for Obstetrics category
-  if (resolvedParams.category === "obstetrics") {
-    return (
-      <div className="container mx-auto px-4 py-8 md:py-12">
-        <ObstetricsCategoryDashboard tools={categoryTools} />
-      </div>
-    );
   }
 
   const categoryName = resolvedParams.category.charAt(0).toUpperCase() + resolvedParams.category.slice(1);
@@ -72,11 +62,20 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
         {categoryTools.map((tool) => (
-          <Link key={tool.metadata.name} href={`/tools/${tool.metadata.category}/${tool.metadata.slug}`}>
-            <Card className="hover:shadow-md transition-shadow h-full flex flex-col">
-              <CardHeader>
-                <CardTitle className="text-xl font-heading">{tool.metadata.name}</CardTitle>
-                <CardDescription>{tool.metadata.description}</CardDescription>
+          <Link key={tool.metadata.name} href={`/tools/${tool.metadata.category}/${tool.metadata.slug}`} className="group outline-none block">
+            <Card className="hover:shadow-lg hover:border-primary/50 transition-all duration-300 h-full flex flex-col hover:-translate-y-1 bg-card/60 backdrop-blur-sm border border-border/60">
+              <CardHeader className="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <CardTitle className="text-xl font-heading group-hover:text-primary transition-colors">
+                      {tool.metadata.name}
+                    </CardTitle>
+                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0 mt-0.5" />
+                  </div>
+                  <CardDescription className="text-sm leading-relaxed text-muted-foreground">
+                    {tool.metadata.description}
+                  </CardDescription>
+                </div>
               </CardHeader>
             </Card>
           </Link>

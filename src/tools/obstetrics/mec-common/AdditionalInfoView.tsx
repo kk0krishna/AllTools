@@ -5,7 +5,7 @@ import { MecDataset } from "./types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./Tabs";
-import { CheckCircle2, AlertCircle, Clock, ShieldCheck, Pill, Syringe, HeartHandshake, Baby, Sparkles } from "lucide-react";
+import { CheckCircle2, AlertCircle, Clock, ShieldCheck, Pill, Syringe, HeartHandshake, Baby, Sparkles, Download, FileText } from "lucide-react";
 
 interface AdditionalInfoViewProps {
   dataset: MecDataset;
@@ -24,6 +24,35 @@ export function AdditionalInfoView({ dataset }: AdditionalInfoViewProps) {
 
   return (
     <div className="space-y-4">
+      {/* Official Guidelines & Reference Document Download Banner */}
+      <div className="p-4 rounded-2xl border border-primary/20 bg-primary/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-primary">
+            <ShieldCheck className="w-4 h-4" />
+            <span>Official Authoritative Source Guidelines</span>
+          </div>
+          <h4 className="text-sm font-bold text-foreground">
+            {dataset.wheelId === "india-mec-2022"
+              ? "MoHFW & WHO India Medical Eligibility Criteria Reference Manual"
+              : "WHO Medical Eligibility Criteria for Contraceptive Use (5th Edition)"}
+          </h4>
+          <p className="text-xs text-muted-foreground">
+            {dataset.wheelId === "india-mec-2022"
+              ? "Comprehensive clinical manual including Centchroman (Chhaya), Antara (DMPA), PPIUCD protocols, and sterilization guidelines."
+              : "Complete evidence-based global standards published by the World Health Organization Department of Reproductive Health and Research."}
+          </p>
+        </div>
+        <a
+          href={dataset.wheelId === "india-mec-2022" ? "/docs/india-adapted-mec-reference-guide.pdf" : "/docs/who-mec-wheel-5th-edition.pdf"}
+          download={dataset.wheelId === "india-mec-2022" ? "India-Adapted-WHO-MEC-Reference-Guide.pdf" : "WHO-MEC-Wheel-5th-Edition-Official.pdf"}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shrink-0 shadow-sm"
+        >
+          <Download className="w-4 h-4" />
+          <span>Download Reference PDF</span>
+        </a>
+      </div>
       <Tabs defaultValue="emergency" className="w-full">
         <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full h-auto p-1 bg-muted/60">
           <TabsTrigger value="emergency" className="text-xs py-2">

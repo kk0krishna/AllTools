@@ -12,7 +12,7 @@ const CATEGORIES = [
   { name: "Developer", icon: Code, color: "text-purple-500", bg: "bg-purple-500/10", border: "border-purple-500/20", href: "/categories/developer", examples: "JSON Formatter, Base64" },
   { name: "Everyday", icon: Bot, color: "text-indigo-500", bg: "bg-indigo-500/10", border: "border-indigo-500/20", href: "/categories/everyday", examples: "Send to PC, QR Generator, Timers" },
   { name: "Audio", icon: Headphones, color: "text-rose-500", bg: "bg-rose-500/10", border: "border-rose-500/20", href: "/categories/audio", examples: "Spectrum Analyzer" },
-  { name: "Obstetrics", icon: Stethoscope, color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/20", href: "/categories/obstetrics", examples: "EDD, Bishop Score" },
+  { name: "Obstetrics", icon: Stethoscope, color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/20", href: "/categories/obstetrics", examples: "WHO MEC Wheel, EDD, Bishop" },
   { name: "Cardiology", icon: HeartPulse, color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20", href: "/categories/cardiology", examples: "ASCVD Risk, MAP" },
   { name: "Pulmonology", icon: Wind, color: "text-cyan-500", bg: "bg-cyan-500/10", border: "border-cyan-500/20", href: "/categories/pulmonology", examples: "ABG Analyzer" },
   { name: "Neurology", icon: Brain, color: "text-pink-500", bg: "bg-pink-500/10", border: "border-pink-500/20", href: "/categories/neurology", examples: "Glasgow Coma Scale" },

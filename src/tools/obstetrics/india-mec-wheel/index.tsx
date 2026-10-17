@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Compass, Search, BookOpen, Stethoscope, FileText, CheckCircle2,
-  AlertTriangle, XCircle, Sparkles, X, HeartHandshake, ShieldCheck, Printer
+  AlertTriangle, XCircle, Sparkles, X, HeartHandshake, ShieldCheck, Printer, Download
 } from "lucide-react";
 
 export function IndiaMecWheelTool() {
@@ -80,7 +80,18 @@ export function IndiaMecWheelTool() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
+          <div className="flex flex-wrap items-center gap-2 self-start md:self-auto shrink-0">
+            <a
+              href="/docs/india-adapted-mec-reference-guide.pdf"
+              download="India-Adapted-WHO-MEC-Wheel-Reference-Guide.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 transition-colors shadow-2xs"
+              title="Download official India-Adapted WHO MEC Reference Guide (MoHFW)"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Official India MEC PDF</span>
+            </a>
             <Button
               variant="outline"
               size="sm"
@@ -97,7 +108,7 @@ export function IndiaMecWheelTool() {
                 setSelectedNoteCode(null);
                 setIsNoteDrawerOpen(true);
               }}
-              className="text-xs flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="text-xs flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
             >
               <BookOpen className="w-3.5 h-3.5" />
               Clinical Notes A-Z

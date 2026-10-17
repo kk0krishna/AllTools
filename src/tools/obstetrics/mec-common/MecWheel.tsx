@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { MecDataset, MecSectorData } from "./types";
-import { Volume2, VolumeX, RotateCcw, ZoomIn, ZoomOut, Maximize2, Minimize2, Info } from "lucide-react";
+import { Volume2, VolumeX, RotateCcw, ZoomIn, ZoomOut, Maximize2, Minimize2, ChevronLeft, ChevronRight, Compass } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface MecWheelProps {
@@ -34,9 +34,9 @@ export function MecWheel({
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Physics rotation states
-  // Active sector at 0 deg (12 o'clock)
-  // Each sector is 10 degrees (360 / 36 = 10 deg)
-  const currentRotationRef = useRef<number>(-activeSectorIndex * 10);
+  // Sector i spans [i * 10, (i + 1) * 10] deg; its center is at (i * 10 + 5) deg.
+  // To rotate sector i to 12 o'clock (0 deg), rotation angle = -(i * 10 + 5) deg.
+  const currentRotationRef = useRef<number>(-(activeSectorIndex * 10 + 5));
   const isDragging = useRef(false);
   const pointerIsDown = useRef(false);
   const lastAngle = useRef(0);
@@ -60,8 +60,8 @@ export function MecWheel({
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = "sine";
-      osc.frequency.setValueAtTime(600, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.02);
+      osc.frequency.setValueAtTime(650, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.02);
       gain.gain.setValueAtTime(0.08, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.02);
       osc.connect(gain);
@@ -69,7 +69,7 @@ export function MecWheel({
       osc.start();
       osc.stop(ctx.currentTime + 0.02);
     } catch {
-      // AudioContext unavailable or blocked
+      // AudioContext unavailable
     }
   }, [soundEnabled]);
 
@@ -79,10 +79,13 @@ export function MecWheel({
     if (wheelGroupRef.current) {
       wheelGroupRef.current.style.transform = `rotate(${deg}deg)`;
     }
-    // Calculate which sector is at top (12 o'clock / 0 deg)
-    // deg corresponds to: index = ((-deg % 360) + 360) % 360 / 10
+    // Calculate which sector center is closest to 12 o'clock (0 deg)
+    // Sector i center is at i * 10 + 5 deg.
+    // When rotated by deg, sector i center is at (deg + i * 10 + 5).
+    // Center at 0 => deg = -(i * 10 + 5) => (-deg) = i * 10 + 5.
+    // Normalized to [0, 360):
     const normalizedDeg = ((-deg % 360) + 360) % 360;
-    const currentIndex = Math.round(normalizedDeg / 10) % 36;
+    const currentIndex = Math.floor(normalizedDeg / 10) % 36;
     if (currentIndex !== lastNotchIndex.current) {
       lastNotchIndex.current = currentIndex;
       playTickSound();
@@ -93,14 +96,16 @@ export function MecWheel({
     }
   }, [dataset.sectors, onSectorSelect, playTickSound]);
 
-  // Smooth animate to specific sector
+  // Smooth animate to specific sector center
   const spinToSector = useCallback((sectorIndex: number) => {
     if (rafId.current !== null) {
       cancelAnimationFrame(rafId.current);
       rafId.current = null;
     }
     const currentDeg = currentRotationRef.current;
-    const targetDeg = -sectorIndex * 10;
+    // Target angle brings sectorIndex center (sectorIndex * 10 + 5) to 0 deg
+    const targetDeg = -(sectorIndex * 10 + 5);
+
     // Find shortest rotational path
     const currentNormalized = (currentDeg % 360 + 360) % 360;
     const targetNormalized = (targetDeg % 360 + 360) % 360;
@@ -111,7 +116,7 @@ export function MecWheel({
     const startRot = currentDeg;
     const endRot = currentDeg + diff;
     const startTime = performance.now();
-    const duration = 450; // ms
+    const duration = 400; // ms
 
     const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
@@ -136,7 +141,7 @@ export function MecWheel({
   // Synchronize with external activeSectorIndex change (e.g. from search / click)
   useEffect(() => {
     const currentNorm = ((-currentRotationRef.current % 360) + 360) % 360;
-    const curIndex = Math.round(currentNorm / 10) % 36;
+    const curIndex = Math.floor(currentNorm / 10) % 36;
     if (curIndex !== activeSectorIndex && !isDragging.current) {
       spinToSector(activeSectorIndex);
     }
@@ -211,10 +216,9 @@ export function MecWheel({
       if (Math.abs(currentVel) > 0.05) {
         rafId.current = requestAnimationFrame(coast);
       } else {
-        // Snap to nearest 10-degree sector
-        const targetRot = Math.round(currentRot / 10) * 10;
-        const norm = ((-targetRot % 360) + 360) % 360;
-        const targetIndex = Math.round(norm / 10) % 36;
+        // Snap to nearest 10-degree sector center
+        const norm = ((-currentRot % 360) + 360) % 360;
+        const targetIndex = Math.floor(norm / 10) % 36;
         spinToSector(targetIndex);
       }
     };
@@ -222,9 +226,8 @@ export function MecWheel({
     if (Math.abs(currentVel) > 0.1) {
       rafId.current = requestAnimationFrame(coast);
     } else {
-      const targetRot = Math.round(currentRot / 10) * 10;
-      const norm = ((-targetRot % 360) + 360) % 360;
-      const targetIndex = Math.round(norm / 10) % 36;
+      const norm = ((-currentRot % 360) + 360) % 360;
+      const targetIndex = Math.floor(norm / 10) % 36;
       spinToSector(targetIndex);
     }
   };
@@ -249,27 +252,30 @@ export function MecWheel({
   }, []);
 
   // Compute SVG sectors for clicking
+  // Sector i spans [i * 10, (i + 1) * 10] deg relative to 12 o'clock (0 deg)
   const svgSectors = useMemo(() => {
     const count = dataset.sectors.length;
-    const radius = 400; // viewBox size 800x800
-    const innerR = 300; // outer rim width 100px
+    const radius = 400; // viewBox 800x800
+    const innerR = 300; // outer condition rim width
     const sectors = [];
 
+    const round = (val: number) => Number(val.toFixed(2));
+
     for (let i = 0; i < count; i++) {
-      // sector i spans [i * 10 - 5, i * 10 + 5] degrees relative to 12 o'clock (0 deg)
-      const centerAngle = i * 10;
-      const startAngle = (centerAngle - 5 - 90) * (Math.PI / 180);
-      const endAngle = (centerAngle + 5 - 90) * (Math.PI / 180);
+      const startDeg = i * 10;
+      const endDeg = (i + 1) * 10;
+      const startAngle = (startDeg - 90) * (Math.PI / 180);
+      const endAngle = (endDeg - 90) * (Math.PI / 180);
 
-      const x1 = 400 + radius * Math.cos(startAngle);
-      const y1 = 400 + radius * Math.sin(startAngle);
-      const x2 = 400 + radius * Math.cos(endAngle);
-      const y2 = 400 + radius * Math.sin(endAngle);
+      const x1 = round(400 + radius * Math.cos(startAngle));
+      const y1 = round(400 + radius * Math.sin(startAngle));
+      const x2 = round(400 + radius * Math.cos(endAngle));
+      const y2 = round(400 + radius * Math.sin(endAngle));
 
-      const x3 = 400 + innerR * Math.cos(endAngle);
-      const y3 = 400 + innerR * Math.sin(endAngle);
-      const x4 = 400 + innerR * Math.cos(startAngle);
-      const y4 = 400 + innerR * Math.sin(startAngle);
+      const x3 = round(400 + innerR * Math.cos(endAngle));
+      const y3 = round(400 + innerR * Math.sin(endAngle));
+      const x4 = round(400 + innerR * Math.cos(startAngle));
+      const y4 = round(400 + innerR * Math.sin(startAngle));
 
       const pathData = `M ${x1} ${y1} A ${radius} ${radius} 0 0 1 ${x2} ${y2} L ${x3} ${y3} A ${innerR} ${innerR} 0 0 0 ${x4} ${y4} Z`;
 
@@ -282,76 +288,113 @@ export function MecWheel({
     return sectors;
   }, [dataset.sectors]);
 
+  const activeSector = dataset.sectors[activeSectorIndex] || dataset.sectors[0];
+
   return (
     <div
       ref={containerRef}
-      className={`relative flex flex-col items-center justify-center p-2 sm:p-4 select-none touch-none ${
-        isFullscreen ? "fixed inset-0 z-50 bg-background/95 backdrop-blur-md" : ""
+      className={`relative w-full flex flex-col items-center justify-center p-1 sm:p-3 select-none touch-none ${
+        isFullscreen ? "fixed inset-0 z-50 bg-background/95 backdrop-blur-xl p-4 overflow-y-auto" : ""
       }`}
     >
-      {/* Interactive Controls Bar */}
-      <div className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 flex items-center gap-1 sm:gap-2 bg-card/85 backdrop-blur-md p-1.5 rounded-full border border-border/80 shadow-md">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-full hover:bg-muted text-foreground"
-          onClick={() => setSoundEnabled((prev) => !prev)}
-          title={soundEnabled ? "Mute wheel rotation sound" : "Enable rotation click sound"}
-        >
-          {soundEnabled ? <Volume2 className="h-4 w-4 text-primary" /> : <VolumeX className="h-4 w-4 text-muted-foreground" />}
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-full hover:bg-muted text-foreground"
-          onClick={() => setZoom((prev) => Math.min(prev + 0.15, 1.6))}
-          title="Zoom in wheel"
-        >
-          <ZoomIn className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-full hover:bg-muted text-foreground"
-          onClick={() => setZoom((prev) => Math.max(prev - 0.15, 0.75))}
-          title="Zoom out wheel"
-        >
-          <ZoomOut className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-full hover:bg-muted text-foreground"
-          onClick={() => {
-            setZoom(1);
-            spinToSector(0);
-          }}
-          title="Reset wheel to top"
-        >
-          <RotateCcw className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-full hover:bg-muted text-foreground"
-          onClick={toggleFullscreen}
-          title={isFullscreen ? "Exit Fullscreen" : "Fullscreen View"}
-        >
-          {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-        </Button>
-      </div>
-
-      {/* Viewing Slot Alignment Marker at 12 o'clock */}
-      <div className="relative z-10 flex flex-col items-center pointer-events-none mb-1">
-        <div className="flex items-center gap-1.5 px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full shadow-lg border border-primary-foreground/20 animate-pulse">
-          <span>Viewing Slot (Active Condition)</span>
+      {/* Clean Toolbar Header ABOVE the wheel - Completely unobstructed */}
+      <div className="w-full max-w-[580px] flex items-center justify-between gap-1.5 sm:gap-2 mb-2 p-1.5 sm:p-2 rounded-2xl bg-card/90 backdrop-blur-md border border-border/70 shadow-xs z-20">
+        {/* Left: Previous / Next Sector Stepper */}
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-2 text-xs font-semibold flex items-center gap-1 hover:bg-muted text-foreground"
+            onClick={() => spinToSector((activeSectorIndex - 1 + 36) % 36)}
+            title="Previous condition sector"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Prev</span>
+          </Button>
+          <span className="text-[11px] sm:text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-muted text-foreground whitespace-nowrap">
+            {activeSectorIndex + 1} / 36
+          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-2 text-xs font-semibold flex items-center gap-1 hover:bg-muted text-foreground"
+            onClick={() => spinToSector((activeSectorIndex + 1) % 36)}
+            title="Next condition sector"
+          >
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="w-4 h-4" />
+          </Button>
         </div>
-        <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] border-t-primary shadow-sm" />
+
+        {/* Right: Sound, Zoom, Reset, Fullscreen */}
+        <div className="flex items-center gap-0.5 sm:gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-lg hover:bg-muted text-foreground"
+            onClick={() => setSoundEnabled((prev) => !prev)}
+            title={soundEnabled ? "Mute audio ticks" : "Enable rotation click sound"}
+          >
+            {soundEnabled ? (
+              <Volume2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            ) : (
+              <VolumeX className="h-4 w-4 text-muted-foreground" />
+            )}
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-lg hover:bg-muted text-foreground"
+            onClick={() => setZoom((prev) => Math.min(prev + 0.15, 1.5))}
+            title="Zoom in wheel"
+          >
+            <ZoomIn className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-lg hover:bg-muted text-foreground"
+            onClick={() => setZoom((prev) => Math.max(prev - 0.15, 0.75))}
+            title="Zoom out wheel"
+          >
+            <ZoomOut className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-lg hover:bg-muted text-foreground"
+            onClick={() => {
+              setZoom(1);
+              spinToSector(0);
+            }}
+            title="Reset to Sector 1"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-lg hover:bg-muted text-foreground"
+            onClick={toggleFullscreen}
+            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen View"}
+          >
+            {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          </Button>
+        </div>
       </div>
 
-      {/* Main Wheel Container with Physics Rotation */}
+      {/* Viewing Slot Top Alignment Indicator at 12 o'clock */}
+      <div className="relative z-10 flex flex-col items-center pointer-events-none mb-1">
+        <div className="flex items-center gap-1.5 px-3 py-1 bg-primary text-primary-foreground text-[11px] sm:text-xs font-bold rounded-full shadow-md uppercase tracking-wider">
+          <Compass className="w-3.5 h-3.5" />
+          <span>Active Viewing Window</span>
+        </div>
+        <div className="w-0 h-0 border-l-[7px] border-l-transparent border-r-[7px] border-r-transparent border-t-[8px] border-t-primary -mt-[1px]" />
+      </div>
+
+      {/* Main Wheel Responsive Scaled Container with Physics Rotation */}
       <div
-        className="relative w-full max-w-[620px] aspect-square flex items-center justify-center cursor-grab active:cursor-grabbing transition-transform duration-200"
+        className="relative w-full max-w-[340px] xs:max-w-[380px] sm:max-w-[460px] md:max-w-[520px] lg:max-w-[560px] aspect-square flex items-center justify-center cursor-grab active:cursor-grabbing transition-transform duration-200"
         style={{ transform: `scale(${zoom})` }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -371,7 +414,7 @@ export function MecWheel({
             src={dataset.lowerWheelImage}
             alt="MEC Lower Wheel Disc"
             fill
-            sizes="(max-width: 768px) 100vw, 620px"
+            sizes="(max-width: 640px) 340px, (max-width: 768px) 460px, 560px"
             priority
             className="object-contain pointer-events-none"
           />
@@ -391,9 +434,9 @@ export function MecWheel({
                   d={pathData}
                   className={`transition-colors cursor-pointer ${
                     isSelected
-                      ? "fill-primary/20 stroke-primary stroke-[3]"
+                      ? "fill-primary/25 stroke-primary stroke-[3]"
                       : isHighlighted
-                      ? "fill-amber-400/30 stroke-amber-400 stroke-[3] animate-pulse"
+                      ? "fill-amber-400/35 stroke-amber-400 stroke-[3] animate-pulse"
                       : "fill-transparent hover:fill-primary/10 stroke-transparent"
                   }`}
                   onClick={(e) => {
@@ -408,13 +451,13 @@ export function MecWheel({
           </svg>
         </div>
 
-        {/* STATIC COVER DISC (Upper wheel with viewing window slot at 12 o'clock) */}
+        {/* STATIC COVER DISC (Upper wheel with transparent viewing window slot at 12 o'clock) */}
         <div className="absolute inset-0 w-full h-full pointer-events-none rounded-full overflow-hidden">
           <Image
             src={dataset.upperWheelImage}
             alt="MEC Upper Wheel Viewing Slot"
             fill
-            sizes="(max-width: 768px) 100vw, 620px"
+            sizes="(max-width: 640px) 340px, (max-width: 768px) 460px, 560px"
             priority
             className="object-contain"
           />
@@ -427,9 +470,54 @@ export function MecWheel({
       </div>
 
       {/* User Guidance Micro-text */}
-      <div className="mt-3 flex items-center justify-center gap-2 text-xs text-muted-foreground text-center">
+      <div className="mt-2.5 flex items-center justify-center gap-2 text-xs text-muted-foreground text-center">
         <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-        <span>Drag or flick wheel to spin &bull; Click any condition sector to rotate into view</span>
+        <span>Drag or flick to spin &bull; Click sector to center &bull; Step with Prev/Next</span>
+      </div>
+
+      {/* Mobile Quick-HUD for Active Condition (Shown on small screens for instant reading without scrolling) */}
+      <div className="w-full max-w-[580px] mt-3 p-3 rounded-2xl bg-card border border-border/80 shadow-xs lg:hidden">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-primary">
+            {activeSector.categoryName}
+          </span>
+          <span className="text-[10px] font-mono text-muted-foreground">
+            Sector #{activeSector.sectorIndex + 1} of 36
+          </span>
+        </div>
+        <h4 className="text-sm font-bold text-foreground line-clamp-1 mb-2">
+          {activeSector.conditionName}
+        </h4>
+        {/* Horizontal scrollable row of contraceptive ratings */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          {activeSector.scores.map((sc) => {
+            const m = dataset.methods.find((md) => md.id === sc.methodId);
+            if (!m) return null;
+            const rawScore = sc.score.split(/[\^/, -]/)[0].trim();
+            const badgeClass =
+              rawScore === "1"
+                ? "bg-emerald-600 text-white"
+                : rawScore === "2"
+                ? "bg-blue-600 text-white"
+                : rawScore === "3"
+                ? "bg-amber-500 text-slate-950 font-black"
+                : rawScore === "4"
+                ? "bg-rose-600 text-white"
+                : "bg-slate-600 text-white";
+
+            return (
+              <div
+                key={sc.methodId}
+                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-muted/60 border border-border/60 shrink-0 text-xs"
+              >
+                <span className="text-[11px] font-medium text-foreground">{m.shortName}:</span>
+                <span className={`px-1.5 py-0.5 rounded text-[11px] font-mono font-black ${badgeClass}`}>
+                  {sc.score}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

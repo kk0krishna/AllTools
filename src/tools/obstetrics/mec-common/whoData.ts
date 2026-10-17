@@ -202,557 +202,13 @@ export const whoMecData: MecDataset = {
   ],
   sectors: [
     {
-      id: "who-nulliparity",
-      sectorIndex: 0,
-      categoryName: "NULLIPARITY",
-      conditionName: "Nulliparous",
-      subCondition: "Women who have not given birth",
-      startAngle: 0,
-      endAngle: 10,
-      scores: [
-        { methodId: "chc", score: "1" },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "1" },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "2", clarification: "Safe; smaller uterus may cause slight increase in expulsion or cramp sensation." },
-        { methodId: "cu_iud", score: "2", clarification: "Safe; nulliparity is not a contraindication to IUD use." }
-      ]
-    },
-    {
-      id: "who-adolescents",
-      sectorIndex: 1,
-      categoryName: "ADOLESCENTS",
-      conditionName: "Menarche to age < 18 years",
-      subCondition: "Younger adolescent clients",
-      startAngle: 10,
-      endAngle: 20,
-      scores: [
-        { methodId: "chc", score: "1" },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "2", clarification: "Theoretical concern regarding bone mineral density acquisition; benefits generally outweigh risks." },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "2", clarification: "Eligible; STI screening recommended if at increased risk." },
-        { methodId: "cu_iud", score: "2", clarification: "Eligible; counsel on condom dual protection for STI prevention." }
-      ]
-    },
-    {
-      id: "who-unexplained-bleeding",
-      sectorIndex: 2,
-      categoryName: "VAGINAL BLEEDING",
-      conditionName: "Unexplained Vaginal Bleeding",
-      subCondition: "Suspicious for serious condition prior to evaluation",
-      startAngle: 20,
-      endAngle: 30,
-      scores: [
-        { methodId: "chc", score: "1" },
-        { methodId: "pop", score: "2" },
-        { methodId: "poi", score: "2" },
-        { methodId: "implants", score: "2" },
-        { methodId: "lng_iud", score: "4", notes: ["A"], clarification: "Do not initiate until etiology evaluated and pelvic malignancy excluded. If condition develops during use, can continue (Cat 2)." },
-        { methodId: "cu_iud", score: "4", notes: ["A"], clarification: "Do not initiate until underlying cause diagnosed. If develops while using, can continue during treatment (Cat 2)." }
-      ]
-    },
-    {
-      id: "who-uterine-fibroids",
-      sectorIndex: 3,
-      categoryName: "UTERINE FIBROIDS",
-      conditionName: "Uterine Fibroids",
-      subCondition: "With or without distortion of the uterine cavity",
-      startAngle: 30,
-      endAngle: 40,
-      scores: [
-        { methodId: "chc", score: "1" },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "1" },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "1", notes: ["H"], clarification: "Category 1 without cavity distortion; Category 4 if uterine cavity distorted preventing proper placement." },
-        { methodId: "cu_iud", score: "1", notes: ["H"], clarification: "Category 1 without cavity distortion; Category 4 if cavity distorted." }
-      ]
-    },
-    {
-      id: "who-cervical-neoplasia",
-      sectorIndex: 4,
-      categoryName: "CERVICAL NEOPLASIA",
-      conditionName: "Cervical Intraepithelial Neoplasia (CIN)",
-      subCondition: "Cervical ectropion or dysplastic changes",
-      startAngle: 40,
-      endAngle: 50,
-      scores: [
-        { methodId: "chc", score: "2", clarification: "Mild concern over cervical cancer progression with long-term use; monitoring advised." },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "2" },
-        { methodId: "implants", score: "2" },
-        { methodId: "lng_iud", score: "2" },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-cervical-cancer",
-      sectorIndex: 5,
-      categoryName: "CERVICAL CANCER",
-      conditionName: "Cervical Cancer (Pre-treatment)",
-      subCondition: "Awaiting curative oncologic treatment",
-      startAngle: 50,
-      endAngle: 60,
-      scores: [
-        { methodId: "chc", score: "2" },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "2" },
-        { methodId: "implants", score: "2" },
-        { methodId: "lng_iud", score: "4", notes: ["A"], clarification: "Do not initiate in presence of untreated cervical cancer. If diagnosed while in place, can continue pending therapy." },
-        { methodId: "cu_iud", score: "4", notes: ["A"], clarification: "Do not initiate; risk of severe infection and bleeding during insertion." }
-      ]
-    },
-    {
-      id: "who-breast-cancer",
-      sectorIndex: 6,
-      categoryName: "BREAST CANCER",
-      conditionName: "Current Breast Cancer",
-      subCondition: "Active hormone-sensitive malignancy",
-      startAngle: 60,
-      endAngle: 70,
-      scores: [
-        { methodId: "chc", score: "4", clarification: "Hormone dependent tumour: absolute contraindication." },
-        { methodId: "pop", score: "4", clarification: "Absolute contraindication: progestins promote tumor proliferation." },
-        { methodId: "poi", score: "4", clarification: "Absolute contraindication: depot progestin stimulates hormone receptors." },
-        { methodId: "implants", score: "4", clarification: "Absolute contraindication." },
-        { methodId: "lng_iud", score: "4", clarification: "Absolute contraindication: systemic absorption occurs." },
-        { methodId: "cu_iud", score: "1", clarification: "Completely non-hormonal; first-line safest choice for breast cancer patients." }
-      ]
-    },
-    {
-      id: "who-liver-tumour",
-      sectorIndex: 7,
-      categoryName: "LIVER DISEASES",
-      conditionName: "Liver Tumour (Benign / Malignant)",
-      subCondition: "Hepatocellular adenoma or carcinoma / hepatoma",
-      startAngle: 70,
-      endAngle: 80,
-      scores: [
-        { methodId: "chc", score: "4", notes: ["J"], clarification: "Estrogens stimulate adenoma rupture and malignant progression." },
-        { methodId: "pop", score: "3", notes: ["J"] },
-        { methodId: "poi", score: "3", notes: ["J"] },
-        { methodId: "implants", score: "3", notes: ["J"] },
-        { methodId: "lng_iud", score: "3", notes: ["J"] },
-        { methodId: "cu_iud", score: "1", clarification: "Non-hormonal; no hepatic metabolism." }
-      ]
-    },
-    {
-      id: "who-hepatitis-acute",
-      sectorIndex: 8,
-      categoryName: "LIVER DISEASES",
-      conditionName: "Acute Viral Hepatitis / Flare",
-      subCondition: "Active hepatic inflammation or acute jaundice",
-      startAngle: 80,
-      endAngle: 90,
-      scores: [
-        { methodId: "chc", score: "3/4", notes: ["K", "A"], clarification: "Category 3/4 to initiate; if flare occurs while already using, can continue (Cat 2)." },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "1" },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "1" },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-hepatitis-history",
-      sectorIndex: 9,
-      categoryName: "LIVER DISEASES",
-      conditionName: "History of Hepatitis / Carrier",
-      subCondition: "Chronic viral hepatitis or asymptomatic carrier",
-      startAngle: 90,
-      endAngle: 100,
-      scores: [
-        { methodId: "chc", score: "1" },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "1" },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "1" },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-vte-acute",
-      sectorIndex: 10,
-      categoryName: "VENOUS THROMBOEMBOLISM",
-      conditionName: "Acute DVT / PE",
-      subCondition: "Current acute deep venous thrombosis or pulmonary embolism",
-      startAngle: 100,
-      endAngle: 110,
-      scores: [
-        { methodId: "chc", score: "4", clarification: "Estrogen triggers hypercoagulability and marked thrombosis recurrence." },
-        { methodId: "pop", score: "2" },
-        { methodId: "poi", score: "2" },
-        { methodId: "implants", score: "2" },
-        { methodId: "lng_iud", score: "2" },
-        { methodId: "cu_iud", score: "1", notes: ["L"], clarification: "Category 2 if established on anticoagulation therapy (risk of heavy bleeding)." }
-      ]
-    },
-    {
-      id: "who-vte-surgery",
-      sectorIndex: 11,
-      categoryName: "VENOUS THROMBOEMBOLISM",
-      conditionName: "Major Surgery with Prolonged Immobilization",
-      subCondition: "High risk of post-operative venous stasis",
-      startAngle: 110,
-      endAngle: 120,
-      scores: [
-        { methodId: "chc", score: "4", clarification: "Avoid CHC due to compounded thromboembolic risk." },
-        { methodId: "pop", score: "2" },
-        { methodId: "poi", score: "2" },
-        { methodId: "implants", score: "2" },
-        { methodId: "lng_iud", score: "2" },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-cvd-stroke",
-      sectorIndex: 12,
-      categoryName: "CARDIOVASCULAR DISEASE",
-      conditionName: "Stroke (History of CVA)",
-      subCondition: "Past ischemic or hemorrhagic cerebrovascular accident",
-      startAngle: 120,
-      endAngle: 130,
-      scores: [
-        { methodId: "chc", score: "4", clarification: "High risk of recurrent ischemic or thromboembolic stroke." },
-        { methodId: "pop", score: "2", notes: ["M"] },
-        { methodId: "poi", score: "3", notes: ["L"] },
-        { methodId: "implants", score: "2", notes: ["M"] },
-        { methodId: "lng_iud", score: "2", notes: ["M"] },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-cvd-ihd",
-      sectorIndex: 13,
-      categoryName: "CARDIOVASCULAR DISEASE",
-      conditionName: "Ischaemic Heart Disease (IHD)",
-      subCondition: "Current or history of myocardial infarction or angina",
-      startAngle: 130,
-      endAngle: 140,
-      scores: [
-        { methodId: "chc", score: "4", clarification: "Contraindicated; substantial risk of recurrent coronary events." },
-        { methodId: "pop", score: "2", notes: ["M"] },
-        { methodId: "poi", score: "3", notes: ["L"] },
-        { methodId: "implants", score: "2", notes: ["M"] },
-        { methodId: "lng_iud", score: "2", notes: ["M"] },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-cvd-risk-factors",
-      sectorIndex: 14,
-      categoryName: "CARDIOVASCULAR DISEASE",
-      conditionName: "Multiple Cardiovascular Risk Factors",
-      subCondition: "Combination of older age, smoking, diabetes, hypertension, obesity, dyslipidemia",
-      startAngle: 140,
-      endAngle: 150,
-      scores: [
-        { methodId: "chc", score: "3/4", notes: ["N"], clarification: "Category 3 or 4 depending on severity and number of concurrent risk factors." },
-        { methodId: "pop", score: "2" },
-        { methodId: "poi", score: "3", notes: ["L"] },
-        { methodId: "implants", score: "2" },
-        { methodId: "lng_iud", score: "2" },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-htn-severe",
-      sectorIndex: 15,
-      categoryName: "HYPERTENSION",
-      conditionName: "Severe Hypertension (≥ 160 / ≥ 100)",
-      subCondition: "Systolic ≥ 160 mm Hg or Diastolic ≥ 100 mm Hg, or with vascular disease",
-      startAngle: 150,
-      endAngle: 160,
-      scores: [
-        { methodId: "chc", score: "4", notes: ["O"], clarification: "Severe risk of stroke and cardiac event." },
-        { methodId: "pop", score: "2" },
-        { methodId: "poi", score: "3", clarification: "DMPA may slightly elevate blood pressure or affect lipid profile." },
-        { methodId: "implants", score: "2" },
-        { methodId: "lng_iud", score: "2" },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-htn-moderate",
-      sectorIndex: 16,
-      categoryName: "HYPERTENSION",
-      conditionName: "Moderate / Controlled Hypertension",
-      subCondition: "140–159 / 90–99 mm Hg or adequately controlled on medication",
-      startAngle: 160,
-      endAngle: 170,
-      scores: [
-        { methodId: "chc", score: "3", notes: ["O"], clarification: "Generally not recommended unless other methods unavailable." },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "2" },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "1" },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-obesity",
-      sectorIndex: 17,
-      categoryName: "OBESITY",
-      conditionName: "Obesity (BMI ≥ 30 kg/m²)",
-      subCondition: "BMI ≥ 30 kg/m² across all age groups",
-      startAngle: 170,
-      endAngle: 180,
-      scores: [
-        { methodId: "chc", score: "2", clarification: "Baseline VTE risk is elevated; CHC can generally be used." },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "1", notes: ["P"], clarification: "Category 2 if age < 18 years and obese." },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "1" },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-diabetes",
-      sectorIndex: 18,
-      categoryName: "DIABETES",
-      conditionName: "Diabetes Mellitus (Current)",
-      subCondition: "Non-vascular, uncomplicated insulin/non-insulin dependent",
-      startAngle: 180,
-      endAngle: 190,
-      scores: [
-        { methodId: "chc", score: "2", notes: ["Q"], clarification: "Category 3/4 if complicated (nephropathy, retinopathy, neuropathy) or > 20 years duration." },
-        { methodId: "pop", score: "2" },
-        { methodId: "poi", score: "2", notes: ["Q"], clarification: "Category 3 if complicated or > 20 years duration." },
-        { methodId: "implants", score: "2" },
-        { methodId: "lng_iud", score: "2" },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-smoking-lt-35",
-      sectorIndex: 19,
-      categoryName: "SMOKING",
-      conditionName: "Smoking: Age < 35 Years",
-      subCondition: "Smoker of any quantity under 35 years of age",
-      startAngle: 190,
-      endAngle: 200,
-      scores: [
-        { methodId: "chc", score: "2" },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "1" },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "1" },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-smoking-gte-35",
-      sectorIndex: 20,
-      categoryName: "SMOKING",
-      conditionName: "Smoking: Age ≥ 35 Years",
-      subCondition: "Smoker 35 years or older",
-      startAngle: 200,
-      endAngle: 210,
-      scores: [
-        { methodId: "chc", score: "3/4", notes: ["R"], clarification: "Category 3 if < 15 cigarettes/day; Category 4 if ≥ 15 cigarettes/day." },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "1" },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "1" },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-headache-non-migraine",
-      sectorIndex: 21,
-      categoryName: "HEADACHE",
-      conditionName: "Non-migrainous Headache",
-      subCondition: "Tension, cluster, or sinus headache without neurological symptoms",
-      startAngle: 210,
-      endAngle: 220,
-      scores: [
-        { methodId: "chc", score: "1/2", clarification: "Category 1 if mild/tension; Category 2 for migraine without aura in women < 35." },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "1" },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "1" },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-headache-aura",
-      sectorIndex: 22,
-      categoryName: "HEADACHE",
-      conditionName: "Migraine with Aura (Any Age)",
-      subCondition: "Focal neurological symptoms such as scintillating scotoma or numbness",
-      startAngle: 220,
-      endAngle: 230,
-      scores: [
-        { methodId: "chc", score: "4", notes: ["S"], clarification: "Unacceptable risk of ischemic stroke." },
-        { methodId: "pop", score: "2", notes: ["M", "S"], clarification: "Category 2 to initiate. If aura develops during use, switch to non-hormonal (Cat 3)." },
-        { methodId: "poi", score: "2", notes: ["M"] },
-        { methodId: "implants", score: "2", notes: ["M"] },
-        { methodId: "lng_iud", score: "2", notes: ["M"] },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-meds-anticonvulsants",
-      sectorIndex: 23,
-      categoryName: "MEDICATIONS",
-      conditionName: "Certain Anti-convulsants",
-      subCondition: "Carbamazepine, phenytoin, phenobarbital, primidone, topiramate, lamotrigine",
-      startAngle: 230,
-      endAngle: 240,
-      scores: [
-        { methodId: "chc", score: "3", notes: ["T", "U"], clarification: "Hepatic CYP450 inducers speed estrogen clearance, risking method failure." },
-        { methodId: "pop", score: "3", notes: ["V"], clarification: "Category 1 if taking lamotrigine alone." },
-        { methodId: "poi", score: "1", notes: ["W"], clarification: "DMPA = 1 (depot dose overcomes induction); NET-EN = 2." },
-        { methodId: "implants", score: "2", clarification: "Efficacy may be mildly reduced." },
-        { methodId: "lng_iud", score: "1", clarification: "Local action; unhindered by hepatic enzyme induction." },
-        { methodId: "cu_iud", score: "1", clarification: "Completely unaffected by enzyme-inducing drugs." }
-      ]
-    },
-    {
-      id: "who-meds-rifampicin",
-      sectorIndex: 24,
-      categoryName: "MEDICATIONS",
-      conditionName: "Rifampicin / Rifabutin Therapy",
-      subCondition: "Potent cytochrome P450 3A4 enzyme inducers used in tuberculosis",
-      startAngle: 240,
-      endAngle: 250,
-      scores: [
-        { methodId: "chc", score: "3", notes: ["X"], clarification: "Marked clearance of ethinylestradiol leads to contraceptive breakthrough." },
-        { methodId: "pop", score: "3" },
-        { methodId: "poi", score: "1" },
-        { methodId: "implants", score: "2" },
-        { methodId: "lng_iud", score: "1" },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-meds-arv",
-      sectorIndex: 25,
-      categoryName: "MEDICATIONS",
-      conditionName: "Antiretroviral Therapy (ART)",
-      subCondition: "Taking ARV regimens for HIV (EFV, NVP, ritonavir-boosted PIs, NRTIs)",
-      startAngle: 250,
-      endAngle: 260,
-      scores: [
-        { methodId: "chc", score: "1-2", notes: ["Y"], clarification: "Category 2 for EFV, NVP, ATV/r, LPV/r, DRV/r, RTV. Category 1 for all NRTIs and Integrase Inhibitors." },
-        { methodId: "pop", score: "1-2", notes: ["Y"] },
-        { methodId: "poi", score: "1-2", notes: ["Y"], clarification: "Category 1 for DMPA with all ARVs; Category 2 for NET-EN." },
-        { methodId: "implants", score: "1-2", notes: ["Y"] },
-        { methodId: "lng_iud", score: "1" },
-        { methodId: "cu_iud", score: "1" }
-      ]
-    },
-    {
-      id: "who-hiv-stage-3-4",
-      sectorIndex: 26,
-      categoryName: "HIV",
-      conditionName: "WHO Stage 3 or 4 Clinical Disease",
-      subCondition: "Severe or advanced HIV clinical disease / opportunistic infections",
-      startAngle: 260,
-      endAngle: 270,
-      scores: [
-        { methodId: "chc", score: "1" },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "1" },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "2/3", notes: ["A", "Z"], clarification: "Category 3 to initiate in Stage 3/4 until clinically stable on ART; Category 2 to continue." },
-        { methodId: "cu_iud", score: "2/3", notes: ["A", "Z"], clarification: "Category 3 to initiate; Category 2 to continue." }
-      ]
-    },
-    {
-      id: "who-sti-gonorrhoea-chlamydia",
-      sectorIndex: 27,
-      categoryName: "SEXUALLY TRANSMITTED INFECTIONS",
-      conditionName: "Gonorrhoea & Chlamydia (Current)",
-      subCondition: "Purulent cervicitis or verified Neisseria / Chlamydia infection",
-      startAngle: 270,
-      endAngle: 280,
-      scores: [
-        { methodId: "chc", score: "1", clarification: "Hormonal method does not alter upper tract infection risk." },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "1" },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "4", notes: ["A"], clarification: "Do not insert IUD during acute cervical infection; risk of severe pelvic sepsis. If already in place, treat without removal." },
-        { methodId: "cu_iud", score: "4", notes: ["A"], clarification: "Do not insert. Treat infection first." }
-      ]
-    },
-    {
-      id: "who-sti-other-vaginitis",
-      sectorIndex: 28,
-      categoryName: "SEXUALLY TRANSMITTED INFECTIONS",
-      conditionName: "Other STIs and Vaginitis",
-      subCondition: "Trichomonas, Bacterial Vaginosis, HPV, HSV",
-      startAngle: 280,
-      endAngle: 290,
-      scores: [
-        { methodId: "chc", score: "1" },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "1" },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "2", clarification: "Generally use; treat vaginitis concomitantly." },
-        { methodId: "cu_iud", score: "2", clarification: "Generally use; treat concomitantly." }
-      ]
-    },
-    {
-      id: "who-sti-increased-risk",
-      sectorIndex: 29,
-      categoryName: "SEXUALLY TRANSMITTED INFECTIONS",
-      conditionName: "Increased Risk of STIs",
-      subCondition: "Multiple partners or partner with active STI",
-      startAngle: 290,
-      endAngle: 300,
-      scores: [
-        { methodId: "chc", score: "1" },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "1" },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "2/3", notes: ["B"], clarification: "Category 3 if very high individual likelihood of exposure to gonorrhoea/chlamydia; otherwise Category 2." },
-        { methodId: "cu_iud", score: "2/3", notes: ["B"] }
-      ]
-    },
-    {
-      id: "who-pid-current",
-      sectorIndex: 30,
-      categoryName: "PELVIC INFLAMMATORY DISEASE",
-      conditionName: "Current PID",
-      subCondition: "Active pelvic inflammatory disease / salpingitis",
-      startAngle: 300,
-      endAngle: 310,
-      scores: [
-        { methodId: "chc", score: "1" },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "1" },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "4", notes: ["C", "A"], clarification: "Do not insert. If woman develops PID while using IUD, give antibiotic treatment and continue method." },
-        { methodId: "cu_iud", score: "4", notes: ["C", "A"], clarification: "Do not insert. If past PID without current symptoms, all methods = 1." }
-      ]
-    },
-    {
-      id: "who-sepsis",
-      sectorIndex: 31,
-      categoryName: "SEPSIS",
-      conditionName: "Puerperal / Post-Abortion Sepsis",
-      subCondition: "Active postpartum or post-abortive uterine sepsis",
-      startAngle: 310,
-      endAngle: 320,
-      scores: [
-        { methodId: "chc", score: "1" },
-        { methodId: "pop", score: "1" },
-        { methodId: "poi", score: "1" },
-        { methodId: "implants", score: "1" },
-        { methodId: "lng_iud", score: "4", clarification: "Absolute contraindication: insertion into infected uterus carries severe risk of peritonitis and septic shock." },
-        { methodId: "cu_iud", score: "4", clarification: "Absolute contraindication." }
-      ]
-    },
-    {
       id: "who-postpartum-lt-48h",
-      sectorIndex: 32,
+      sectorIndex: 0,
       categoryName: "POSTPARTUM AND BREASTFEEDING",
       conditionName: "< 48 Hours Postpartum",
       subCondition: "Immediate post-placental insertion or early postpartum",
-      startAngle: 320,
-      endAngle: 330,
+      startAngle: 0,
+      endAngle: 10,
       scores: [
         { methodId: "chc", score: "4", notes: ["D"], clarification: "High VTE risk and estrogen suppression of milk volume. If not breastfeeding and no VTE risk: Category 3." },
         { methodId: "pop", score: "2" },
@@ -764,12 +220,12 @@ export const whoMecData: MecDataset = {
     },
     {
       id: "who-postpartum-48h-4w",
-      sectorIndex: 33,
+      sectorIndex: 1,
       categoryName: "POSTPARTUM AND BREASTFEEDING",
       conditionName: "48 Hours to < 4 Weeks Postpartum",
       subCondition: "Uterine involution phase",
-      startAngle: 330,
-      endAngle: 340,
+      startAngle: 10,
+      endAngle: 20,
       scores: [
         { methodId: "chc", score: "4", notes: ["D", "F"], clarification: "Category 4 if breastfeeding. If not breastfeeding: Category 3 (<3 weeks), Category 2 (3 to <6 weeks without VTE risk)." },
         { methodId: "pop", score: "2" },
@@ -781,12 +237,12 @@ export const whoMecData: MecDataset = {
     },
     {
       id: "who-postpartum-4w-6w",
-      sectorIndex: 34,
+      sectorIndex: 2,
       categoryName: "POSTPARTUM AND BREASTFEEDING",
       conditionName: "4 Weeks to < 6 Weeks Postpartum",
       subCondition: "Involution complete; establishing lactation",
-      startAngle: 340,
-      endAngle: 350,
+      startAngle: 20,
+      endAngle: 30,
       scores: [
         { methodId: "chc", score: "4", notes: ["F"], clarification: "Category 4 if breastfeeding. If not breastfeeding: Category 2 (or 3 with VTE risk factors)." },
         { methodId: "pop", score: "2" },
@@ -798,12 +254,12 @@ export const whoMecData: MecDataset = {
     },
     {
       id: "who-postpartum-6w-6m",
-      sectorIndex: 35,
+      sectorIndex: 3,
       categoryName: "POSTPARTUM AND BREASTFEEDING",
       conditionName: "6 Weeks to < 6 Months Postpartum",
       subCondition: "Established lactation / infant growing",
-      startAngle: 350,
-      endAngle: 360,
+      startAngle: 30,
+      endAngle: 40,
       scores: [
         { methodId: "chc", score: "3", notes: ["G"], clarification: "Use of method not usually recommended unless other methods unavailable. Category 1 if not breastfeeding." },
         { methodId: "pop", score: "1" },
@@ -812,7 +268,551 @@ export const whoMecData: MecDataset = {
         { methodId: "lng_iud", score: "1" },
         { methodId: "cu_iud", score: "1" }
       ]
-    }
+    },
+    {
+      id: "who-nulliparity",
+      sectorIndex: 4,
+      categoryName: "NULLIPARITY",
+      conditionName: "Nulliparous",
+      subCondition: "Women who have not given birth",
+      startAngle: 40,
+      endAngle: 50,
+      scores: [
+        { methodId: "chc", score: "1" },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "1" },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "2", clarification: "Safe; smaller uterus may cause slight increase in expulsion or cramp sensation." },
+        { methodId: "cu_iud", score: "2", clarification: "Safe; nulliparity is not a contraindication to IUD use." }
+      ]
+    },
+    {
+      id: "who-adolescents",
+      sectorIndex: 5,
+      categoryName: "ADOLESCENTS",
+      conditionName: "Menarche to age < 18 years",
+      subCondition: "Younger adolescent clients",
+      startAngle: 50,
+      endAngle: 60,
+      scores: [
+        { methodId: "chc", score: "1" },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "2", clarification: "Theoretical concern regarding bone mineral density acquisition; benefits generally outweigh risks." },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "2", clarification: "Eligible; STI screening recommended if at increased risk." },
+        { methodId: "cu_iud", score: "2", clarification: "Eligible; counsel on condom dual protection for STI prevention." }
+      ]
+    },
+    {
+      id: "who-unexplained-bleeding",
+      sectorIndex: 6,
+      categoryName: "VAGINAL BLEEDING",
+      conditionName: "Unexplained Vaginal Bleeding",
+      subCondition: "Suspicious for serious condition prior to evaluation",
+      startAngle: 60,
+      endAngle: 70,
+      scores: [
+        { methodId: "chc", score: "1" },
+        { methodId: "pop", score: "2" },
+        { methodId: "poi", score: "2" },
+        { methodId: "implants", score: "2" },
+        { methodId: "lng_iud", score: "4", notes: ["A"], clarification: "Do not initiate until etiology evaluated and pelvic malignancy excluded. If condition develops during use, can continue (Cat 2)." },
+        { methodId: "cu_iud", score: "4", notes: ["A"], clarification: "Do not initiate until underlying cause diagnosed. If develops while using, can continue during treatment (Cat 2)." }
+      ]
+    },
+    {
+      id: "who-uterine-fibroids",
+      sectorIndex: 7,
+      categoryName: "UTERINE FIBROIDS",
+      conditionName: "Uterine Fibroids",
+      subCondition: "With or without distortion of the uterine cavity",
+      startAngle: 70,
+      endAngle: 80,
+      scores: [
+        { methodId: "chc", score: "1" },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "1" },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "1", notes: ["H"], clarification: "Category 1 without cavity distortion; Category 4 if uterine cavity distorted preventing proper placement." },
+        { methodId: "cu_iud", score: "1", notes: ["H"], clarification: "Category 1 without cavity distortion; Category 4 if cavity distorted." }
+      ]
+    },
+    {
+      id: "who-cervical-neoplasia",
+      sectorIndex: 8,
+      categoryName: "CERVICAL NEOPLASIA",
+      conditionName: "Cervical Intraepithelial Neoplasia (CIN)",
+      subCondition: "Cervical ectropion or dysplastic changes",
+      startAngle: 80,
+      endAngle: 90,
+      scores: [
+        { methodId: "chc", score: "2", clarification: "Mild concern over cervical cancer progression with long-term use; monitoring advised." },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "2" },
+        { methodId: "implants", score: "2" },
+        { methodId: "lng_iud", score: "2" },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-cervical-cancer",
+      sectorIndex: 9,
+      categoryName: "CERVICAL CANCER",
+      conditionName: "Cervical Cancer (Pre-treatment)",
+      subCondition: "Awaiting curative oncologic treatment",
+      startAngle: 90,
+      endAngle: 100,
+      scores: [
+        { methodId: "chc", score: "2" },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "2" },
+        { methodId: "implants", score: "2" },
+        { methodId: "lng_iud", score: "4", notes: ["A"], clarification: "Do not initiate in presence of untreated cervical cancer. If diagnosed while in place, can continue pending therapy." },
+        { methodId: "cu_iud", score: "4", notes: ["A"], clarification: "Do not initiate; risk of severe infection and bleeding during insertion." }
+      ]
+    },
+    {
+      id: "who-breast-cancer",
+      sectorIndex: 10,
+      categoryName: "BREAST CANCER",
+      conditionName: "Current Breast Cancer",
+      subCondition: "Active hormone-sensitive malignancy",
+      startAngle: 100,
+      endAngle: 110,
+      scores: [
+        { methodId: "chc", score: "4", clarification: "Hormone dependent tumour: absolute contraindication." },
+        { methodId: "pop", score: "4", clarification: "Absolute contraindication: progestins promote tumor proliferation." },
+        { methodId: "poi", score: "4", clarification: "Absolute contraindication: depot progestin stimulates hormone receptors." },
+        { methodId: "implants", score: "4", clarification: "Absolute contraindication." },
+        { methodId: "lng_iud", score: "4", clarification: "Absolute contraindication: systemic absorption occurs." },
+        { methodId: "cu_iud", score: "1", clarification: "Completely non-hormonal; first-line safest choice for breast cancer patients." }
+      ]
+    },
+    {
+      id: "who-liver-tumour",
+      sectorIndex: 11,
+      categoryName: "LIVER DISEASES",
+      conditionName: "Liver Tumour (Benign / Malignant)",
+      subCondition: "Hepatocellular adenoma or carcinoma / hepatoma",
+      startAngle: 110,
+      endAngle: 120,
+      scores: [
+        { methodId: "chc", score: "4", notes: ["J"], clarification: "Estrogens stimulate adenoma rupture and malignant progression." },
+        { methodId: "pop", score: "3", notes: ["J"] },
+        { methodId: "poi", score: "3", notes: ["J"] },
+        { methodId: "implants", score: "3", notes: ["J"] },
+        { methodId: "lng_iud", score: "3", notes: ["J"] },
+        { methodId: "cu_iud", score: "1", clarification: "Non-hormonal; no hepatic metabolism." }
+      ]
+    },
+    {
+      id: "who-hepatitis-acute",
+      sectorIndex: 12,
+      categoryName: "LIVER DISEASES",
+      conditionName: "Acute Viral Hepatitis / Flare",
+      subCondition: "Active hepatic inflammation or acute jaundice",
+      startAngle: 120,
+      endAngle: 130,
+      scores: [
+        { methodId: "chc", score: "3/4", notes: ["K", "A"], clarification: "Category 3/4 to initiate; if flare occurs while already using, can continue (Cat 2)." },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "1" },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "1" },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-hepatitis-history",
+      sectorIndex: 13,
+      categoryName: "LIVER DISEASES",
+      conditionName: "History of Hepatitis / Carrier",
+      subCondition: "Chronic viral hepatitis or asymptomatic carrier",
+      startAngle: 130,
+      endAngle: 140,
+      scores: [
+        { methodId: "chc", score: "1" },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "1" },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "1" },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-vte-acute",
+      sectorIndex: 14,
+      categoryName: "VENOUS THROMBOEMBOLISM",
+      conditionName: "Acute DVT / PE",
+      subCondition: "Current acute deep venous thrombosis or pulmonary embolism",
+      startAngle: 140,
+      endAngle: 150,
+      scores: [
+        { methodId: "chc", score: "4", clarification: "Estrogen triggers hypercoagulability and marked thrombosis recurrence." },
+        { methodId: "pop", score: "2" },
+        { methodId: "poi", score: "2" },
+        { methodId: "implants", score: "2" },
+        { methodId: "lng_iud", score: "2" },
+        { methodId: "cu_iud", score: "1", notes: ["L"], clarification: "Category 2 if established on anticoagulation therapy (risk of heavy bleeding)." }
+      ]
+    },
+    {
+      id: "who-vte-surgery",
+      sectorIndex: 15,
+      categoryName: "VENOUS THROMBOEMBOLISM",
+      conditionName: "Major Surgery with Prolonged Immobilization",
+      subCondition: "High risk of post-operative venous stasis",
+      startAngle: 150,
+      endAngle: 160,
+      scores: [
+        { methodId: "chc", score: "4", clarification: "Avoid CHC due to compounded thromboembolic risk." },
+        { methodId: "pop", score: "2" },
+        { methodId: "poi", score: "2" },
+        { methodId: "implants", score: "2" },
+        { methodId: "lng_iud", score: "2" },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-cvd-stroke",
+      sectorIndex: 16,
+      categoryName: "CARDIOVASCULAR DISEASE",
+      conditionName: "Stroke (History of CVA)",
+      subCondition: "Past ischemic or hemorrhagic cerebrovascular accident",
+      startAngle: 160,
+      endAngle: 170,
+      scores: [
+        { methodId: "chc", score: "4", clarification: "High risk of recurrent ischemic or thromboembolic stroke." },
+        { methodId: "pop", score: "2", notes: ["M"] },
+        { methodId: "poi", score: "3", notes: ["L"] },
+        { methodId: "implants", score: "2", notes: ["M"] },
+        { methodId: "lng_iud", score: "2", notes: ["M"] },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-cvd-ihd",
+      sectorIndex: 17,
+      categoryName: "CARDIOVASCULAR DISEASE",
+      conditionName: "Ischaemic Heart Disease (IHD)",
+      subCondition: "Current or history of myocardial infarction or angina",
+      startAngle: 170,
+      endAngle: 180,
+      scores: [
+        { methodId: "chc", score: "4", clarification: "Contraindicated; substantial risk of recurrent coronary events." },
+        { methodId: "pop", score: "2", notes: ["M"] },
+        { methodId: "poi", score: "3", notes: ["L"] },
+        { methodId: "implants", score: "2", notes: ["M"] },
+        { methodId: "lng_iud", score: "2", notes: ["M"] },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-cvd-risk-factors",
+      sectorIndex: 18,
+      categoryName: "CARDIOVASCULAR DISEASE",
+      conditionName: "Multiple Cardiovascular Risk Factors",
+      subCondition: "Combination of older age, smoking, diabetes, hypertension, obesity, dyslipidemia",
+      startAngle: 180,
+      endAngle: 190,
+      scores: [
+        { methodId: "chc", score: "3/4", notes: ["N"], clarification: "Category 3 or 4 depending on severity and number of concurrent risk factors." },
+        { methodId: "pop", score: "2" },
+        { methodId: "poi", score: "3", notes: ["L"] },
+        { methodId: "implants", score: "2" },
+        { methodId: "lng_iud", score: "2" },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-htn-severe",
+      sectorIndex: 19,
+      categoryName: "HYPERTENSION",
+      conditionName: "Severe Hypertension (≥ 160 / ≥ 100)",
+      subCondition: "Systolic ≥ 160 mm Hg or Diastolic ≥ 100 mm Hg, or with vascular disease",
+      startAngle: 190,
+      endAngle: 200,
+      scores: [
+        { methodId: "chc", score: "4", notes: ["O"], clarification: "Severe risk of stroke and cardiac event." },
+        { methodId: "pop", score: "2" },
+        { methodId: "poi", score: "3", clarification: "DMPA may slightly elevate blood pressure or affect lipid profile." },
+        { methodId: "implants", score: "2" },
+        { methodId: "lng_iud", score: "2" },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-htn-moderate",
+      sectorIndex: 20,
+      categoryName: "HYPERTENSION",
+      conditionName: "Moderate / Controlled Hypertension",
+      subCondition: "140–159 / 90–99 mm Hg or adequately controlled on medication",
+      startAngle: 200,
+      endAngle: 210,
+      scores: [
+        { methodId: "chc", score: "3", notes: ["O"], clarification: "Generally not recommended unless other methods unavailable." },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "2" },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "1" },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-obesity",
+      sectorIndex: 21,
+      categoryName: "OBESITY",
+      conditionName: "Obesity (BMI ≥ 30 kg/m²)",
+      subCondition: "BMI ≥ 30 kg/m² across all age groups",
+      startAngle: 210,
+      endAngle: 220,
+      scores: [
+        { methodId: "chc", score: "2", clarification: "Baseline VTE risk is elevated; CHC can generally be used." },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "1", notes: ["P"], clarification: "Category 2 if age < 18 years and obese." },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "1" },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-diabetes",
+      sectorIndex: 22,
+      categoryName: "DIABETES",
+      conditionName: "Diabetes Mellitus (Current)",
+      subCondition: "Non-vascular, uncomplicated insulin/non-insulin dependent",
+      startAngle: 220,
+      endAngle: 230,
+      scores: [
+        { methodId: "chc", score: "2", notes: ["Q"], clarification: "Category 3/4 if complicated (nephropathy, retinopathy, neuropathy) or > 20 years duration." },
+        { methodId: "pop", score: "2" },
+        { methodId: "poi", score: "2", notes: ["Q"], clarification: "Category 3 if complicated or > 20 years duration." },
+        { methodId: "implants", score: "2" },
+        { methodId: "lng_iud", score: "2" },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-smoking-lt-35",
+      sectorIndex: 23,
+      categoryName: "SMOKING",
+      conditionName: "Smoking: Age < 35 Years",
+      subCondition: "Smoker of any quantity under 35 years of age",
+      startAngle: 230,
+      endAngle: 240,
+      scores: [
+        { methodId: "chc", score: "2" },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "1" },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "1" },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-smoking-gte-35",
+      sectorIndex: 24,
+      categoryName: "SMOKING",
+      conditionName: "Smoking: Age ≥ 35 Years",
+      subCondition: "Smoker 35 years or older",
+      startAngle: 240,
+      endAngle: 250,
+      scores: [
+        { methodId: "chc", score: "3/4", notes: ["R"], clarification: "Category 3 if < 15 cigarettes/day; Category 4 if ≥ 15 cigarettes/day." },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "1" },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "1" },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-headache-non-migraine",
+      sectorIndex: 25,
+      categoryName: "HEADACHE",
+      conditionName: "Non-migrainous Headache",
+      subCondition: "Tension, cluster, or sinus headache without neurological symptoms",
+      startAngle: 250,
+      endAngle: 260,
+      scores: [
+        { methodId: "chc", score: "1/2", clarification: "Category 1 if mild/tension; Category 2 for migraine without aura in women < 35." },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "1" },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "1" },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-headache-aura",
+      sectorIndex: 26,
+      categoryName: "HEADACHE",
+      conditionName: "Migraine with Aura (Any Age)",
+      subCondition: "Focal neurological symptoms such as scintillating scotoma or numbness",
+      startAngle: 260,
+      endAngle: 270,
+      scores: [
+        { methodId: "chc", score: "4", notes: ["S"], clarification: "Unacceptable risk of ischemic stroke." },
+        { methodId: "pop", score: "2", notes: ["M", "S"], clarification: "Category 2 to initiate. If aura develops during use, switch to non-hormonal (Cat 3)." },
+        { methodId: "poi", score: "2", notes: ["M"] },
+        { methodId: "implants", score: "2", notes: ["M"] },
+        { methodId: "lng_iud", score: "2", notes: ["M"] },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-meds-anticonvulsants",
+      sectorIndex: 27,
+      categoryName: "MEDICATIONS",
+      conditionName: "Certain Anti-convulsants",
+      subCondition: "Carbamazepine, phenytoin, phenobarbital, primidone, topiramate, lamotrigine",
+      startAngle: 270,
+      endAngle: 280,
+      scores: [
+        { methodId: "chc", score: "3", notes: ["T", "U"], clarification: "Hepatic CYP450 inducers speed estrogen clearance, risking method failure." },
+        { methodId: "pop", score: "3", notes: ["V"], clarification: "Category 1 if taking lamotrigine alone." },
+        { methodId: "poi", score: "1", notes: ["W"], clarification: "DMPA = 1 (depot dose overcomes induction); NET-EN = 2." },
+        { methodId: "implants", score: "2", clarification: "Efficacy may be mildly reduced." },
+        { methodId: "lng_iud", score: "1", clarification: "Local action; unhindered by hepatic enzyme induction." },
+        { methodId: "cu_iud", score: "1", clarification: "Completely unaffected by enzyme-inducing drugs." }
+      ]
+    },
+    {
+      id: "who-meds-rifampicin",
+      sectorIndex: 28,
+      categoryName: "MEDICATIONS",
+      conditionName: "Rifampicin / Rifabutin Therapy",
+      subCondition: "Potent cytochrome P450 3A4 enzyme inducers used in tuberculosis",
+      startAngle: 280,
+      endAngle: 290,
+      scores: [
+        { methodId: "chc", score: "3", notes: ["X"], clarification: "Marked clearance of ethinylestradiol leads to contraceptive breakthrough." },
+        { methodId: "pop", score: "3" },
+        { methodId: "poi", score: "1" },
+        { methodId: "implants", score: "2" },
+        { methodId: "lng_iud", score: "1" },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-meds-arv",
+      sectorIndex: 29,
+      categoryName: "MEDICATIONS",
+      conditionName: "Antiretroviral Therapy (ART)",
+      subCondition: "Taking ARV regimens for HIV (EFV, NVP, ritonavir-boosted PIs, NRTIs)",
+      startAngle: 290,
+      endAngle: 300,
+      scores: [
+        { methodId: "chc", score: "1-2", notes: ["Y"], clarification: "Category 2 for EFV, NVP, ATV/r, LPV/r, DRV/r, RTV. Category 1 for all NRTIs and Integrase Inhibitors." },
+        { methodId: "pop", score: "1-2", notes: ["Y"] },
+        { methodId: "poi", score: "1-2", notes: ["Y"], clarification: "Category 1 for DMPA with all ARVs; Category 2 for NET-EN." },
+        { methodId: "implants", score: "1-2", notes: ["Y"] },
+        { methodId: "lng_iud", score: "1" },
+        { methodId: "cu_iud", score: "1" }
+      ]
+    },
+    {
+      id: "who-hiv-stage-3-4",
+      sectorIndex: 30,
+      categoryName: "HIV",
+      conditionName: "WHO Stage 3 or 4 Clinical Disease",
+      subCondition: "Severe or advanced HIV clinical disease / opportunistic infections",
+      startAngle: 300,
+      endAngle: 310,
+      scores: [
+        { methodId: "chc", score: "1" },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "1" },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "2/3", notes: ["A", "Z"], clarification: "Category 3 to initiate in Stage 3/4 until clinically stable on ART; Category 2 to continue." },
+        { methodId: "cu_iud", score: "2/3", notes: ["A", "Z"], clarification: "Category 3 to initiate; Category 2 to continue." }
+      ]
+    },
+    {
+      id: "who-sti-gonorrhoea-chlamydia",
+      sectorIndex: 31,
+      categoryName: "SEXUALLY TRANSMITTED INFECTIONS",
+      conditionName: "Gonorrhoea & Chlamydia (Current)",
+      subCondition: "Purulent cervicitis or verified Neisseria / Chlamydia infection",
+      startAngle: 310,
+      endAngle: 320,
+      scores: [
+        { methodId: "chc", score: "1", clarification: "Hormonal method does not alter upper tract infection risk." },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "1" },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "4", notes: ["A"], clarification: "Do not insert IUD during acute cervical infection; risk of severe pelvic sepsis. If already in place, treat without removal." },
+        { methodId: "cu_iud", score: "4", notes: ["A"], clarification: "Do not insert. Treat infection first." }
+      ]
+    },
+    {
+      id: "who-sti-other-vaginitis",
+      sectorIndex: 32,
+      categoryName: "SEXUALLY TRANSMITTED INFECTIONS",
+      conditionName: "Other STIs and Vaginitis",
+      subCondition: "Trichomonas, Bacterial Vaginosis, HPV, HSV",
+      startAngle: 320,
+      endAngle: 330,
+      scores: [
+        { methodId: "chc", score: "1" },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "1" },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "2", clarification: "Generally use; treat vaginitis concomitantly." },
+        { methodId: "cu_iud", score: "2", clarification: "Generally use; treat concomitantly." }
+      ]
+    },
+    {
+      id: "who-sti-increased-risk",
+      sectorIndex: 33,
+      categoryName: "SEXUALLY TRANSMITTED INFECTIONS",
+      conditionName: "Increased Risk of STIs",
+      subCondition: "Multiple partners or partner with active STI",
+      startAngle: 330,
+      endAngle: 340,
+      scores: [
+        { methodId: "chc", score: "1" },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "1" },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "2/3", notes: ["B"], clarification: "Category 3 if very high individual likelihood of exposure to gonorrhoea/chlamydia; otherwise Category 2." },
+        { methodId: "cu_iud", score: "2/3", notes: ["B"] }
+      ]
+    },
+    {
+      id: "who-pid-current",
+      sectorIndex: 34,
+      categoryName: "PELVIC INFLAMMATORY DISEASE",
+      conditionName: "Current PID",
+      subCondition: "Active pelvic inflammatory disease / salpingitis",
+      startAngle: 340,
+      endAngle: 350,
+      scores: [
+        { methodId: "chc", score: "1" },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "1" },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "4", notes: ["C", "A"], clarification: "Do not insert. If woman develops PID while using IUD, give antibiotic treatment and continue method." },
+        { methodId: "cu_iud", score: "4", notes: ["C", "A"], clarification: "Do not insert. If past PID without current symptoms, all methods = 1." }
+      ]
+    },
+    {
+      id: "who-sepsis",
+      sectorIndex: 35,
+      categoryName: "SEPSIS",
+      conditionName: "Puerperal / Post-Abortion Sepsis",
+      subCondition: "Active postpartum or post-abortive uterine sepsis",
+      startAngle: 350,
+      endAngle: 360,
+      scores: [
+        { methodId: "chc", score: "1" },
+        { methodId: "pop", score: "1" },
+        { methodId: "poi", score: "1" },
+        { methodId: "implants", score: "1" },
+        { methodId: "lng_iud", score: "4", clarification: "Absolute contraindication: insertion into infected uterus carries severe risk of peritonitis and septic shock." },
+        { methodId: "cu_iud", score: "4", clarification: "Absolute contraindication." }
+      ]
+    },
   ],
   notes: {
     A: {
