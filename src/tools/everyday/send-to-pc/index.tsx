@@ -25,7 +25,10 @@ import {
   Lock,
   Link2,
   Activity,
-  ArrowRightLeft
+  ArrowRightLeft,
+  Globe,
+  Radio,
+  HardDrive
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import JSZip from "jszip";
@@ -51,12 +54,14 @@ import {
   formatDuration, 
   downloadBlob, 
   shareFileNative, 
-  detectConnectionType 
+  detectConnectionType,
+  detectDeviceName
 } from "./utils";
 import { QrScannerModal } from "./components/QrScannerModal";
 import { ImageLightbox } from "./components/ImageLightbox";
 import { SendConsole } from "./components/SendConsole";
 import { TransferCard } from "./components/TransferCard";
+import { ProtocolStatusCard } from "./components/ProtocolStatusCard";
 
 export function SendToPcTool() {
   // Roles: "receiver" (Receive files / display QR) or "sender" (Send files / connect via PIN/QR)
@@ -217,8 +222,15 @@ export function SendToPcTool() {
       const netInfo = await detectConnectionType(conn.peerConnection);
       setConnectedPeerInfo((prev) => ({
         ...prev,
+        localDevice: detectDeviceName(),
         connectionType: netInfo.type,
         localIp: netInfo.localIp,
+        remoteIp: netInfo.remoteIp,
+        candidateType: netInfo.candidateType,
+        remoteCandidateType: netInfo.remoteCandidateType,
+        protocol: netInfo.protocol,
+        securityCipher: netInfo.securityCipher,
+        iceState: netInfo.iceState,
       }));
     } catch {
       // Safe catch
@@ -293,15 +305,17 @@ export function SendToPcTool() {
 
     // 2. Handshake
     if (data.type === "handshake") {
-      setConnectedPeerInfo({
-        device: data.device || (roleRef.current === "receiver" ? "Sender" : "Receiver"),
+      setConnectedPeerInfo((prev) => ({
+        ...prev,
+        device: data.device || (roleRef.current === "receiver" ? "Remote Sender" : "Remote Receiver"),
+        localDevice: detectDeviceName(),
         connectedAt: data.timestamp || Date.now(),
-      });
+      }));
       setConnectionStatus("connected");
       setErrorMessage("");
       playSound();
       triggerVibrate();
-      setTimeout(updateConnectionNetworkStats, 800);
+      setTimeout(updateConnectionNetworkStats, 600);
       return;
     }
 
@@ -475,7 +489,8 @@ export function SendToPcTool() {
       setErrorMessage("");
       conn.send({
         type: "handshake",
-        device: roleRef.current === "receiver" ? "Receiver" : "Sender",
+        device: detectDeviceName(),
+        role: roleRef.current,
         timestamp: Date.now(),
       });
       playSound();
@@ -1143,7 +1158,7 @@ export function SendToPcTool() {
             <Upload className="h-10 w-10" />
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-            Drop Files Anywhere to Send
+            Drop Files Anywhere to Send via OmniDrop
           </h2>
           <p className="text-sm text-muted-foreground mt-2 max-w-md text-center">
             {connectionStatus === "connected"
@@ -1151,8 +1166,9 @@ export function SendToPcTool() {
               : "Connect sender and receiver to complete the wireless transfer."}
           </p>
           <div className="mt-4 flex items-center gap-2">
-            <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-semibold px-3 py-1 text-xs">
-              ⚡ 0 Internet Data Used on Local Wi-Fi
+            <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-semibold px-3 py-1 text-xs flex items-center gap-1.5">
+              <Zap className="h-3.5 w-3.5 text-emerald-500" />
+              <span>0 Internet Data Used on Local Wi-Fi</span>
             </Badge>
           </div>
         </div>
@@ -1167,20 +1183,24 @@ export function SendToPcTool() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="font-heading font-extrabold text-base sm:text-lg text-foreground tracking-tight">
-                Send to PC
+                OmniDrop
               </h1>
               <Badge variant="outline" className="text-[10px] px-2 py-0 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10">
                 <ShieldCheck className="h-3 w-3 mr-1 inline" /> 100% P2P Encrypted
               </Badge>
 
-              {connectedPeerInfo?.connectionType === "local-lan" && (
+              {connectedPeerInfo?.connectionType === "local-lan" ? (
+                <Badge variant="outline" className="text-[10px] px-2 py-0 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 flex items-center gap-1">
+                  <Radio className="h-3 w-3" /> Local Wi-Fi (0 Data Used)
+                </Badge>
+              ) : (
                 <Badge variant="outline" className="text-[10px] px-2 py-0 border-primary/30 text-primary bg-primary/10">
-                  ⚡ Local Wi-Fi (0 Data Used)
+                  Universal Any-Device
                 </Badge>
               )}
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Blazing fast wireless file &amp; clipboard bridge between sender and receiver
+              Universal wireless file &amp; clipboard bridge across any device (PC, Phone, Mac, Tablet)
             </p>
           </div>
         </div>
@@ -1295,8 +1315,9 @@ export function SendToPcTool() {
             </span>
             <div className="flex items-center gap-2 font-mono">
               {activeTransfer.speedBytesPerSec !== undefined && activeTransfer.speedBytesPerSec > 0 && (
-                <span className="text-[11px] text-muted-foreground">
-                  ⚡ {formatSpeed(activeTransfer.speedBytesPerSec)}
+                <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                  <Zap className="h-3 w-3 text-primary inline" />
+                  <span>{formatSpeed(activeTransfer.speedBytesPerSec)}</span>
                 </span>
               )}
               {activeTransfer.remainingSeconds !== undefined && activeTransfer.remainingSeconds > 0 && (
@@ -1334,7 +1355,8 @@ export function SendToPcTool() {
         <div className="space-y-4">
           {connectionStatus !== "connected" ? (
             /* UNPAIRED STATE: Minimalist QR & PIN Hero */
-            <div className="bg-card/40 backdrop-blur-xl border border-border/60 rounded-3xl p-5 sm:p-7 shadow-xs text-center space-y-4">
+            <>
+              <div className="bg-card/40 backdrop-blur-xl border border-border/60 rounded-3xl p-5 sm:p-7 shadow-xs text-center space-y-4">
               <div className="space-y-1 max-w-md mx-auto">
                 <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
                   Scan QR with Sender Device
@@ -1399,6 +1421,15 @@ export function SendToPcTool() {
                 </div>
               </div>
             </div>
+
+            {/* Protocol & Transfer Architecture Specifications */}
+            <ProtocolStatusCard
+              connectedPeerInfo={connectedPeerInfo}
+              connectionStatus={connectionStatus}
+              role={role}
+              onRefreshStats={updateConnectionNetworkStats}
+            />
+          </>
           ) : (
             /* PAIRED STATE: Live Console & Transfer Stream */
             <div className="space-y-4 animate-in fade-in duration-200">
@@ -1421,11 +1452,13 @@ export function SendToPcTool() {
                     </div>
                     <div className="text-[10px] text-muted-foreground flex items-center gap-1.5">
                       {connectedPeerInfo?.connectionType === "local-lan" ? (
-                        <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                          ⚡ Direct Local Wi-Fi (0 Data Used • Unlimited Speed)
+                        <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                          <Radio className="h-3 w-3" /> Direct Local Wi-Fi (0 Data Used • Unlimited Speed)
                         </span>
                       ) : (
-                        <span>🌐 Encrypted P2P (Any Network)</span>
+                        <span className="flex items-center gap-1">
+                          <Globe className="h-3 w-3" /> Direct Encrypted P2P (Any Network)
+                        </span>
                       )}
                     </div>
                   </div>
@@ -1483,6 +1516,14 @@ export function SendToPcTool() {
                   </Button>
                 </div>
               </div>
+
+              {/* Protocol & Transfer Architecture Diagnostics */}
+              <ProtocolStatusCard
+                connectedPeerInfo={connectedPeerInfo}
+                connectionStatus={connectionStatus}
+                role={role}
+                onRefreshStats={updateConnectionNetworkStats}
+              />
 
               {/* Receiver Send Console */}
               <SendConsole
@@ -1577,7 +1618,8 @@ export function SendToPcTool() {
         <div className="space-y-4">
           {connectionStatus !== "connected" ? (
             /* Pair to Receiver with Camera Scanner + PIN Fallback */
-            <div className="bg-card/40 backdrop-blur-xl border border-border/60 rounded-3xl p-5 sm:p-7 space-y-4 text-center max-w-sm mx-auto shadow-xs">
+            <>
+              <div className="bg-card/40 backdrop-blur-xl border border-border/60 rounded-3xl p-5 sm:p-7 space-y-4 text-center max-w-sm mx-auto shadow-xs">
               <div className="h-11 w-11 rounded-2xl bg-primary/10 text-primary mx-auto flex items-center justify-center">
                 <Upload className="h-5 w-5" />
               </div>
@@ -1642,9 +1684,18 @@ export function SendToPcTool() {
                 </div>
               </div>
             </div>
+
+            {/* Protocol & Transfer Architecture Specifications */}
+            <ProtocolStatusCard
+              connectedPeerInfo={connectedPeerInfo}
+              connectionStatus={connectionStatus}
+              role={role}
+              onRefreshStats={updateConnectionNetworkStats}
+            />
+          </>
           ) : (
             /* Sender Paired Console */
-            <div className="max-w-md mx-auto space-y-3.5 animate-in fade-in">
+            <div className="max-w-2xl mx-auto space-y-3.5 animate-in fade-in">
               <div className="flex items-center justify-between p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
                 <div className="flex items-center gap-2.5">
                   <span className="relative flex h-2.5 w-2.5">
@@ -1652,11 +1703,21 @@ export function SendToPcTool() {
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                   </span>
                   <div>
-                    <h4 className="font-bold text-xs text-foreground">Connected to Receiver</h4>
-                    <p className="text-[10px] text-muted-foreground">
-                      {connectedPeerInfo?.connectionType === "local-lan"
-                        ? "⚡ Local Wi-Fi (0 Internet Data Used)"
-                        : "🌐 Direct Encrypted P2P"}
+                    <h4 className="font-bold text-xs text-foreground">
+                      Connected to {connectedPeerInfo?.device || "Remote Receiver"}
+                    </h4>
+                    <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                      {connectedPeerInfo?.connectionType === "local-lan" ? (
+                        <>
+                          <Radio className="h-3 w-3 text-emerald-500" />
+                          <span>Local Wi-Fi (0 Internet Data Used)</span>
+                        </>
+                      ) : (
+                        <>
+                          <Globe className="h-3 w-3 text-primary" />
+                          <span>Direct Encrypted P2P</span>
+                        </>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -1672,6 +1733,14 @@ export function SendToPcTool() {
                   Disconnect
                 </Button>
               </div>
+
+              {/* Protocol & Transfer Architecture Diagnostics */}
+              <ProtocolStatusCard
+                connectedPeerInfo={connectedPeerInfo}
+                connectionStatus={connectionStatus}
+                role={role}
+                onRefreshStats={updateConnectionNetworkStats}
+              />
 
               <SendConsole
                 title="Send to Receiver"

@@ -40,10 +40,17 @@ export type ConnectionStatus =
 
 export interface ConnectedPeerInfo {
   device?: string;
+  localDevice?: string;
   connectedAt?: number;
   connectionType?: "local-lan" | "p2p-direct" | "relay";
   latencyMs?: number;
   localIp?: string;
+  remoteIp?: string;
+  candidateType?: string;
+  remoteCandidateType?: string;
+  protocol?: string;
+  securityCipher?: string;
+  iceState?: string;
 }
 
 export interface QueueItem {

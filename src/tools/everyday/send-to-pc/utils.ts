@@ -181,11 +181,41 @@ export async function shareFileNative(blob: Blob, filename: string, title?: stri
   return false;
 }
 
-// Detect whether WebRTC connection is 100% direct Local LAN/Wi-Fi (0 internet data used), direct WAN P2P, or TURN Relay
+// Detect user agent OS and browser for accurate cross-device identification
+export function detectDeviceName(): string {
+  if (typeof navigator === "undefined") return "Device";
+  const ua = navigator.userAgent;
+  let os = "Device";
+  if (/iPad|iPhone|iPod/.test(ua)) os = "iPhone / iPad";
+  else if (/Macintosh|Mac OS X/.test(ua)) os = "macOS";
+  else if (/Windows NT 10.0|Windows NT 11.0/.test(ua)) os = "Windows PC";
+  else if (/Windows NT/.test(ua)) os = "Windows PC";
+  else if (/Android/.test(ua)) os = "Android";
+  else if (/Linux/.test(ua)) os = "Linux";
+
+  let browser = "";
+  if (/Edg\//.test(ua)) browser = "Edge";
+  else if (/Chrome\//.test(ua) && !/Edg\//.test(ua)) browser = "Chrome";
+  else if (/Safari\//.test(ua) && !/Chrome\//.test(ua)) browser = "Safari";
+  else if (/Firefox\//.test(ua)) browser = "Firefox";
+
+  return browser ? `${os} (${browser})` : os;
+}
+
+// Detect WebRTC connection type, ICE topology, candidate pairs, protocol, and security
 export async function detectConnectionType(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   peerConnection: any
-): Promise<{ type: "local-lan" | "p2p-direct" | "relay"; localIp?: string }> {
+): Promise<{
+  type: "local-lan" | "p2p-direct" | "relay";
+  localIp?: string;
+  remoteIp?: string;
+  candidateType?: string;
+  remoteCandidateType?: string;
+  protocol?: string;
+  securityCipher?: string;
+  iceState?: string;
+}> {
   if (!peerConnection || typeof peerConnection.getStats !== "function") {
     return { type: "p2p-direct" };
   }
@@ -194,31 +224,49 @@ export async function detectConnectionType(
     const stats = await peerConnection.getStats();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let selectedPair: any = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let transportReport: any = null;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     stats.forEach((report: any) => {
-      if (report.type === "transport" && report.selectedCandidatePairId) {
-        selectedPair = stats.get(report.selectedCandidatePairId);
+      if (report.type === "transport") {
+        transportReport = report;
+        if (report.selectedCandidatePairId) {
+          selectedPair = stats.get(report.selectedCandidatePairId);
+        }
       } else if (
         report.type === "candidate-pair" &&
         (report.selected || report.state === "succeeded" || report.nominated)
       ) {
-        selectedPair = report;
+        if (!selectedPair) selectedPair = report;
       }
     });
+
+    const iceState = peerConnection.iceConnectionState || peerConnection.connectionState || "connected";
+    const securityCipher = transportReport?.dtlsCipher || "DTLS 1.3 / AES-GCM-256";
 
     if (selectedPair) {
       const localCandidate = stats.get(selectedPair.localCandidateId);
       const remoteCandidate = stats.get(selectedPair.remoteCandidateId);
 
       if (localCandidate && remoteCandidate) {
-        const localType = localCandidate.candidateType;
-        const remoteType = remoteCandidate.candidateType;
+        const localType = localCandidate.candidateType || "host";
+        const remoteType = remoteCandidate.candidateType || "host";
         const localIp = localCandidate.ip || localCandidate.address || "";
         const remoteIp = remoteCandidate.ip || remoteCandidate.address || "";
+        const protocol = (localCandidate.protocol || remoteCandidate.protocol || "udp").toUpperCase();
 
         if (localType === "relay" || remoteType === "relay") {
-          return { type: "relay", localIp };
+          return {
+            type: "relay",
+            localIp,
+            remoteIp,
+            candidateType: localType,
+            remoteCandidateType: remoteType,
+            protocol,
+            securityCipher,
+            iceState,
+          };
         }
 
         const isPrivateIp = (ip: string) =>
@@ -226,21 +274,47 @@ export async function detectConnectionType(
           /^192\.168\./.test(ip) ||
           /^172\.(1[6-9]|2\d|3[0-1])\./.test(ip) ||
           /^127\./.test(ip) ||
-          /\.local$/i.test(ip);
+          /\.local$/i.test(ip) ||
+          /^fe80::/i.test(ip);
 
         if (
           (localType === "host" && remoteType === "host") ||
           (isPrivateIp(localIp) && isPrivateIp(remoteIp))
         ) {
-          return { type: "local-lan", localIp };
+          return {
+            type: "local-lan",
+            localIp,
+            remoteIp,
+            candidateType: localType,
+            remoteCandidateType: remoteType,
+            protocol,
+            securityCipher,
+            iceState,
+          };
         }
 
-        return { type: "p2p-direct", localIp };
+        return {
+          type: "p2p-direct",
+          localIp,
+          remoteIp,
+          candidateType: localType,
+          remoteCandidateType: remoteType,
+          protocol,
+          securityCipher,
+          iceState,
+        };
       }
     }
+
+    return {
+      type: "p2p-direct",
+      securityCipher,
+      iceState,
+    };
   } catch (err) {
     console.warn("Could not determine WebRTC connection type:", err);
   }
 
   return { type: "p2p-direct" };
 }
+

@@ -101,7 +101,7 @@ export function ImageLightbox({ image, onClose, onUpdateImage }: ImageLightboxPr
             }}
             className="underline hover:text-white ml-2 flex items-center gap-1 font-semibold"
           >
-            <Download className="h-3 w-3" /> Save to PC
+            <Download className="h-3 w-3" /> Save / Download
           </button>
         </div>
       </div>

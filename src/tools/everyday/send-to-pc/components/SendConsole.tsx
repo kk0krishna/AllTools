@@ -13,8 +13,7 @@ import {
   Eye, 
   EyeOff, 
   Flame,
-  Layers,
-  Sparkles
+  Layers
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -192,7 +191,7 @@ export function SendConsole({
                 }`}
               >
                 {isConsoleDragOver ? (
-                  <Sparkles className="h-6 w-6 animate-pulse" />
+                  <Upload className="h-6 w-6 animate-bounce" />
                 ) : (
                   <Upload className="h-6 w-6" />
                 )}
@@ -210,8 +209,8 @@ export function SendConsole({
               </div>
 
               <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
-                <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                  ⚡ 0 Data Used on Local Wi-Fi
+                <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+                  <Zap className="h-3 w-3" /> 0 Data Used on Local Wi-Fi
                 </span>
                 <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                   Ctrl+V to paste screenshot

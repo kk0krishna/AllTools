@@ -4,14 +4,19 @@ import { SendToPcTool } from "./index";
 
 export const sendToPcEntry: ToolEntry = {
   metadata: {
-    name: "Send to PC: Blazing Fast Wireless Transfer & Clipboard Bridge",
-    description: "Ultra-fast P2P file transfer and cross-device clipboard bridge. Zero data charge on local Wi-Fi, full drag & drop support, ToffeeShare-style streaming, and auto-download for phone and PC.",
+    name: "OmniDrop: Universal Fast Cross-Device Transfer & Clipboard Bridge",
+    description: "Ultra-fast P2P file transfer and cross-device clipboard bridge between any device (Phone, PC, Mac, Tablet). Zero data charge on local Wi-Fi, full drag & drop support, ToffeeShare-style streaming, and auto-download.",
     category: "everyday",
     slug: "send-to-pc",
     keywords: [
+      "omnidrop",
+      "omni drop",
+      "universal file transfer",
+      "cross device transfer",
       "send to pc",
+      "phone to phone file transfer",
+      "pc to phone transfer",
       "toffeeshare alternative",
-      "phone to pc transfer",
       "wireless file transfer",
       "drag and drop file share",
       "cross device clipboard",
@@ -19,10 +24,9 @@ export const sendToPcEntry: ToolEntry = {
       "send password securely",
       "camera scan to pc",
       "airdrop for windows",
-      "photo to computer",
+      "airdrop for android",
       "qr code file transfer",
       "browser p2p file share",
-      "burn on copy password",
       "webrtc data transfer",
       "snapdrop alternative"
     ],
@@ -33,10 +37,10 @@ export const sendToPcEntry: ToolEntry = {
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-bold tracking-tight mb-3">
-          Blazing Fast Cross-Device Wireless Transfer
+          OmniDrop: Universal Any-to-Any Device Wireless Transfer
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          <strong>Send to PC</strong> creates a direct, peer-to-peer (P2P) data bridge between any sender and receiver devices (phone, PC, laptop, or tablet) using native browser WebRTC DataChannels. 
+          <strong>OmniDrop</strong> creates a direct, peer-to-peer (P2P) data bridge between any devices (phone to PC, PC to phone, phone to phone, Mac to Android, or tablet to laptop) using native browser WebRTC DataChannels. 
           Transfer high-resolution photos, multi-gigabyte videos, camera-scanned documents, sensitive passwords, clipboard text, and links immediately—with zero software installation, zero accounts, and zero cloud storage.
         </p>
       </div>
@@ -71,7 +75,7 @@ export const sendToPcEntry: ToolEntry = {
       <div>
         <h3 className="text-xl font-bold tracking-tight mb-2">Does It Work Across Different Networks or Far Away?</h3>
         <p className="text-muted-foreground leading-relaxed mb-3">
-          <strong>Yes, absolutely.</strong> Send to PC is built with a resilient multi-tier ICE architecture:
+          <strong>Yes, absolutely.</strong> OmniDrop is built with a resilient multi-tier ICE architecture:
         </p>
         <ul className="list-disc pl-5 space-y-1.5 text-xs text-muted-foreground mb-3">
           <li><strong>Same Network (Home/Office Wi-Fi):</strong> Prioritizes direct LAN host sockets with 0 MB internet data used and maximum local speed.</li>

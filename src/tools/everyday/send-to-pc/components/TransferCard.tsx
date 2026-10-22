@@ -16,7 +16,8 @@ import {
   ZoomIn,
   Share2,
   Music,
-  Video
+  Video,
+  ShieldAlert
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -175,8 +176,8 @@ export function TransferCard({
           </div>
 
           {item.isBurned ? (
-            <div className="p-2.5 bg-red-500/10 border border-red-500/20 rounded-xl text-center text-red-600 dark:text-red-400 text-xs font-semibold">
-              🔥 Shredded from memory
+            <div className="p-2.5 bg-red-500/10 border border-red-500/20 rounded-xl text-center text-red-600 dark:text-red-400 text-xs font-semibold flex items-center justify-center gap-1.5">
+              <ShieldAlert className="h-3.5 w-3.5" /> Shredded from memory
             </div>
           ) : (
             <div className="bg-muted/40 p-2.5 rounded-xl border border-border/60 flex items-center justify-between">

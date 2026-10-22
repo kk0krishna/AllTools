@@ -1,4 +1,4 @@
-# Send to PC & Cross-Device Clipboard Bridge (Technical Architecture)
+# OmniDrop: Universal Cross-Device Wireless Transfer & Clipboard Bridge (Technical Architecture)
 
 **Location:** `src/tools/everyday/send-to-pc`  
 **Route:** `/tools/everyday/send-to-pc`  
@@ -9,7 +9,7 @@
 
 ## 1. Executive Architecture Overview
 
-**Send to PC** is a zero-installation, serverless, client-side peer-to-peer (P2P) file transfer and clipboard bridge built on **WebRTC DataChannels** (`RTCDataChannel`) and **PeerJS**. It connects desktop computers and mobile devices (iOS / Android) across the same local network or across separate networks (e.g., Cellular 4G/5G $\leftrightarrow$ Home Wi-Fi, or across continents).
+**OmniDrop** is a zero-installation, serverless, client-side peer-to-peer (P2P) file transfer and clipboard bridge built on **WebRTC DataChannels** (`RTCDataChannel`) and **PeerJS**. It seamlessly connects any devices (desktop PCs, laptops, mobile phones, Macs, and tablets across iOS, Android, Windows, macOS, and Linux) over the same local network or across separate networks (e.g., Cellular 4G/5G $\leftrightarrow$ Home Wi-Fi, or across continents).
 
 ### Key Architectural Pillars
 - **Zero Cloud Storage & 100% P2P:** All file chunks, clipboard strings, and credentials travel directly from browser RAM to browser RAM over encrypted WebRTC DataChannels with DTLS/SCTP.
@@ -89,7 +89,7 @@
    ```
 2. **Network Connection Detection:**
    - Once connected, `detectConnectionType()` inspects active candidate pairs:
-     - **Local LAN:** When candidate types are `host` $\leftrightarrow$ `host` or both addresses are private IPv4 (RFC 1918), the app marks the connection as **`⚡ Direct Local Wi-Fi (0 Internet Data Used)`**.
+     - **Local LAN:** When candidate types are `host` $\leftrightarrow$ `host` or both addresses are private IPv4 (RFC 1918), the app marks the connection as **`Direct Local Wi-Fi (0 Internet Data Used)`**.
      - **Cross-Network (4G/5G $\leftrightarrow$ Wi-Fi):** STUN Server-Reflexive (`srflx`) candidates perform UDP hole punching across routers.
      - **Symmetric NAT / Strict Carrier Firewalls:** TURN Relay (`relay`) candidates securely tunnel packets across ports 80/443 over UDP/TCP.
 

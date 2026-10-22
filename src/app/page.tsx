@@ -103,7 +103,7 @@ const CATEGORIES = [
     border: "border-indigo-500/20",
     glow: "rgba(99, 102, 241, 0.15)",
     href: "/categories/everyday",
-    examples: "Send to PC, QR Code, PDF Compressor",
+    examples: "OmniDrop, QR Code, PDF Compressor",
   },
   {
     name: "Audio",
@@ -179,8 +179,8 @@ const DEFAULT_TRENDING = [
 function getToolBadge(slug: string, category: string): { label: string; badgeClass: string } {
   if (slug === "send-to-pc") {
     return {
-      label: "Zero Cloud • Local P2P",
-      badgeClass: "text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
+      label: "OmniDrop • Zero Cloud P2P",
+      badgeClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
     };
   }
   if (slug === "who-mec-wheel") {
@@ -418,8 +418,8 @@ export default function Home() {
                 href="/tools/everyday/send-to-pc"
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-card hover:bg-card/90 border border-border/70 hover:border-primary/50 text-foreground text-xs font-semibold transition-all shadow-xs hover:scale-105"
               >
-                <Share2 className="w-3.5 h-3.5 text-indigo-500" />
-                Send to PC
+                <Share2 className="w-3.5 h-3.5 text-primary" />
+                OmniDrop
               </Link>
 
               <Link
@@ -482,7 +482,7 @@ export default function Home() {
             <div>
               <h3 className="font-bold text-xs sm:text-sm text-foreground">Zero Internet on Wi-Fi</h3>
               <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-                Send to PC transfers over your local network switch with 0 MB data charges at gigabit throughput.
+                OmniDrop transfers over your local network switch with 0 MB data charges at gigabit throughput.
               </p>
             </div>
           </div>
@@ -649,7 +649,7 @@ export default function Home() {
             Clinikkit is a comprehensive, privacy-first platform offering free online tools designed specifically for healthcare professionals, clinical trainees, developers, and everyday users. Our mission is to provide lightning-fast, secure, and accurate web utilities directly in your browser.
           </p>
           <p>
-            Our platform features an extensive library of specialized utilities. For healthcare practitioners, we offer clinical-grade calculators including the <strong>WHO MEC Wheel</strong>, <strong>India Adapted MEC Wheel</strong>, <strong>ABG Analyzer</strong>, <strong>BMI Calculator</strong>, <strong>Child Immunization Schedule</strong>, comprehensive <strong>Obstetrics Tools</strong>, and the <strong>Ishihara Color Blindness Test</strong>. For daily productivity and file sharing, <strong>Send to PC</strong> provides high-speed wireless peer-to-peer file transfer without data charges on local Wi-Fi.
+            Our platform features an extensive library of specialized utilities. For healthcare practitioners, we offer clinical-grade calculators including the <strong>WHO MEC Wheel</strong>, <strong>India Adapted MEC Wheel</strong>, <strong>ABG Analyzer</strong>, <strong>BMI Calculator</strong>, <strong>Child Immunization Schedule</strong>, comprehensive <strong>Obstetrics Tools</strong>, and the <strong>Ishihara Color Blindness Test</strong>. For daily productivity and universal file sharing, <strong>OmniDrop</strong> provides high-speed wireless peer-to-peer file transfer between any devices (Phone, PC, Mac, Tablet) without data charges on local Wi-Fi.
           </p>
           <p>
             Built with modern web technologies, Clinikkit ensures that your data remains secure while delivering a seamless, premium user experience across all devices—all without requiring software installation or account creation.
