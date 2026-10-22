@@ -11,10 +11,8 @@ import {
   Activity, 
   Lock, 
   Layers, 
-  Server, 
   ChevronDown, 
   ChevronUp, 
-  Info,
   CheckCircle2,
   HardDrive
 } from "lucide-react";
@@ -26,6 +24,7 @@ interface ProtocolStatusCardProps {
   connectedPeerInfo: ConnectedPeerInfo | null;
   connectionStatus: ConnectionStatus;
   role: RoleType;
+  defaultExpanded?: boolean;
   onRefreshStats?: () => void;
 }
 
@@ -33,9 +32,10 @@ export function ProtocolStatusCard({
   connectedPeerInfo,
   connectionStatus,
   role,
+  defaultExpanded = false,
   onRefreshStats,
 }: ProtocolStatusCardProps) {
-  const [showTechnicalDetails, setShowTechnicalDetails] = useState<boolean>(false);
+  const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded);
 
   const isConnected = connectionStatus === "connected";
   const connectionType = connectedPeerInfo?.connectionType || "p2p-direct";
@@ -77,46 +77,59 @@ export function ProtocolStatusCard({
   };
 
   return (
-    <div className="bg-card/40 backdrop-blur-xl border border-border/60 rounded-3xl p-4 sm:p-5 space-y-4 shadow-xs transition-all">
-      {/* Top Protocol Status Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/40 pb-3">
+    <div className="bg-card/40 backdrop-blur-xl border border-border/60 rounded-3xl p-4 sm:p-5 shadow-xs transition-all mt-3">
+      {/* Clickable Header Strip */}
+      <div 
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer select-none"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
         <div className="flex items-center gap-2.5">
-          <div className="h-9 w-9 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-            <Network className="h-4.5 w-4.5" />
+          <div className="h-8 w-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+            <Network className="h-4 w-4" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="font-bold text-xs sm:text-sm text-foreground">
-                Protocol &amp; Network Architecture
+                Protocol &amp; Architecture Specifications
               </span>
               {getRouteBadge()}
             </div>
-            <p className="text-[11px] text-muted-foreground">
-              WebRTC DataChannel • SCTP over DTLS/UDP • Hardware End-to-End Encrypted
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              WebRTC DataChannel • SCTP over DTLS/UDP • Hardware E2EE
+              {isConnected && connectedPeerInfo?.latencyMs !== undefined && (
+                <span className="font-mono ml-2 text-foreground font-semibold">
+                  • {connectedPeerInfo.latencyMs}ms RTT
+                </span>
+              )}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 self-end sm:self-auto">
-          {isConnected && onRefreshStats && (
+        <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+          {isConnected && onRefreshStats && isExpanded && (
             <Button
               size="sm"
               variant="outline"
-              onClick={onRefreshStats}
+              onClick={(e) => {
+                e.stopPropagation();
+                onRefreshStats();
+              }}
               className="text-[11px] h-7 px-2.5 rounded-xl border-border/60 text-muted-foreground hover:text-foreground"
             >
-              Refresh Diagnostics
+              Refresh Stats
             </Button>
           )}
           <Button
             size="sm"
             variant="ghost"
-            onClick={() => setShowTechnicalDetails(!showTechnicalDetails)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(!isExpanded);
+            }}
             className="text-[11px] h-7 px-2.5 rounded-xl text-primary font-semibold hover:bg-primary/10 flex items-center gap-1"
           >
-            <Info className="h-3.5 w-3.5" />
-            <span>{showTechnicalDetails ? "Hide Specs" : "Protocol Specs"}</span>
-            {showTechnicalDetails ? (
+            <span>{isExpanded ? "Collapse Specs" : "View Architecture Specs"}</span>
+            {isExpanded ? (
               <ChevronUp className="h-3.5 w-3.5" />
             ) : (
               <ChevronDown className="h-3.5 w-3.5" />
@@ -125,97 +138,94 @@ export function ProtocolStatusCard({
         </div>
       </div>
 
-      {/* Real-time Diagnostics Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        {/* Metric 1: Transport Protocol */}
-        <div className="p-3 rounded-2xl bg-muted/25 border border-border/50 space-y-1">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
-            <Layers className="h-3 w-3 text-primary" /> Protocol Stack
-          </div>
-          <div className="font-mono font-bold text-xs sm:text-sm text-foreground">
-            WebRTC SCTP
-          </div>
-          <div className="text-[10px] text-muted-foreground">
-            RFC 8831 DataChannel
-          </div>
-        </div>
+      {/* Expanded Architecture Details */}
+      {isExpanded && (
+        <div className="pt-4 border-t border-border/40 space-y-4 animate-in fade-in duration-200 mt-3">
+          {/* Real-time Diagnostics Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            {/* Metric 1: Transport Protocol */}
+            <div className="p-3 rounded-2xl bg-muted/25 border border-border/50 space-y-1">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
+                <Layers className="h-3 w-3 text-primary" /> Protocol Stack
+              </div>
+              <div className="font-mono font-bold text-xs sm:text-sm text-foreground">
+                WebRTC SCTP
+              </div>
+              <div className="text-[10px] text-muted-foreground">
+                RFC 8831 DataChannel
+              </div>
+            </div>
 
-        {/* Metric 2: Active Transport Route */}
-        <div className="p-3 rounded-2xl bg-muted/25 border border-border/50 space-y-1">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
-            <Radio className="h-3 w-3 text-emerald-500" /> Active Route
-          </div>
-          <div className="font-bold text-xs sm:text-sm text-foreground truncate" title={getRouteLabel()}>
-            {connectionType === "local-lan" ? "Local Wi-Fi Mesh" : connectionType === "relay" ? "TURN Relay Tunnel" : "Direct WAN P2P"}
-          </div>
-          <div className="text-[10px] text-muted-foreground">
-            {connectionType === "local-lan" ? "0 MB Data • Local Switch" : "Global STUN Reflexive"}
-          </div>
-        </div>
+            {/* Metric 2: Active Transport Route */}
+            <div className="p-3 rounded-2xl bg-muted/25 border border-border/50 space-y-1">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
+                <Radio className="h-3 w-3 text-emerald-500" /> Active Route
+              </div>
+              <div className="font-bold text-xs sm:text-sm text-foreground truncate" title={getRouteLabel()}>
+                {connectionType === "local-lan" ? "Local Wi-Fi Mesh" : connectionType === "relay" ? "TURN Relay Tunnel" : "Direct WAN P2P"}
+              </div>
+              <div className="text-[10px] text-muted-foreground">
+                {connectionType === "local-lan" ? "0 MB Data • Local Switch" : "Global STUN Reflexive"}
+              </div>
+            </div>
 
-        {/* Metric 3: Encryption Standard */}
-        <div className="p-3 rounded-2xl bg-muted/25 border border-border/50 space-y-1">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
-            <Lock className="h-3 w-3 text-primary" /> Encryption
-          </div>
-          <div className="font-mono font-bold text-xs sm:text-sm text-foreground">
-            DTLS-AES-GCM
-          </div>
-          <div className="text-[10px] text-muted-foreground">
-            256-bit Hardware E2EE
-          </div>
-        </div>
+            {/* Metric 3: Encryption Standard */}
+            <div className="p-3 rounded-2xl bg-muted/25 border border-border/50 space-y-1">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
+                <Lock className="h-3 w-3 text-primary" /> Encryption
+              </div>
+              <div className="font-mono font-bold text-xs sm:text-sm text-foreground">
+                DTLS-AES-GCM
+              </div>
+              <div className="text-[10px] text-muted-foreground">
+                256-bit Hardware E2EE
+              </div>
+            </div>
 
-        {/* Metric 4: Round-Trip Time Latency */}
-        <div className="p-3 rounded-2xl bg-muted/25 border border-border/50 space-y-1">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
-            <Activity className="h-3 w-3 text-sky-500" /> Latency (RTT)
-          </div>
-          <div className="font-mono font-bold text-xs sm:text-sm text-foreground">
-            {isConnected && connectedPeerInfo?.latencyMs !== undefined
-              ? `${connectedPeerInfo.latencyMs} ms`
-              : isConnected
-              ? "< 2 ms"
-              : "Standby"}
-          </div>
-          <div className="text-[10px] text-muted-foreground">
-            6s Keepalive Pulse
-          </div>
-        </div>
-      </div>
-
-      {/* Connected Device Topology Bar (when connected) */}
-      {isConnected && (
-        <div className="p-3 rounded-2xl bg-muted/30 border border-border/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 overflow-hidden">
-            <HardDrive className="h-4 w-4 text-primary shrink-0" />
-            <span className="text-muted-foreground">This Device:</span>
-            <span className="font-semibold text-foreground font-mono truncate">
-              {connectedPeerInfo?.localDevice || (role === "receiver" ? "Receiver Device" : "Sender Device")}
-            </span>
+            {/* Metric 4: Round-Trip Time Latency */}
+            <div className="p-3 rounded-2xl bg-muted/25 border border-border/50 space-y-1">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
+                <Activity className="h-3 w-3 text-sky-500" /> Latency (RTT)
+              </div>
+              <div className="font-mono font-bold text-xs sm:text-sm text-foreground">
+                {isConnected && connectedPeerInfo?.latencyMs !== undefined
+                  ? `${connectedPeerInfo.latencyMs} ms`
+                  : isConnected
+                  ? "< 2 ms"
+                  : "Standby"}
+              </div>
+              <div className="text-[10px] text-muted-foreground">
+                6s Keepalive Pulse
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 text-primary font-semibold text-[11px] px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 shrink-0">
-            <ArrowRightLeft className="h-3.5 w-3.5" /> Direct In-Memory Bridge
-          </div>
+          {/* Connected Device Topology Bar (when connected) */}
+          {isConnected && (
+            <div className="p-3 rounded-2xl bg-muted/30 border border-border/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2 overflow-hidden">
+                <HardDrive className="h-4 w-4 text-primary shrink-0" />
+                <span className="text-muted-foreground">This Device:</span>
+                <span className="font-semibold text-foreground font-mono truncate">
+                  {connectedPeerInfo?.localDevice || (role === "receiver" ? "Receiver Device" : "Sender Device")}
+                </span>
+              </div>
 
-          <div className="flex items-center gap-2 overflow-hidden">
-            <Wifi className="h-4 w-4 text-emerald-500 shrink-0" />
-            <span className="text-muted-foreground">Connected Peer:</span>
-            <span className="font-semibold text-foreground font-mono truncate">
-              {connectedPeerInfo?.device || (role === "receiver" ? "Connected Sender" : "Connected Receiver")}
-            </span>
-          </div>
-        </div>
-      )}
+              <div className="flex items-center gap-2 text-primary font-semibold text-[11px] px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 shrink-0">
+                <ArrowRightLeft className="h-3.5 w-3.5" /> Direct In-Memory Bridge
+              </div>
 
-      {/* Technical Architecture Deep-Dive (Expandable Specs) */}
-      {showTechnicalDetails && (
-        <div className="pt-2 border-t border-border/40 space-y-3 animate-in fade-in duration-200">
-          <h4 className="font-bold text-xs text-foreground uppercase tracking-wider">
-            Detailed Technical Specifications &amp; Transport Guarantees
-          </h4>
+              <div className="flex items-center gap-2 overflow-hidden">
+                <Wifi className="h-4 w-4 text-emerald-500 shrink-0" />
+                <span className="text-muted-foreground">Connected Peer:</span>
+                <span className="font-semibold text-foreground font-mono truncate">
+                  {connectedPeerInfo?.device || (role === "receiver" ? "Connected Sender" : "Connected Receiver")}
+                </span>
+              </div>
+            </div>
+          )}
 
+          {/* Technical Specifications Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
             <div className="p-3.5 rounded-2xl bg-card border border-border/60 space-y-1.5">
               <div className="flex items-center gap-1.5 font-semibold text-foreground">
@@ -223,7 +233,7 @@ export function ProtocolStatusCard({
                 <span>Zero Internet Data Quota on Local Wi-Fi</span>
               </div>
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                When both devices are connected to the same home or office Wi-Fi network, WebRTC selects RFC 1918 Host-to-Host local socket candidates. Packets flow strictly through your local Wi-Fi router / switch without routing through any WAN internet gateways, resulting in zero cellular or internet data consumption and full gigabit wireless speeds.
+                When both devices are on the same home or office Wi-Fi network, WebRTC selects RFC 1918 Host-to-Host local socket candidates. Packets flow strictly through your local Wi-Fi router / switch without routing through any WAN internet gateways, resulting in zero cellular or internet data consumption and full gigabit wireless speeds.
               </p>
             </div>
 

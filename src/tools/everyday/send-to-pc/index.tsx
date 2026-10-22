@@ -1517,14 +1517,6 @@ export function SendToPcTool() {
                 </div>
               </div>
 
-              {/* Protocol & Transfer Architecture Diagnostics */}
-              <ProtocolStatusCard
-                connectedPeerInfo={connectedPeerInfo}
-                connectionStatus={connectionStatus}
-                role={role}
-                onRefreshStats={updateConnectionNetworkStats}
-              />
-
               {/* Receiver Send Console */}
               <SendConsole
                 title="Send to Connected Device"
@@ -1606,6 +1598,14 @@ export function SendToPcTool() {
                   ))}
                 </div>
               )}
+
+              {/* Protocol & Transfer Architecture Specifications (Discreetly below shared files history) */}
+              <ProtocolStatusCard
+                connectedPeerInfo={connectedPeerInfo}
+                connectionStatus={connectionStatus}
+                role={role}
+                onRefreshStats={updateConnectionNetworkStats}
+              />
             </div>
           )}
         </div>
@@ -1734,14 +1734,6 @@ export function SendToPcTool() {
                 </Button>
               </div>
 
-              {/* Protocol & Transfer Architecture Diagnostics */}
-              <ProtocolStatusCard
-                connectedPeerInfo={connectedPeerInfo}
-                connectionStatus={connectionStatus}
-                role={role}
-                onRefreshStats={updateConnectionNetworkStats}
-              />
-
               <SendConsole
                 title="Send to Receiver"
                 onCameraClick={() => cameraInputRef.current?.click()}
@@ -1811,6 +1803,14 @@ export function SendToPcTool() {
                   </div>
                 </div>
               )}
+
+              {/* Protocol & Transfer Architecture Specifications (Discreetly below shared files history) */}
+              <ProtocolStatusCard
+                connectedPeerInfo={connectedPeerInfo}
+                connectionStatus={connectionStatus}
+                role={role}
+                onRefreshStats={updateConnectionNetworkStats}
+              />
             </div>
           )}
         </div>
