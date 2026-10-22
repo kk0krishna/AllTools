@@ -56,133 +56,73 @@ export function WhoMecWheelTool() {
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6 text-foreground">
-      {/* Hero Header */}
-      <div className="relative rounded-3xl overflow-hidden border border-border/80 bg-gradient-to-br from-sky-950/20 via-card to-background p-5 sm:p-8 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-2 max-w-3xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge className="bg-sky-600 text-white hover:bg-sky-700 text-xs font-semibold px-2.5 py-0.5 flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5" />
-                WHO Global Standard
-              </Badge>
-              <Badge variant="outline" className="text-xs font-mono text-muted-foreground">
-                5th Edition (2015 Guideline)
-              </Badge>
-              <Badge variant="outline" className="text-xs text-muted-foreground">
-                Evidence-Based Contraception
-              </Badge>
-            </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold font-heading tracking-tight text-foreground">
-              WHO Medical Eligibility Criteria Wheel
-            </h1>
-            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-              Official interactive digital edition of the World Health Organization MEC Wheel for contraceptive use. Rotate the wheel, evaluate patient criteria across 6 contraceptive method tracks and 36 medical conditions, or use the multi-condition Eligibility Evaluator.
-            </p>
+      {/* Compact Header - Fits comfortably above the fold */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-1 no-print">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Badge className="bg-sky-600 text-white text-[10px] sm:text-xs font-semibold px-2 py-0.5">
+              WHO 5th Edition (2015)
+            </Badge>
+            <span className="text-[11px] text-muted-foreground hidden xs:inline">
+              Evidence-Based Contraceptive Guidelines
+            </span>
           </div>
-
-          <div className="flex flex-wrap items-center gap-2 self-start md:self-auto shrink-0">
-            <a
-              href="/docs/who-mec-wheel-5th-edition.pdf"
-              download="WHO-MEC-Wheel-5th-Edition-Official.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border border-sky-500/40 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 transition-colors shadow-2xs"
-              title="Download official WHO 5th Edition Medical Eligibility Criteria document"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Official WHO PDF</span>
-            </a>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.print()}
-              className="text-xs flex items-center gap-1.5"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              Print Guide
-            </Button>
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() => {
-                setSelectedNoteCode(null);
-                setIsNoteDrawerOpen(true);
-              }}
-              className="text-xs flex items-center gap-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              Clinical Notes A-Z
-            </Button>
-          </div>
+          <h1 className="text-xl sm:text-3xl font-extrabold font-heading text-foreground tracking-tight">
+            WHO Medical Eligibility Criteria Wheel
+          </h1>
         </div>
 
-        {/* MEC Rating Legend Bar */}
-        <div className="mt-6 pt-5 border-t border-border/60 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-          <div className="p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex items-start gap-2">
-            <div className="w-5 h-5 rounded-full bg-emerald-500 text-white font-mono font-bold text-xs flex items-center justify-center shrink-0">
-              1
-            </div>
-            <div>
-              <strong className="text-foreground block">Category 1: Safe</strong>
-              <span className="text-muted-foreground text-[11px]">Use in any circumstance (YES)</span>
-            </div>
-          </div>
-
-          <div className="p-2.5 rounded-xl border border-blue-500/30 bg-blue-500/10 flex items-start gap-2">
-            <div className="w-5 h-5 rounded-full bg-blue-500 text-white font-mono font-bold text-xs flex items-center justify-center shrink-0">
-              2
-            </div>
-            <div>
-              <strong className="text-foreground block">Category 2: Generally Use</strong>
-              <span className="text-muted-foreground text-[11px]">Advantages outweigh risks (YES)</span>
-            </div>
-          </div>
-
-          <div className="p-2.5 rounded-xl border border-amber-500/30 bg-amber-500/10 flex items-start gap-2">
-            <div className="w-5 h-5 rounded-full bg-amber-500 text-white font-mono font-bold text-xs flex items-center justify-center shrink-0">
-              3
-            </div>
-            <div>
-              <strong className="text-foreground block">Category 3: Caution</strong>
-              <span className="text-muted-foreground text-[11px]">Risks outweigh advantages (NO*)</span>
-            </div>
-          </div>
-
-          <div className="p-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 flex items-start gap-2">
-            <div className="w-5 h-5 rounded-full bg-rose-500 text-white font-mono font-bold text-xs flex items-center justify-center shrink-0">
-              4
-            </div>
-            <div>
-              <strong className="text-foreground block">Category 4: Contraindicated</strong>
-              <span className="text-muted-foreground text-[11px]">Unacceptable health risk (NO)</span>
-            </div>
-          </div>
+        {/* Quick Actions: PDF & Notes Drawer */}
+        <div className="flex items-center gap-1.5 self-start sm:self-auto shrink-0">
+          <a
+            href="/docs/who-mec-wheel-5th-edition.pdf"
+            download="WHO-MEC-Wheel-5th-Edition-Official.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-sky-500/40 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 transition-colors shadow-2xs"
+            title="Download official WHO 5th Edition Medical Eligibility Criteria document"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Official PDF</span>
+          </a>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setSelectedNoteCode(null);
+              setIsNoteDrawerOpen(true);
+            }}
+            className="text-xs h-8 flex items-center gap-1.5"
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Notes A-Z</span>
+          </Button>
         </div>
       </div>
 
       {/* Main Tabs Navigation */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full h-auto p-1 bg-muted/60 rounded-xl">
-          <TabsTrigger value="wheel" className="text-xs sm:text-sm py-2.5 flex items-center gap-1.5">
-            <Compass className="w-4 h-4 text-sky-500" />
-            <span>Interactive Wheel</span>
+        <TabsList className="grid grid-cols-4 w-full p-1 bg-muted/60 rounded-xl">
+          <TabsTrigger value="wheel" className="text-xs sm:text-sm py-2 flex items-center justify-center gap-1">
+            <Compass className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+            <span className="truncate">Wheel</span>
           </TabsTrigger>
-          <TabsTrigger value="eligibility" className="text-xs sm:text-sm py-2.5 flex items-center gap-1.5">
-            <Stethoscope className="w-4 h-4 text-emerald-500" />
-            <span>Eligibility Evaluator</span>
+          <TabsTrigger value="eligibility" className="text-xs sm:text-sm py-2 flex items-center justify-center gap-1">
+            <Stethoscope className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+            <span className="truncate">Evaluator</span>
           </TabsTrigger>
-          <TabsTrigger value="methods" className="text-xs sm:text-sm py-2.5 flex items-center gap-1.5">
-            <FileText className="w-4 h-4 text-primary" />
-            <span>Method Monographs</span>
+          <TabsTrigger value="methods" className="text-xs sm:text-sm py-2 flex items-center justify-center gap-1">
+            <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
+            <span className="truncate">Methods</span>
           </TabsTrigger>
-          <TabsTrigger value="additional" className="text-xs sm:text-sm py-2.5 flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            <span>EC & Drug Matrix</span>
+          <TabsTrigger value="additional" className="text-xs sm:text-sm py-2 flex items-center justify-center gap-1">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+            <span className="truncate">EC & Matrix</span>
           </TabsTrigger>
         </TabsList>
 
         {/* TAB 1: INTERACTIVE WHEEL VIEW */}
-        <TabsContent value="wheel" className="mt-4 space-y-6">
+        <TabsContent value="wheel" className="mt-3 space-y-4">
           {/* Quick Search & Condition Jump Bar */}
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />

@@ -173,7 +173,7 @@ export function QrScannerModal({ isOpen, onClose, onScan }: QrScannerModalProps)
         <div className="p-3.5 border-b border-border/50 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ScanLine className="h-4 w-4 text-primary" />
-            <span className="font-bold text-xs sm:text-sm text-foreground">Scan PC Screen QR</span>
+            <span className="font-bold text-xs sm:text-sm text-foreground">Scan Receiver QR</span>
           </div>
           <button
             onClick={onClose}
@@ -216,7 +216,7 @@ export function QrScannerModal({ isOpen, onClose, onScan }: QrScannerModalProps)
             </div>
           ) : (
             <p className="text-xs text-muted-foreground">
-              Align the QR code on your PC screen inside the frame.
+              Align the QR code on the receiver screen inside the frame.
             </p>
           )}
 

@@ -20,6 +20,7 @@ export const indiaMecWheelEntry: ToolEntry = {
       "female sterilization criteria india",
       "nsv male sterilization"
     ],
+    hideHeader: true,
   },
   component: IndiaMecWheelTool,
   content: () => (

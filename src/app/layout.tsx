@@ -4,6 +4,9 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { siteConfig } from "@/config/site";
+import { AnalyticsProvider } from "@/components/AnalyticsProvider";
+import { AuthProvider } from "@/components/providers/AuthProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -61,9 +64,6 @@ export const metadata: Metadata = {
   },
 };
 
-import { AnalyticsProvider } from "@/components/AnalyticsProvider";
-import { AuthProvider } from "@/components/providers/AuthProvider";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -72,18 +72,28 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
-        <AuthProvider>
-          <AnalyticsProvider>
-            <Header />
-            <main className="flex-1 flex flex-col">
-              {children}
-            </main>
-            <Footer />
-          </AnalyticsProvider>
-        </AuthProvider>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem('clinikkit-theme');var d=s==='dark'||(!s&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col font-sans bg-background text-foreground transition-colors duration-200">
+        <ThemeProvider>
+          <AuthProvider>
+            <AnalyticsProvider>
+              <Header />
+              <main className="flex-1 flex flex-col">
+                {children}
+              </main>
+              <Footer />
+            </AnalyticsProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

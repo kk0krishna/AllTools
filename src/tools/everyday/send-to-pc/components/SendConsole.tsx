@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { 
   Zap, 
   Image as ImageIcon, 
@@ -12,7 +12,9 @@ import {
   Send, 
   Eye, 
   EyeOff, 
-  Flame 
+  Flame,
+  Layers,
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +25,7 @@ interface SendConsoleProps {
   title: string;
   onCameraClick: () => void;
   onFileSelectClick: () => void;
+  onFilesDrop?: (files: File[]) => void;
   onSendText: (text: string) => void;
   onSendPassword: (password: string, burnOnCopy: boolean) => void;
   onSendLink: (url: string) => void;
@@ -32,6 +35,7 @@ export function SendConsole({
   title,
   onCameraClick,
   onFileSelectClick,
+  onFilesDrop,
   onSendText,
   onSendPassword,
   onSendLink,
@@ -42,6 +46,9 @@ export function SendConsole({
   const [burnOnCopyOption, setBurnOnCopyOption] = useState<boolean>(true);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [linkInput, setLinkInput] = useState<string>("");
+  const [isConsoleDragOver, setIsConsoleDragOver] = useState<boolean>(false);
+
+  const dragCounterRef = useRef<number>(0);
 
   const handleSendText = () => {
     if (!textMessage.trim()) return;
@@ -65,8 +72,46 @@ export function SendConsole({
     setLinkInput("");
   };
 
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current += 1;
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsConsoleDragOver(true);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current -= 1;
+    if (dragCounterRef.current <= 0) {
+      dragCounterRef.current = 0;
+      setIsConsoleDragOver(false);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current = 0;
+    setIsConsoleDragOver(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const droppedFiles = Array.from(e.dataTransfer.files);
+      if (onFilesDrop) {
+        onFilesDrop(droppedFiles);
+      }
+    }
+  };
+
   return (
-    <div className="bg-card/40 backdrop-blur-xl border border-border/60 rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-xs">
+    <div className="bg-card/40 backdrop-blur-xl border border-border/60 rounded-3xl p-4 sm:p-5 space-y-3.5 shadow-xs transition-all">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-border/40 pb-3">
         <div className="flex items-center gap-2">
           <Zap className="h-4 w-4 text-primary" />
@@ -122,34 +167,87 @@ export function SendConsole({
         </div>
       </div>
 
-      {/* TAB 1: FILES & CAMERA */}
+      {/* TAB 1: FILES & DRAG-AND-DROP */}
       {activeTab === "files" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button
-            onClick={onCameraClick}
-            className="p-3.5 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 flex items-center gap-3 transition-all active:scale-[0.99] group text-left"
-          >
-            <div className="h-9 w-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-              <Camera className="h-4.5 w-4.5" />
-            </div>
-            <div>
-              <div className="font-semibold text-xs text-foreground">Camera Scan</div>
-              <div className="text-[11px] text-muted-foreground">Direct document snapshot</div>
-            </div>
-          </button>
-
-          <button
+        <div className="space-y-3">
+          {/* Interactive Drag & Drop Area */}
+          <div
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            className={`relative rounded-2xl border-2 border-dashed transition-all p-5 sm:p-6 text-center cursor-pointer ${
+              isConsoleDragOver
+                ? "border-primary bg-primary/10 shadow-lg scale-[1.01]"
+                : "border-border/70 hover:border-primary/50 bg-muted/15 hover:bg-muted/25"
+            }`}
             onClick={onFileSelectClick}
-            className="p-3.5 rounded-xl border border-border/60 bg-muted/20 hover:bg-muted/40 flex items-center gap-3 transition-all active:scale-[0.99] group text-left"
           >
-            <div className="h-9 w-9 rounded-xl bg-secondary text-secondary-foreground flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-              <Upload className="h-4.5 w-4.5" />
+            <div className="flex flex-col items-center justify-center space-y-2">
+              <div
+                className={`h-12 w-12 rounded-2xl flex items-center justify-center transition-transform duration-200 ${
+                  isConsoleDragOver
+                    ? "bg-primary text-primary-foreground scale-110 shadow-md"
+                    : "bg-primary/10 text-primary hover:scale-105"
+                }`}
+              >
+                {isConsoleDragOver ? (
+                  <Sparkles className="h-6 w-6 animate-pulse" />
+                ) : (
+                  <Upload className="h-6 w-6" />
+                )}
+              </div>
+
+              <div>
+                <p className="font-bold text-xs sm:text-sm text-foreground">
+                  {isConsoleDragOver
+                    ? "Drop files here to send instantly!"
+                    : "Drag & drop files here, or click to browse"}
+                </p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Photos, videos, PDFs, documents • Unlimited size • End-to-end encrypted
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  ⚡ 0 Data Used on Local Wi-Fi
+                </span>
+                <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                  Ctrl+V to paste screenshot
+                </span>
+              </div>
             </div>
-            <div>
-              <div className="font-semibold text-xs text-foreground">Select Photos or Files</div>
-              <div className="text-[11px] text-muted-foreground">Any format • Batch upload</div>
-            </div>
-          </button>
+          </div>
+
+          {/* Quick Action Buttons */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <button
+              onClick={onFileSelectClick}
+              className="p-3 rounded-xl border border-border/60 bg-card/60 hover:bg-card flex items-center gap-3 transition-all active:scale-[0.99] group text-left shadow-xs"
+            >
+              <div className="h-9 w-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                <Layers className="h-4.5 w-4.5" />
+              </div>
+              <div className="overflow-hidden">
+                <div className="font-semibold text-xs text-foreground">Choose Photos or Files</div>
+                <div className="text-[10px] text-muted-foreground truncate">Select single or multiple files</div>
+              </div>
+            </button>
+
+            <button
+              onClick={onCameraClick}
+              className="p-3 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 flex items-center gap-3 transition-all active:scale-[0.99] group text-left shadow-xs"
+            >
+              <div className="h-9 w-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                <Camera className="h-4.5 w-4.5" />
+              </div>
+              <div className="overflow-hidden">
+                <div className="font-semibold text-xs text-foreground">Camera Scan</div>
+                <div className="text-[10px] text-muted-foreground truncate">Snap photo / document directly</div>
+              </div>
+            </button>
+          </div>
         </div>
       )}
 
@@ -157,7 +255,7 @@ export function SendConsole({
       {activeTab === "text" && (
         <div className="space-y-2.5">
           <Textarea
-            placeholder="Type or paste notes, snippets, or text to transfer..."
+            placeholder="Type or paste notes, code snippets, or text to transfer..."
             rows={3}
             value={textMessage}
             onChange={(e) => setTextMessage(e.target.value)}
@@ -166,10 +264,10 @@ export function SendConsole({
                 handleSendText();
               }
             }}
-            className="rounded-xl text-xs sm:text-sm font-mono border-border/60 focus-visible:ring-primary/20"
+            className="rounded-2xl text-xs sm:text-sm font-mono border-border/60 focus-visible:ring-primary/20"
           />
           <div className="flex justify-between items-center text-[11px] text-muted-foreground">
-            <span>Press Ctrl+Enter to send</span>
+            <span>Press Ctrl+Enter to send instantly</span>
             <Button
               onClick={handleSendText}
               disabled={!textMessage.trim()}
@@ -191,7 +289,7 @@ export function SendConsole({
               placeholder="Enter password, Wi-Fi key, or sensitive secret..."
               value={passwordInput}
               onChange={(e) => setPasswordInput(e.target.value)}
-              className="rounded-xl text-xs sm:text-sm font-mono pr-10 h-10 border-border/60"
+              className="rounded-2xl text-xs sm:text-sm font-mono pr-10 h-10 border-border/60"
             />
             <button
               type="button"
@@ -238,7 +336,7 @@ export function SendConsole({
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSendLink();
             }}
-            className="rounded-xl text-xs sm:text-sm font-mono h-10 border-border/60"
+            className="rounded-2xl text-xs sm:text-sm font-mono h-10 border-border/60"
           />
           <Button
             onClick={handleSendLink}
@@ -253,3 +351,4 @@ export function SendConsole({
     </div>
   );
 }
+export default SendConsole;

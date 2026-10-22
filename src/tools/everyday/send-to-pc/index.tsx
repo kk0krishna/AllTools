@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { 
-  Smartphone, 
-  Monitor, 
+  Download, 
+  Upload, 
   Check, 
   Copy, 
   RefreshCw, 
@@ -18,13 +18,14 @@ import {
   Share2, 
   X, 
   Zap, 
-  Laptop, 
   ScanLine, 
   Layers,
   FileText,
   File as FileIcon,
   Lock,
-  Link2
+  Link2,
+  Activity,
+  ArrowRightLeft
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import JSZip from "jszip";
@@ -38,17 +39,27 @@ import {
   TransferProgress, 
   RoleType, 
   ConnectionStatus, 
-  ConnectedPeerInfo 
+  ConnectedPeerInfo,
+  QueueItem
 } from "./types";
-import { CHUNK_SIZE, PEER_CONFIG } from "./constants";
-import { playChimeSound, triggerVibrate, parseQrSessionId } from "./utils";
+import { CHUNK_SIZE, BUFFER_THRESHOLD, HEARTBEAT_INTERVAL_MS, PEER_CONFIG } from "./constants";
+import { 
+  playChimeSound, 
+  triggerVibrate, 
+  parseQrSessionId, 
+  formatSpeed, 
+  formatDuration, 
+  downloadBlob, 
+  shareFileNative, 
+  detectConnectionType 
+} from "./utils";
 import { QrScannerModal } from "./components/QrScannerModal";
 import { ImageLightbox } from "./components/ImageLightbox";
 import { SendConsole } from "./components/SendConsole";
 import { TransferCard } from "./components/TransferCard";
 
 export function SendToPcTool() {
-  // Roles: "receiver" (PC Screen) or "sender" (Phone Sender)
+  // Roles: "receiver" (Receive files / display QR) or "sender" (Send files / connect via PIN/QR)
   const [role, setRole] = useState<RoleType>("receiver");
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("initializing");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -59,17 +70,26 @@ export function SendToPcTool() {
   const [targetPinInput, setTargetPinInput] = useState<string>("");
   const [connectedPeerInfo, setConnectedPeerInfo] = useState<ConnectedPeerInfo | null>(null);
 
-  // Transfer items
+  // Transfer items & active progress
   const [items, setItems] = useState<TransferItem[]>([]);
   const [activeTransfer, setActiveTransfer] = useState<TransferProgress | null>(null);
+  const [queueCount, setQueueCount] = useState<number>(0);
 
   // Masked passwords state
   const [revealedPasswords, setRevealedPasswords] = useState<{ [id: string]: boolean }>({});
 
-  // Auto-copy state
+  // Auto-copy state (Notes/Clipboard)
   const [autoCopyEnabled, setAutoCopyEnabled] = useState<boolean>(false);
   const [autoCopyNotice, setAutoCopyNotice] = useState<string | null>(null);
   const [pendingCopyItem, setPendingCopyItem] = useState<{ text: string; label: string } | null>(null);
+
+  // Auto-download state (Receiver Mode: auto-save incoming files to Downloads)
+  const [autoDownloadEnabled, setAutoDownloadEnabled] = useState<boolean>(false);
+  const [autoDownloadNotice, setAutoDownloadNotice] = useState<string | null>(null);
+
+  // Drag and drop overlay state (full-window)
+  const [isWindowDragging, setIsWindowDragging] = useState<boolean>(false);
+  const dragCounterRef = useRef<number>(0);
 
   // Modals state
   const [isScannerOpen, setIsScannerOpen] = useState<boolean>(false);
@@ -81,19 +101,21 @@ export function SendToPcTool() {
     zoom: number;
   } | null>(null);
 
-  // UI action states
+  // UI action feedback states
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [copiedPin, setCopiedPin] = useState<boolean>(false);
   const [copiedItemId, setCopiedItemId] = useState<string | null>(null);
+  const [isZipping, setIsZipping] = useState<boolean>(false);
 
-  // Persistent Refs to maintain stable callbacks
+  // Persistent Refs to maintain stable callbacks without tearing down Peer
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const peerInstanceRef = useRef<any>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const connectionRef = useRef<any>(null);
   const roleRef = useRef<RoleType>("receiver");
   const autoCopyRef = useRef<boolean>(false);
+  const autoDownloadRef = useRef<boolean>(false);
   const soundEnabledRef = useRef<boolean>(true);
 
   // Pending clipboard write queued for next user activation
@@ -102,6 +124,14 @@ export function SendToPcTool() {
   // Incoming chunk accumulation buffer
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const incomingFilesRef = useRef<{ [fileId: string]: any }>({});
+
+  // Queue of files pending sequential transmission
+  const sendQueueRef = useRef<QueueItem[]>([]);
+  const isTransmittingRef = useRef<boolean>(false);
+  const cancelTransferRef = useRef<boolean>(false);
+
+  // Heartbeat keepalive timer
+  const heartbeatTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Hidden native file & camera inputs
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -115,6 +145,10 @@ export function SendToPcTool() {
   useEffect(() => {
     autoCopyRef.current = autoCopyEnabled;
   }, [autoCopyEnabled]);
+
+  useEffect(() => {
+    autoDownloadRef.current = autoDownloadEnabled;
+  }, [autoDownloadEnabled]);
 
   useEffect(() => {
     soundEnabledRef.current = soundEnabled;
@@ -133,7 +167,7 @@ export function SendToPcTool() {
     // 1. Try immediate Async Clipboard API (succeeds if tab is currently focused)
     if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(text).then(() => {
-        setAutoCopyNotice(`Auto-copied ${label} to Clipboard! Press Ctrl+V`);
+        setAutoCopyNotice(`Auto-copied ${label} to Clipboard! Ready to paste`);
         setPendingCopyItem(null);
         pendingClipboardWriteRef.current = null;
         setTimeout(() => setAutoCopyNotice(null), 3000);
@@ -167,19 +201,6 @@ export function SendToPcTool() {
     window.addEventListener("focus", handleUserActivation, { once: true });
   }, []);
 
-  // Toggle Auto-copy button
-  const handleToggleAutoCopy = () => {
-    if (!autoCopyEnabled) {
-      setAutoCopyEnabled(true);
-      setAutoCopyNotice("Auto-copy ON: incoming notes copy automatically to clipboard");
-      setTimeout(() => setAutoCopyNotice(null), 3000);
-    } else {
-      setAutoCopyEnabled(false);
-      setPendingCopyItem(null);
-      pendingClipboardWriteRef.current = null;
-    }
-  };
-
   // Construct pairing URL
   const getPairingUrl = useCallback((): string => {
     if (typeof window === "undefined" || !receiverPeerId) return "";
@@ -187,24 +208,128 @@ export function SendToPcTool() {
     return `${origin}/tools/everyday/send-to-pc?session=${receiverPeerId}`;
   }, [receiverPeerId]);
 
+  // Update connection type & stats (Local LAN vs P2P Direct vs Relay)
+  const updateConnectionNetworkStats = useCallback(async () => {
+    const conn = connectionRef.current;
+    if (!conn || !conn.peerConnection) return;
+
+    try {
+      const netInfo = await detectConnectionType(conn.peerConnection);
+      setConnectedPeerInfo((prev) => ({
+        ...prev,
+        connectionType: netInfo.type,
+        localIp: netInfo.localIp,
+      }));
+    } catch {
+      // Safe catch
+    }
+  }, []);
+
+  // Start periodic heartbeat keepalive to prevent mobile/tab channel sleep & measure RTT
+  const startHeartbeat = useCallback(() => {
+    if (heartbeatTimerRef.current) {
+      clearInterval(heartbeatTimerRef.current);
+    }
+
+    heartbeatTimerRef.current = setInterval(() => {
+      const conn = connectionRef.current;
+      if (conn && conn.open) {
+        try {
+          conn.send({
+            type: "ping",
+            sentAt: Date.now(),
+          });
+        } catch {
+          // Safe catch
+        }
+      }
+    }, HEARTBEAT_INTERVAL_MS);
+  }, []);
+
+  const stopHeartbeat = useCallback(() => {
+    if (heartbeatTimerRef.current) {
+      clearInterval(heartbeatTimerRef.current);
+      heartbeatTimerRef.current = null;
+    }
+  }, []);
+
   // Handle incoming data channel messages
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleIncomingData = useCallback((data: any) => {
-    if (!data || typeof data !== "object") return;
+    if (!data) return;
 
+    // 1. Raw Binary Chunk (Direct ArrayBuffer transmission for maximum throughput)
+    if (data instanceof ArrayBuffer || (data.byteLength !== undefined && !(data.type))) {
+      const activeFileId = Object.keys(incomingFilesRef.current)[0];
+      if (activeFileId) {
+        const fileData = incomingFilesRef.current[activeFileId];
+        if (fileData) {
+          fileData.chunks.push(data);
+          fileData.receivedBytes += data.byteLength;
+
+          const now = Date.now();
+          const elapsed = (now - fileData.startTime) / 1000;
+          const speedBytesPerSec = elapsed > 0 ? fileData.receivedBytes / elapsed : 0;
+          const remainingBytes = Math.max(0, fileData.size - fileData.receivedBytes);
+          const remainingSeconds = speedBytesPerSec > 0 ? remainingBytes / speedBytesPerSec : 0;
+          const progress = Math.min(100, Math.round((fileData.receivedBytes / fileData.size) * 100));
+
+          setActiveTransfer({
+            fileId: activeFileId,
+            name: fileData.name,
+            size: fileData.size,
+            progress,
+            direction: "receiving",
+            speedBytesPerSec,
+            remainingSeconds,
+            transferredBytes: fileData.receivedBytes,
+          });
+        }
+      }
+      return;
+    }
+
+    if (typeof data !== "object") return;
+
+    // 2. Handshake
     if (data.type === "handshake") {
       setConnectedPeerInfo({
-        device: data.device || "Mobile Device",
+        device: data.device || (roleRef.current === "receiver" ? "Sender" : "Receiver"),
         connectedAt: data.timestamp || Date.now(),
       });
       setConnectionStatus("connected");
       setErrorMessage("");
       playSound();
       triggerVibrate();
+      setTimeout(updateConnectionNetworkStats, 800);
       return;
     }
 
-    // Text or Link
+    // 3. Heartbeat Ping / Pong
+    if (data.type === "ping") {
+      const conn = connectionRef.current;
+      if (conn && conn.open) {
+        try {
+          conn.send({
+            type: "pong",
+            sentAt: data.sentAt,
+          });
+        } catch {
+          // Safe catch
+        }
+      }
+      return;
+    }
+
+    if (data.type === "pong") {
+      if (data.sentAt) {
+        const rtt = Math.max(1, Date.now() - data.sentAt);
+        setConnectedPeerInfo((prev) => (prev ? { ...prev, latencyMs: rtt } : prev));
+      }
+      return;
+    }
+
+    // 4. Text or Link
     if (data.type === "text" || data.type === "link") {
       const isLink = data.type === "link";
       const newItem: TransferItem = {
@@ -212,7 +337,7 @@ export function SendToPcTool() {
         type: isLink ? "link" : "text",
         text: data.text,
         timestamp: data.timestamp || Date.now(),
-        sender: roleRef.current === "receiver" ? "phone" : "pc",
+        sender: roleRef.current === "receiver" ? "sender" : "receiver",
       };
       setItems((prev) => [newItem, ...prev]);
       playSound();
@@ -224,7 +349,7 @@ export function SendToPcTool() {
       return;
     }
 
-    // Confidential Secret / Password
+    // 5. Confidential Secret / Password
     if (data.type === "password") {
       const newItem: TransferItem = {
         id: data.id || Math.random().toString(36).substring(2, 9),
@@ -233,7 +358,7 @@ export function SendToPcTool() {
         burnOnCopy: data.burnOnCopy ?? true,
         isBurned: false,
         timestamp: data.timestamp || Date.now(),
-        sender: roleRef.current === "receiver" ? "phone" : "pc",
+        sender: roleRef.current === "receiver" ? "sender" : "receiver",
       };
       setItems((prev) => [newItem, ...prev]);
       playSound();
@@ -241,39 +366,60 @@ export function SendToPcTool() {
       return;
     }
 
-    // File start
+    // 6. File Start Envelope
     if (data.type === "file-start") {
       incomingFilesRef.current[data.fileId] = {
         name: data.name,
         size: data.size,
         mimeType: data.mimeType,
         totalChunks: data.totalChunks,
+        chunkSize: data.chunkSize || CHUNK_SIZE,
         chunks: [],
+        receivedBytes: 0,
+        startTime: Date.now(),
       };
+
       setActiveTransfer({
         fileId: data.fileId,
         name: data.name,
+        size: data.size,
         progress: 0,
         direction: "receiving",
+        transferredBytes: 0,
       });
       return;
     }
 
-    // File chunk
+    // 7. Structured File Chunk Envelope (Fallback compatibility)
     if (data.type === "file-chunk") {
       const fileData = incomingFilesRef.current[data.fileId];
       if (fileData) {
         fileData.chunks[data.chunkIndex] = data.data;
-        const received = fileData.chunks.filter(Boolean).length;
-        const progress = Math.min(100, Math.round((received / fileData.totalChunks) * 100));
-        setActiveTransfer((prev) =>
-          prev && prev.fileId === data.fileId ? { ...prev, progress } : prev
-        );
+        const chunkSize = data.data?.byteLength || CHUNK_SIZE;
+        fileData.receivedBytes += chunkSize;
+
+        const now = Date.now();
+        const elapsed = (now - fileData.startTime) / 1000;
+        const speedBytesPerSec = elapsed > 0 ? fileData.receivedBytes / elapsed : 0;
+        const remainingBytes = Math.max(0, fileData.size - fileData.receivedBytes);
+        const remainingSeconds = speedBytesPerSec > 0 ? remainingBytes / speedBytesPerSec : 0;
+        const progress = Math.min(100, Math.round((fileData.receivedBytes / fileData.size) * 100));
+
+        setActiveTransfer({
+          fileId: data.fileId,
+          name: fileData.name,
+          size: fileData.size,
+          progress,
+          direction: "receiving",
+          speedBytesPerSec,
+          remainingSeconds,
+          transferredBytes: fileData.receivedBytes,
+        });
       }
       return;
     }
 
-    // File end
+    // 8. File End Envelope
     if (data.type === "file-end") {
       const fileData = incomingFilesRef.current[data.fileId];
       if (fileData) {
@@ -288,16 +434,36 @@ export function SendToPcTool() {
           blob,
           url,
           timestamp: Date.now(),
-          sender: roleRef.current === "receiver" ? "phone" : "pc",
+          sender: roleRef.current === "receiver" ? "sender" : "receiver",
         };
+
         setItems((prev) => [newItem, ...prev]);
         delete incomingFilesRef.current[data.fileId];
         setActiveTransfer(null);
         playSound();
         triggerVibrate();
+
+        // Auto-download on receiver if enabled
+        if (autoDownloadRef.current && roleRef.current === "receiver") {
+          downloadBlob(blob, fileData.name).then((success) => {
+            if (success) {
+              setAutoDownloadNotice(`Saved "${fileData.name}" to Downloads`);
+              setTimeout(() => setAutoDownloadNotice(null), 3500);
+            }
+          });
+        }
       }
+      return;
     }
-  }, [playSound, copyToClipboard]);
+
+    // 9. Transfer Cancel Envelope
+    if (data.type === "file-cancel") {
+      if (data.fileId && incomingFilesRef.current[data.fileId]) {
+        delete incomingFilesRef.current[data.fileId];
+      }
+      setActiveTransfer(null);
+    }
+  }, [playSound, copyToClipboard, updateConnectionNetworkStats]);
 
   // Setup connection handlers
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -307,14 +473,15 @@ export function SendToPcTool() {
     conn.on("open", () => {
       setConnectionStatus("connected");
       setErrorMessage("");
-      const isMobile = typeof navigator !== "undefined" && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
       conn.send({
         type: "handshake",
-        device: isMobile ? "Phone" : "PC",
+        device: roleRef.current === "receiver" ? "Receiver" : "Sender",
         timestamp: Date.now(),
       });
       playSound();
       triggerVibrate();
+      startHeartbeat();
+      setTimeout(updateConnectionNetworkStats, 1000);
     });
 
     conn.on("data", (data: unknown) => {
@@ -325,15 +492,17 @@ export function SendToPcTool() {
       setConnectionStatus("ready");
       setConnectedPeerInfo(null);
       connectionRef.current = null;
+      stopHeartbeat();
     });
 
     conn.on("error", (err: unknown) => {
       console.warn("DataConnection error:", err);
       setConnectionStatus("ready");
+      stopHeartbeat();
     });
-  }, [handleIncomingData, playSound]);
+  }, [handleIncomingData, playSound, startHeartbeat, stopHeartbeat, updateConnectionNetworkStats]);
 
-  // Initialize Receiver (PC Mode)
+  // Initialize Receiver
   const initReceiver = useCallback(async () => {
     setConnectionStatus("initializing");
     setErrorMessage("");
@@ -390,7 +559,7 @@ export function SendToPcTool() {
     }
   }, [setupConnection]);
 
-  // Initialize Sender (Mobile Mode)
+  // Initialize Sender
   const initSender = useCallback(async (targetPeerId: string) => {
     setConnectionStatus("connecting");
     setErrorMessage("");
@@ -425,9 +594,9 @@ export function SendToPcTool() {
         console.warn("Peer sender error:", err);
         setConnectionStatus("ready");
         if (err.type === "peer-unavailable") {
-          setErrorMessage("PC screen with this PIN was not found. Please verify the PIN shown on your PC screen.");
+          setErrorMessage("Receiver with this PIN was not found. Please verify the PIN shown on the receiver screen.");
         } else {
-          setErrorMessage("Could not connect to PC screen. Verify PIN or QR code.");
+          setErrorMessage("Could not connect to receiver. Verify PIN or QR code.");
         }
       });
 
@@ -463,17 +632,12 @@ export function SendToPcTool() {
       setRole("sender");
       initSender(sessionParam);
     } else {
-      const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-      if (isMobile) {
-        setRole("sender");
-        setConnectionStatus("ready");
-      } else {
-        setRole("receiver");
-        initReceiver();
-      }
+      setRole("receiver");
+      initReceiver();
     }
 
     return () => {
+      stopHeartbeat();
       if (peerInstanceRef.current) {
         try {
           peerInstanceRef.current.destroy();
@@ -482,48 +646,44 @@ export function SendToPcTool() {
         }
       }
     };
-  }, [initReceiver, initSender]);
+  }, [initReceiver, initSender, stopHeartbeat]);
 
-  // Manual PIN connect
-  const handleConnectByPin = () => {
-    const cleanPin = targetPinInput.trim().replace(/\D/g, "");
-    if (cleanPin.length !== 6) {
-      setErrorMessage("Please enter the 6-digit PIN shown on your PC screen.");
-      return;
-    }
-    const targetId = `tvpc-${cleanPin}`;
-    initSender(targetId);
+  // =========================================================================
+  // HIGH-SPEED RESILIENT FILE TRANSMISSION ENGINE (Event-Driven Backpressure)
+  // =========================================================================
+
+  // Helper: Wait for RTCDataChannel buffer to drain below threshold
+  const waitForBufferDrain = (dataChannel: RTCDataChannel): Promise<void> => {
+    return new Promise((resolve) => {
+      if (dataChannel.bufferedAmount <= BUFFER_THRESHOLD) {
+        resolve();
+        return;
+      }
+
+      dataChannel.bufferedAmountLowThreshold = BUFFER_THRESHOLD;
+      const onLow = () => {
+        dataChannel.removeEventListener("bufferedamountlow", onLow);
+        resolve();
+      };
+
+      dataChannel.addEventListener("bufferedamountlow", onLow);
+      // Failsafe timeout to prevent deadlocks
+      setTimeout(onLow, 120);
+    });
   };
 
-  // Auto-connect on 6th digit
-  const handlePinInputChange = (val: string) => {
-    const clean = val.replace(/\D/g, "").slice(0, 6);
-    setTargetPinInput(clean);
-    if (clean.length === 6) {
-      const targetId = `tvpc-${clean}`;
-      initSender(targetId);
-    }
-  };
-
-  // Send a file in 32KB chunks over WebRTC DataChannel
-  const sendFile = async (file: File) => {
-    if (!connectionRef.current || connectionStatus !== "connected") {
-      alert("No device connected. Please pair your devices first.");
-      return;
-    }
+  // Transmit a single file with adaptive chunking and real-time telemetry
+  const transmitFile = async (file: File): Promise<boolean> => {
+    const conn = connectionRef.current;
+    if (!conn || !conn.open) return false;
 
     const fileId = "file-" + Math.random().toString(36).substring(2, 9);
     const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+    const dataChannel: RTCDataChannel | undefined = conn.dataChannel;
 
-    setActiveTransfer({
-      fileId,
-      name: file.name,
-      progress: 0,
-      direction: "sending",
-    });
+    cancelTransferRef.current = false;
 
-    const conn = connectionRef.current;
-
+    // Send header envelope
     conn.send({
       type: "file-start",
       fileId,
@@ -531,71 +691,166 @@ export function SendToPcTool() {
       size: file.size,
       mimeType: file.type || "application/octet-stream",
       totalChunks,
+      chunkSize: CHUNK_SIZE,
+    });
+
+    setActiveTransfer({
+      fileId,
+      name: file.name,
+      size: file.size,
+      progress: 0,
+      direction: "sending",
+      transferredBytes: 0,
+      totalChunks,
+      currentChunk: 0,
     });
 
     let offset = 0;
     let chunkIndex = 0;
+    const startTime = Date.now();
+    let lastProgressUpdate = 0;
 
-    const readAndSendNextChunk = () => {
-      if (offset >= file.size) {
-        conn.send({ type: "file-end", fileId });
+    while (offset < file.size) {
+      if (cancelTransferRef.current || !conn.open) {
+        conn.send({ type: "file-cancel", fileId });
         setActiveTransfer(null);
-
-        const blobUrl = URL.createObjectURL(file);
-        setItems((prev) => [
-          {
-            id: fileId,
-            type: "file",
-            name: file.name,
-            size: file.size,
-            mimeType: file.type,
-            blob: file,
-            url: blobUrl,
-            timestamp: Date.now(),
-            sender: role === "receiver" ? "pc" : "phone",
-          },
-          ...prev,
-        ]);
-        playSound();
-        triggerVibrate();
-        return;
+        return false;
       }
 
-      const slice = file.slice(offset, offset + CHUNK_SIZE);
-      const reader = new FileReader();
+      // Backpressure: if socket buffer is filled, wait for it to drain
+      if (dataChannel && dataChannel.bufferedAmount > BUFFER_THRESHOLD) {
+        await waitForBufferDrain(dataChannel);
+      }
 
-      reader.onload = (e) => {
-        if (e.target?.result && conn.open) {
-          conn.send({
-            type: "file-chunk",
-            fileId,
-            chunkIndex,
-            data: e.target.result,
-          });
+      const end = Math.min(offset + CHUNK_SIZE, file.size);
+      const slice = file.slice(offset, end);
+      const arrayBuffer = await slice.arrayBuffer();
 
-          offset += CHUNK_SIZE;
-          chunkIndex++;
-          const prog = Math.min(100, Math.round((offset / file.size) * 100));
-          setActiveTransfer((prev) =>
-            prev && prev.fileId === fileId ? { ...prev, progress: prog } : prev
-          );
+      // Send chunk directly
+      conn.send({
+        type: "file-chunk",
+        fileId,
+        chunkIndex,
+        data: arrayBuffer,
+      });
 
-          setTimeout(readAndSendNextChunk, 5);
-        }
-      };
+      offset = end;
+      chunkIndex++;
 
-      reader.readAsArrayBuffer(slice);
-    };
+      // Real-time speed and ETA calculation (throttled to every 150ms to keep UI snappy)
+      const now = Date.now();
+      if (now - lastProgressUpdate > 150 || offset >= file.size) {
+        lastProgressUpdate = now;
+        const elapsedSec = (now - startTime) / 1000;
+        const speedBytesPerSec = elapsedSec > 0 ? offset / elapsedSec : 0;
+        const remainingBytes = file.size - offset;
+        const remainingSeconds = speedBytesPerSec > 0 ? remainingBytes / speedBytesPerSec : 0;
+        const progress = Math.min(100, Math.round((offset / file.size) * 100));
 
-    readAndSendNextChunk();
+        setActiveTransfer({
+          fileId,
+          name: file.name,
+          size: file.size,
+          progress,
+          direction: "sending",
+          speedBytesPerSec,
+          remainingSeconds,
+          transferredBytes: offset,
+          totalChunks,
+          currentChunk: chunkIndex,
+        });
+      }
+    }
+
+    // Send termination envelope
+    conn.send({ type: "file-end", fileId });
+    setActiveTransfer(null);
+
+    const blobUrl = URL.createObjectURL(file);
+    setItems((prev) => [
+      {
+        id: fileId,
+        type: "file",
+        name: file.name,
+        size: file.size,
+        mimeType: file.type || "application/octet-stream",
+        blob: file,
+        url: blobUrl,
+        timestamp: Date.now(),
+        sender: roleRef.current === "receiver" ? "receiver" : "sender",
+      },
+      ...prev,
+    ]);
+
+    playSound();
+    triggerVibrate();
+    return true;
+  };
+
+  // Sequential Queue Processor: processes multiple files without buffer collisions
+  const processSendQueue = useCallback(async () => {
+    if (isTransmittingRef.current) return;
+    if (sendQueueRef.current.length === 0) {
+      setQueueCount(0);
+      return;
+    }
+
+    isTransmittingRef.current = true;
+    setQueueCount(sendQueueRef.current.length);
+
+    while (sendQueueRef.current.length > 0) {
+      const nextItem = sendQueueRef.current[0];
+      const success = await transmitFile(nextItem.file);
+
+      // Remove finished item from queue
+      sendQueueRef.current.shift();
+      setQueueCount(sendQueueRef.current.length);
+
+      if (!success && cancelTransferRef.current) {
+        // If cancelled, clear remainder of queue
+        sendQueueRef.current = [];
+        setQueueCount(0);
+        break;
+      }
+    }
+
+    isTransmittingRef.current = false;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Enqueue single or multiple files
+  const enqueueFiles = useCallback((files: File[]) => {
+    if (!connectionRef.current || connectionStatus !== "connected") {
+      setErrorMessage("No device connected. Please pair sender and receiver first.");
+      return;
+    }
+
+    if (files.length === 0) return;
+
+    const newQueueItems: QueueItem[] = files.map((file) => ({
+      id: Math.random().toString(36).substring(2, 9),
+      file,
+      name: file.name,
+      size: file.size,
+      status: "queued",
+    }));
+
+    sendQueueRef.current.push(...newQueueItems);
+    setQueueCount(sendQueueRef.current.length);
+    processSendQueue();
+  }, [connectionStatus, processSendQueue]);
+
+  const handleCancelActiveTransfer = () => {
+    cancelTransferRef.current = true;
+    setActiveTransfer(null);
+    sendQueueRef.current = [];
+    setQueueCount(0);
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const fileList = Array.from(e.target.files);
-    fileList.forEach((file) => {
-      sendFile(file);
-    });
+    enqueueFiles(fileList);
     e.target.value = "";
   };
 
@@ -617,7 +872,7 @@ export function SendToPcTool() {
         type: "text",
         text: text.trim(),
         timestamp: Date.now(),
-        sender: role === "receiver" ? "pc" : "phone",
+        sender: role === "receiver" ? "receiver" : "sender",
       },
       ...prev,
     ]);
@@ -647,7 +902,7 @@ export function SendToPcTool() {
         burnOnCopy,
         isBurned: false,
         timestamp: Date.now(),
-        sender: role === "receiver" ? "pc" : "phone",
+        sender: role === "receiver" ? "receiver" : "sender",
       },
       ...prev,
     ]);
@@ -674,7 +929,7 @@ export function SendToPcTool() {
         type: "link",
         text: url.trim(),
         timestamp: Date.now(),
-        sender: role === "receiver" ? "pc" : "phone",
+        sender: role === "receiver" ? "receiver" : "sender",
       },
       ...prev,
     ]);
@@ -682,6 +937,70 @@ export function SendToPcTool() {
     playSound();
     triggerVibrate();
   };
+
+  // =========================================================================
+  // GLOBAL DRAG & DROP AND CLIPBOARD PASTE (CTRL+V)
+  // =========================================================================
+  useEffect(() => {
+    const handleWindowDragEnter = (e: DragEvent) => {
+      e.preventDefault();
+      dragCounterRef.current += 1;
+      if (e.dataTransfer && e.dataTransfer.types.includes("Files")) {
+        setIsWindowDragging(true);
+      }
+    };
+
+    const handleWindowDragLeave = (e: DragEvent) => {
+      e.preventDefault();
+      dragCounterRef.current -= 1;
+      if (dragCounterRef.current <= 0) {
+        dragCounterRef.current = 0;
+        setIsWindowDragging(false);
+      }
+    };
+
+    const handleWindowDragOver = (e: DragEvent) => {
+      e.preventDefault();
+    };
+
+    const handleWindowDrop = (e: DragEvent) => {
+      e.preventDefault();
+      dragCounterRef.current = 0;
+      setIsWindowDragging(false);
+
+      if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+        const droppedFiles = Array.from(e.dataTransfer.files);
+        enqueueFiles(droppedFiles);
+      }
+    };
+
+    const handleWindowPaste = (e: ClipboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) {
+        return;
+      }
+
+      if (e.clipboardData && e.clipboardData.files.length > 0) {
+        e.preventDefault();
+        const pastedFiles = Array.from(e.clipboardData.files);
+        enqueueFiles(pastedFiles);
+      }
+    };
+
+    window.addEventListener("dragenter", handleWindowDragEnter);
+    window.addEventListener("dragleave", handleWindowDragLeave);
+    window.addEventListener("dragover", handleWindowDragOver);
+    window.addEventListener("drop", handleWindowDrop);
+    window.addEventListener("paste", handleWindowPaste);
+
+    return () => {
+      window.removeEventListener("dragenter", handleWindowDragEnter);
+      window.removeEventListener("dragleave", handleWindowDragLeave);
+      window.removeEventListener("dragover", handleWindowDragOver);
+      window.removeEventListener("drop", handleWindowDrop);
+      window.removeEventListener("paste", handleWindowPaste);
+    };
+  }, [enqueueFiles]);
 
   const handleCopyLink = () => {
     const url = getPairingUrl();
@@ -696,6 +1015,25 @@ export function SendToPcTool() {
     navigator.clipboard.writeText(pinCode);
     setCopiedPin(true);
     setTimeout(() => setCopiedPin(false), 2000);
+  };
+
+  const handleConnectByPin = () => {
+    const cleanPin = targetPinInput.trim().replace(/\D/g, "");
+    if (cleanPin.length !== 6) {
+      setErrorMessage("Please enter the 6-digit PIN shown on the receiver screen.");
+      return;
+    }
+    const targetId = `tvpc-${cleanPin}`;
+    initSender(targetId);
+  };
+
+  const handlePinInputChange = (val: string) => {
+    const clean = val.replace(/\D/g, "").slice(0, 6);
+    setTargetPinInput(clean);
+    if (clean.length === 6) {
+      const targetId = `tvpc-${clean}`;
+      initSender(targetId);
+    }
   };
 
   const handleCopyContent = (item: TransferItem) => {
@@ -721,12 +1059,21 @@ export function SendToPcTool() {
     setRevealedPasswords((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const handleDownloadItem = (item: TransferItem) => {
+  const handleDownloadItem = async (item: TransferItem) => {
     if (item.type === "file" && item.blob) {
-      saveAs(item.blob, item.name || "downloaded-file");
+      await downloadBlob(item.blob, item.name || "downloaded-file");
     } else if (item.type === "text" && item.text) {
       const blob = new Blob([item.text], { type: "text/plain;charset=utf-8" });
       saveAs(blob, `note-${item.id.substring(0, 6)}.txt`);
+    }
+  };
+
+  const handleShareNative = async (item: TransferItem) => {
+    if (item.type === "file" && item.blob) {
+      const shared = await shareFileNative(item.blob, item.name || "shared-file");
+      if (!shared) {
+        handleDownloadItem(item);
+      }
     }
   };
 
@@ -734,24 +1081,29 @@ export function SendToPcTool() {
     const fileItems = items.filter((item) => item.type === "file" && item.blob);
     if (fileItems.length === 0) return;
 
-    const zip = new JSZip();
-    fileItems.forEach((item) => {
-      if (item.blob) {
-        zip.file(item.name || `file-${item.id}`, item.blob);
-      }
-    });
-
-    const textItems = items.filter((item) => item.type === "text" && item.text);
-    if (textItems.length > 0) {
-      const notesFolder = zip.folder("notes");
-      textItems.forEach((item, index) => {
-        notesFolder?.file(`note-${index + 1}.txt`, item.text || "");
+    setIsZipping(true);
+    try {
+      const zip = new JSZip();
+      fileItems.forEach((item) => {
+        if (item.blob) {
+          zip.file(item.name || `file-${item.id}`, item.blob);
+        }
       });
-    }
 
-    const content = await zip.generateAsync({ type: "blob" });
-    const dateStr = new Date().toISOString().slice(0, 10);
-    saveAs(content, `SendToPC_${dateStr}.zip`);
+      const textItems = items.filter((item) => item.type === "text" && item.text);
+      if (textItems.length > 0) {
+        const notesFolder = zip.folder("notes");
+        textItems.forEach((item, index) => {
+          notesFolder?.file(`note-${index + 1}.txt`, item.text || "");
+        });
+      }
+
+      const content = await zip.generateAsync({ type: "blob" });
+      const dateStr = new Date().toISOString().slice(0, 10);
+      saveAs(content, `SendToPC_${dateStr}.zip`);
+    } finally {
+      setIsZipping(false);
+    }
   };
 
   const openImageModal = (item: TransferItem) => {
@@ -766,7 +1118,7 @@ export function SendToPcTool() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-4 sm:space-y-5 animate-in fade-in duration-200">
+    <div className="w-full max-w-4xl mx-auto space-y-4 sm:space-y-5 animate-in fade-in duration-200 relative">
       {/* Hidden File and Camera Inputs */}
       <input
         ref={fileInputRef}
@@ -784,11 +1136,33 @@ export function SendToPcTool() {
         onChange={handleFileInputChange}
       />
 
+      {/* FULL-WINDOW DRAG AND DROP OVERLAY */}
+      {isWindowDragging && (
+        <div className="fixed inset-0 z-50 bg-background/85 backdrop-blur-md flex flex-col items-center justify-center p-6 border-4 border-dashed border-primary animate-in fade-in zoom-in-95 pointer-events-none">
+          <div className="h-20 w-20 rounded-3xl bg-primary text-primary-foreground flex items-center justify-center shadow-2xl mb-4 animate-bounce">
+            <Upload className="h-10 w-10" />
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+            Drop Files Anywhere to Send
+          </h2>
+          <p className="text-sm text-muted-foreground mt-2 max-w-md text-center">
+            {connectionStatus === "connected"
+              ? "Files will stream directly to your connected device with zero server storage."
+              : "Connect sender and receiver to complete the wireless transfer."}
+          </p>
+          <div className="mt-4 flex items-center gap-2">
+            <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-semibold px-3 py-1 text-xs">
+              ⚡ 0 Internet Data Used on Local Wi-Fi
+            </Badge>
+          </div>
+        </div>
+      )}
+
       {/* Top Navigation & Status Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card/60 backdrop-blur-xl border border-border/60 p-3 sm:p-4 rounded-2xl shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card/60 backdrop-blur-xl border border-border/60 p-3 sm:p-4 rounded-3xl shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-            <Laptop className="h-4.5 w-4.5" />
+          <div className="h-10 w-10 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+            <ArrowRightLeft className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -796,11 +1170,17 @@ export function SendToPcTool() {
                 Send to PC
               </h1>
               <Badge variant="outline" className="text-[10px] px-2 py-0 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10">
-                <ShieldCheck className="h-3 w-3 mr-1 inline" /> 100% P2P
+                <ShieldCheck className="h-3 w-3 mr-1 inline" /> 100% P2P Encrypted
               </Badge>
+
+              {connectedPeerInfo?.connectionType === "local-lan" && (
+                <Badge variant="outline" className="text-[10px] px-2 py-0 border-primary/30 text-primary bg-primary/10">
+                  ⚡ Local Wi-Fi (0 Data Used)
+                </Badge>
+              )}
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Direct wireless file and clipboard bridge between phone and computer
+              Blazing fast wireless file &amp; clipboard bridge between sender and receiver
             </p>
           </div>
         </div>
@@ -814,35 +1194,35 @@ export function SendToPcTool() {
                 setErrorMessage("");
                 if (!receiverPeerId) initReceiver();
               }}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all ${
                 role === "receiver"
                   ? "bg-background text-foreground shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <Monitor className="h-3.5 w-3.5" />
-              <span>PC Screen</span>
+              <Download className="h-3.5 w-3.5" />
+              <span>Receiver</span>
             </button>
             <button
               onClick={() => {
                 setRole("sender");
                 setErrorMessage("");
               }}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all ${
                 role === "sender"
                   ? "bg-background text-foreground shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <Smartphone className="h-3.5 w-3.5" />
-              <span>Phone Sender</span>
+              <Upload className="h-3.5 w-3.5" />
+              <span>Sender</span>
             </button>
           </div>
 
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
             title={soundEnabled ? "Mute alert sounds" : "Unmute alert sounds"}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
           >
             {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
           </button>
@@ -851,15 +1231,25 @@ export function SendToPcTool() {
 
       {/* Floating Auto-Copy Notice Banner */}
       {autoCopyNotice && (
-        <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-xl text-xs font-semibold flex items-center justify-between animate-in fade-in">
+        <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-2xl text-xs font-semibold flex items-center justify-between animate-in fade-in">
           <span className="flex items-center gap-2">
-            <Zap className="h-3.5 w-3.5" /> {autoCopyNotice}
+            <Zap className="h-4 w-4" /> {autoCopyNotice}
           </span>
-          <Check className="h-3.5 w-3.5" />
+          <Check className="h-4 w-4" />
         </div>
       )}
 
-      {/* Floating 1-Click Action Pill When Note Arrives from Phone */}
+      {/* Floating Auto-Download Notice Banner */}
+      {autoDownloadNotice && (
+        <div className="p-3 bg-primary/10 border border-primary/20 text-primary rounded-2xl text-xs font-semibold flex items-center justify-between animate-in fade-in">
+          <span className="flex items-center gap-2">
+            <Download className="h-4 w-4 animate-bounce" /> {autoDownloadNotice}
+          </span>
+          <Check className="h-4 w-4" />
+        </div>
+      )}
+
+      {/* Floating 1-Click Action Pill When Note Arrives from Sender */}
       {pendingCopyItem && (
         <div className="p-3 bg-primary/10 border-2 border-primary/40 rounded-2xl flex items-center justify-between gap-3 animate-in fade-in shadow-md">
           <div className="flex items-center gap-2 overflow-hidden text-xs">
@@ -872,14 +1262,14 @@ export function SendToPcTool() {
             onClick={() => copyToClipboard(pendingCopyItem.text, pendingCopyItem.label)}
             className="rounded-xl text-xs h-7.5 px-3.5 font-bold shrink-0 shadow-xs"
           >
-            Copy to Clipboard (Ctrl+V)
+            Copy Note (Ctrl+V)
           </Button>
         </div>
       )}
 
       {/* Error alert with clean dismiss */}
       {errorMessage && (
-        <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-700 dark:text-amber-300 text-xs flex items-center justify-between">
+        <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-amber-700 dark:text-amber-300 text-xs flex items-center justify-between">
           <span>{errorMessage}</span>
           <button
             onClick={() => setErrorMessage("")}
@@ -890,39 +1280,67 @@ export function SendToPcTool() {
         </div>
       )}
 
-      {/* Active Transfer Progress */}
+      {/* ACTIVE TRANSFER PROGRESS (SPEEDOMETER & REALTIME TELEMETRY) */}
       {activeTransfer && (
-        <div className="p-3 bg-primary/10 border border-primary/20 rounded-xl animate-in fade-in">
-          <div className="flex justify-between items-center text-xs font-medium mb-1">
-            <span className="flex items-center gap-2 text-primary font-semibold">
-              <RefreshCw className="h-3 w-3 animate-spin" />
+        <div className="p-4 bg-primary/10 border border-primary/20 rounded-2xl space-y-2 animate-in fade-in shadow-sm">
+          <div className="flex justify-between items-center text-xs font-medium">
+            <span className="flex items-center gap-2 text-primary font-bold">
+              <RefreshCw className="h-3.5 w-3.5 animate-spin" />
               {activeTransfer.direction === "sending" ? "Sending" : "Receiving"} &ldquo;{activeTransfer.name}&rdquo;
+              {queueCount > 1 && (
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 font-normal">
+                  Queue: {queueCount} left
+                </Badge>
+              )}
             </span>
-            <span className="text-primary font-mono">{activeTransfer.progress}%</span>
+            <div className="flex items-center gap-2 font-mono">
+              {activeTransfer.speedBytesPerSec !== undefined && activeTransfer.speedBytesPerSec > 0 && (
+                <span className="text-[11px] text-muted-foreground">
+                  ⚡ {formatSpeed(activeTransfer.speedBytesPerSec)}
+                </span>
+              )}
+              {activeTransfer.remainingSeconds !== undefined && activeTransfer.remainingSeconds > 0 && (
+                <span className="text-[11px] text-muted-foreground">
+                  • {formatDuration(activeTransfer.remainingSeconds)} left
+                </span>
+              )}
+              <span className="text-primary font-bold text-xs">{activeTransfer.progress}%</span>
+            </div>
           </div>
-          <div className="w-full bg-primary/20 rounded-full h-1.5 overflow-hidden">
+
+          <div className="w-full bg-primary/20 rounded-full h-2 overflow-hidden">
             <div
               className="bg-primary h-full transition-all duration-150 rounded-full"
               style={{ width: `${activeTransfer.progress}%` }}
             />
           </div>
+
+          <div className="flex justify-between items-center text-[10px] text-muted-foreground pt-0.5">
+            <span>Direct in-memory peer stream</span>
+            <button
+              onClick={handleCancelActiveTransfer}
+              className="text-destructive hover:underline font-semibold"
+            >
+              Cancel Transfer
+            </button>
+          </div>
         </div>
       )}
 
       {/* ======================================================== */}
-      {/* ROLE 1: PC SCREEN (RECEIVER) */}
+      {/* ROLE 1: RECEIVER */}
       {/* ======================================================== */}
       {role === "receiver" && (
         <div className="space-y-4">
           {connectionStatus !== "connected" ? (
-            /* UNPAIRED STATE: Minimalist QR & PIN Hero (Fits comfortably above fold) */
+            /* UNPAIRED STATE: Minimalist QR & PIN Hero */
             <div className="bg-card/40 backdrop-blur-xl border border-border/60 rounded-3xl p-5 sm:p-7 shadow-xs text-center space-y-4">
               <div className="space-y-1 max-w-md mx-auto">
                 <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
-                  Scan QR with your Phone Camera
+                  Scan QR with Sender Device
                 </h2>
                 <p className="text-xs text-muted-foreground">
-                  Open your phone camera to pair instantly, or enter the 6-digit PIN below.
+                  Point the camera on your sender device at this QR code, or enter the 6-digit PIN on the sender.
                 </p>
               </div>
 
@@ -932,7 +1350,7 @@ export function SendToPcTool() {
                   {connectionStatus === "initializing" ? (
                     <div className="w-52 h-52 flex flex-col items-center justify-center text-muted-foreground gap-2">
                       <RefreshCw className="h-6 w-6 animate-spin text-primary" />
-                      <span className="text-xs">Preparing QR...</span>
+                      <span className="text-xs">Generating Pairing QR...</span>
                     </div>
                   ) : (
                     <QRCodeSVG
@@ -970,7 +1388,7 @@ export function SendToPcTool() {
                   >
                     {copiedLink ? (
                       <>
-                        <Check className="h-3.5 w-3.5 mr-1 text-emerald-500" /> Copied
+                        <Check className="h-3.5 w-3.5 mr-1 text-emerald-500" /> Copied Link
                       </>
                     ) : (
                       <>
@@ -985,23 +1403,46 @@ export function SendToPcTool() {
             /* PAIRED STATE: Live Console & Transfer Stream */
             <div className="space-y-4 animate-in fade-in duration-200">
               {/* Active Connection Bar */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 rounded-3xl bg-emerald-500/10 border border-emerald-500/20">
                 <div className="flex items-center gap-2.5">
-                  <div className="h-7 w-7 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
-                    <Wifi className="h-3.5 w-3.5" />
+                  <div className="h-8 w-8 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                    <Wifi className="h-4 w-4" />
                   </div>
                   <div>
-                    <div className="font-semibold text-xs sm:text-sm text-foreground">
-                      {connectedPeerInfo?.device || "Phone"} Connected
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-xs sm:text-sm text-foreground">
+                        {connectedPeerInfo?.device || "Sender"} Connected
+                      </span>
+                      {connectedPeerInfo?.latencyMs !== undefined && (
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
+                          <Activity className="h-2.5 w-2.5 mr-1 inline" /> {connectedPeerInfo.latencyMs}ms
+                        </Badge>
+                      )}
                     </div>
-                    <div className="text-[10px] text-muted-foreground">Direct encrypted peer stream</div>
+                    <div className="text-[10px] text-muted-foreground flex items-center gap-1.5">
+                      {connectedPeerInfo?.connectionType === "local-lan" ? (
+                        <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                          ⚡ Direct Local Wi-Fi (0 Data Used • Unlimited Speed)
+                        </span>
+                      ) : (
+                        <span>🌐 Encrypted P2P (Any Network)</span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 self-end sm:self-auto">
+                <div className="flex flex-wrap items-center gap-2 self-end sm:self-auto">
+                  {/* Auto-Copy Toggle */}
                   <button
-                    onClick={handleToggleAutoCopy}
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
+                    onClick={() => {
+                      const next = !autoCopyEnabled;
+                      setAutoCopyEnabled(next);
+                      if (next) {
+                        setAutoCopyNotice("Auto-copy ON: incoming notes copy directly to clipboard");
+                        setTimeout(() => setAutoCopyNotice(null), 3000);
+                      }
+                    }}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
                       autoCopyEnabled
                         ? "bg-primary text-primary-foreground border-primary shadow-xs"
                         : "bg-background/80 text-muted-foreground hover:text-foreground border-border/60"
@@ -1010,10 +1451,29 @@ export function SendToPcTool() {
                     <Zap className="h-3.5 w-3.5" /> Auto-copy {autoCopyEnabled ? "ON" : "OFF"}
                   </button>
 
+                  {/* Auto-Download Files Toggle */}
+                  <button
+                    onClick={() => {
+                      const next = !autoDownloadEnabled;
+                      setAutoDownloadEnabled(next);
+                      if (next) {
+                        setAutoDownloadNotice("Auto-download ON: incoming files save immediately to Downloads");
+                        setTimeout(() => setAutoDownloadNotice(null), 3000);
+                      }
+                    }}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
+                      autoDownloadEnabled
+                        ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
+                        : "bg-background/80 text-muted-foreground hover:text-foreground border-border/60"
+                    }`}
+                  >
+                    <Download className="h-3.5 w-3.5" /> Auto-save {autoDownloadEnabled ? "ON" : "OFF"}
+                  </button>
+
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="rounded-xl text-xs text-muted-foreground hover:text-destructive h-7 px-2.5"
+                    className="rounded-xl text-xs text-muted-foreground hover:text-destructive h-8 px-2.5"
                     onClick={() => {
                       connectionRef.current?.close();
                       setConnectionStatus("ready");
@@ -1024,11 +1484,12 @@ export function SendToPcTool() {
                 </div>
               </div>
 
-              {/* PC Send Console */}
+              {/* Receiver Send Console */}
               <SendConsole
-                title="Send from PC to Phone"
+                title="Send to Connected Device"
                 onCameraClick={() => cameraInputRef.current?.click()}
                 onFileSelectClick={() => fileInputRef.current?.click()}
+                onFilesDrop={enqueueFiles}
                 onSendText={sendTextMessage}
                 onSendPassword={sendPasswordMessage}
                 onSendLink={sendLinkMessage}
@@ -1050,9 +1511,18 @@ export function SendToPcTool() {
                     <Button
                       size="sm"
                       onClick={handleDownloadAllZip}
-                      className="rounded-xl font-semibold text-xs h-7 shadow-xs"
+                      disabled={isZipping}
+                      className="rounded-xl font-semibold text-xs h-7.5 shadow-xs"
                     >
-                      <Archive className="h-3.5 w-3.5 mr-1" /> Download ZIP
+                      {isZipping ? (
+                        <>
+                          <RefreshCw className="h-3.5 w-3.5 mr-1 animate-spin" /> Packaging ZIP...
+                        </>
+                      ) : (
+                        <>
+                          <Archive className="h-3.5 w-3.5 mr-1" /> Download All (ZIP)
+                        </>
+                      )}
                     </Button>
                   )}
                   {items.length > 0 && (
@@ -1060,7 +1530,8 @@ export function SendToPcTool() {
                       size="sm"
                       variant="outline"
                       onClick={() => setItems([])}
-                      className="rounded-xl text-xs h-7 px-2 text-muted-foreground hover:text-destructive border-border/60"
+                      className="rounded-xl text-xs h-7.5 px-2.5 text-muted-foreground hover:text-destructive border-border/60"
+                      title="Clear feed"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
@@ -1070,11 +1541,11 @@ export function SendToPcTool() {
 
               {/* Transferred Items Grid */}
               {items.length === 0 ? (
-                <div className="p-7 border border-dashed border-border/80 rounded-2xl text-center space-y-1.5 bg-card/20">
-                  <Layers className="h-7 w-7 text-muted-foreground/60 mx-auto" />
+                <div className="p-8 border border-dashed border-border/80 rounded-3xl text-center space-y-2 bg-card/20">
+                  <Layers className="h-8 w-8 text-muted-foreground/60 mx-auto" />
                   <p className="text-xs font-semibold text-foreground">Ready for transfers</p>
                   <p className="text-[11px] text-muted-foreground max-w-sm mx-auto">
-                    Snap a photo or send notes from your phone. Items will stream live directly to this screen.
+                    Send files, photos, or notes from the sender device. Transfers stream live with zero cloud storage.
                   </p>
                 </div>
               ) : (
@@ -1087,6 +1558,7 @@ export function SendToPcTool() {
                       onToggleRevealPassword={toggleRevealPassword}
                       onOpenImageModal={openImageModal}
                       onDownloadItem={handleDownloadItem}
+                      onShareNative={handleShareNative}
                       onCopyContent={handleCopyContent}
                       isCopied={copiedItemId === item.id}
                     />
@@ -1099,23 +1571,23 @@ export function SendToPcTool() {
       )}
 
       {/* ======================================================== */}
-      {/* ROLE 2: PHONE SENDER (MOBILE INTERFACE) */}
+      {/* ROLE 2: SENDER */}
       {/* ======================================================== */}
       {role === "sender" && (
         <div className="space-y-4">
           {connectionStatus !== "connected" ? (
-            /* Pair to PC Screen with Built-In Camera Scanner + PIN Fallback */
+            /* Pair to Receiver with Camera Scanner + PIN Fallback */
             <div className="bg-card/40 backdrop-blur-xl border border-border/60 rounded-3xl p-5 sm:p-7 space-y-4 text-center max-w-sm mx-auto shadow-xs">
-              <div className="h-10 w-10 rounded-2xl bg-primary/10 text-primary mx-auto flex items-center justify-center">
-                <Smartphone className="h-5 w-5" />
+              <div className="h-11 w-11 rounded-2xl bg-primary/10 text-primary mx-auto flex items-center justify-center">
+                <Upload className="h-5 w-5" />
               </div>
 
               <div className="space-y-1">
                 <h2 className="font-bold text-base sm:text-lg text-foreground">
-                  Connect to PC Screen
+                  Connect to Receiver
                 </h2>
                 <p className="text-xs text-muted-foreground">
-                  Scan the QR code on your PC screen or enter the 6-digit PIN.
+                  Scan the QR code shown on the receiver screen or enter the 6-digit PIN.
                 </p>
               </div>
 
@@ -1163,7 +1635,7 @@ export function SendToPcTool() {
                       </>
                     ) : (
                       <>
-                        Connect via PIN <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                        Connect to Receiver <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
                       </>
                     )}
                   </Button>
@@ -1171,23 +1643,27 @@ export function SendToPcTool() {
               </div>
             </div>
           ) : (
-            /* Mobile Paired Console */
+            /* Sender Paired Console */
             <div className="max-w-md mx-auto space-y-3.5 animate-in fade-in">
-              <div className="flex items-center justify-between p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
-                <div className="flex items-center gap-2">
-                  <span className="relative flex h-2 w-2">
+              <div className="flex items-center justify-between p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
+                <div className="flex items-center gap-2.5">
+                  <span className="relative flex h-2.5 w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                   </span>
                   <div>
-                    <h4 className="font-semibold text-xs text-foreground">Connected to PC</h4>
-                    <p className="text-[10px] text-muted-foreground">Transfers stream directly to your screen</p>
+                    <h4 className="font-bold text-xs text-foreground">Connected to Receiver</h4>
+                    <p className="text-[10px] text-muted-foreground">
+                      {connectedPeerInfo?.connectionType === "local-lan"
+                        ? "⚡ Local Wi-Fi (0 Internet Data Used)"
+                        : "🌐 Direct Encrypted P2P"}
+                    </p>
                   </div>
                 </div>
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="text-xs text-muted-foreground hover:text-destructive h-7 px-2"
+                  className="text-xs text-muted-foreground hover:text-destructive h-7 px-2.5 rounded-xl"
                   onClick={() => {
                     connectionRef.current?.close();
                     setConnectionStatus("ready");
@@ -1198,22 +1674,35 @@ export function SendToPcTool() {
               </div>
 
               <SendConsole
-                title="Send to PC"
+                title="Send to Receiver"
                 onCameraClick={() => cameraInputRef.current?.click()}
                 onFileSelectClick={() => fileInputRef.current?.click()}
+                onFilesDrop={enqueueFiles}
                 onSendText={sendTextMessage}
                 onSendPassword={sendPasswordMessage}
                 onSendLink={sendLinkMessage}
               />
 
-              {/* Sent items feed for phone */}
+              {/* Sent items feed */}
               {items.length > 0 && (
                 <div className="space-y-2 pt-1">
-                  <h4 className="font-semibold text-[11px] text-muted-foreground uppercase tracking-wider">
-                    Recent Activity ({items.length})
-                  </h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold text-[11px] text-muted-foreground uppercase tracking-wider">
+                      Recent Activity ({items.length})
+                    </h4>
+                    {items.some((i) => i.type === "file") && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleDownloadAllZip}
+                        className="text-[11px] h-6 px-2 rounded-lg border-border/60"
+                      >
+                        <Archive className="h-3 w-3 mr-1" /> ZIP All
+                      </Button>
+                    )}
+                  </div>
                   <div className="space-y-1.5">
-                    {items.slice(0, 5).map((item) => (
+                    {items.slice(0, 6).map((item) => (
                       <div
                         key={item.id}
                         className="p-2.5 bg-muted/30 border border-border/40 rounded-xl flex items-center justify-between text-xs"
@@ -1232,9 +1721,22 @@ export function SendToPcTool() {
                             {item.name || (item.type === "password" ? "••••••••••••" : item.text)}
                           </span>
                         </div>
-                        <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 shrink-0">
-                          Sent
-                        </Badge>
+                        <div className="flex items-center gap-1 shrink-0 ml-2">
+                          {item.type === "file" && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleDownloadItem(item)}
+                              className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                              title="Download"
+                            >
+                              <Download className="h-3 w-3" />
+                            </Button>
+                          )}
+                          <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
+                            Sent
+                          </Badge>
+                        </div>
                       </div>
                     ))}
                   </div>

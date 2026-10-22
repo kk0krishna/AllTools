@@ -19,6 +19,7 @@ export const whoMecWheelEntry: ToolEntry = {
       "iud medical eligibility",
       "postpartum contraception who"
     ],
+    hideHeader: true,
   },
   component: WhoMecWheelTool,
   content: () => (

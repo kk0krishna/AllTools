@@ -7,6 +7,31 @@ export function formatBytes(bytes?: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
 }
 
+// Format transfer speed
+export function formatSpeed(bytesPerSec?: number): string {
+  if (!bytesPerSec || bytesPerSec <= 0) return "0 B/s";
+  if (bytesPerSec >= 1024 * 1024) {
+    return (bytesPerSec / (1024 * 1024)).toFixed(1) + " MB/s";
+  }
+  if (bytesPerSec >= 1024) {
+    return (bytesPerSec / 1024).toFixed(0) + " KB/s";
+  }
+  return Math.round(bytesPerSec) + " B/s";
+}
+
+// Format duration
+export function formatDuration(seconds?: number): string {
+  if (seconds === undefined || !Number.isFinite(seconds) || seconds <= 0) {
+    return "< 1s";
+  }
+  if (seconds >= 60) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.round(seconds % 60);
+    return `${mins}m ${secs}s`;
+  }
+  return `${Math.round(seconds)}s`;
+}
+
 // Trigger mobile haptic vibration safely
 export function triggerVibrate(): void {
   if (typeof navigator !== "undefined" && navigator.vibrate) {
@@ -79,4 +104,143 @@ export function parseQrSessionId(rawQrData: string): string | null {
   if (pinMatch) return `tvpc-${pinMatch[0]}`;
 
   return null;
+}
+
+// Download blob using File System Access API or anchor fallback
+export async function downloadBlob(blob: Blob, filename: string): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+
+  // 1. Try File System Access API (Desktop Chrome, Edge)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (typeof (window as any).showSaveFilePicker === "function") {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const handle = await (window as any).showSaveFilePicker({
+        suggestedName: filename,
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return true;
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "AbortError") {
+        return false;
+      }
+      // Fall through to anchor tag
+    }
+  }
+
+  // 2. Standard HTML5 anchor download
+  try {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename || "download";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      try {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch {
+        // Safe catch
+      }
+    }, 2000);
+    return true;
+  } catch (err) {
+    console.warn("Classic download failed, falling back to saveAs:", err);
+    try {
+      const { saveAs } = await import("file-saver");
+      saveAs(blob, filename);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+}
+
+// Native Web Share API (Save to Photos / Files / AirDrop on iOS & Android)
+export async function shareFileNative(blob: Blob, filename: string, title?: string): Promise<boolean> {
+  if (typeof navigator === "undefined" || !navigator.share) return false;
+  try {
+    const file = new File([blob], filename, { type: blob.type || "application/octet-stream" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: title || filename,
+      });
+      return true;
+    }
+  } catch (err: unknown) {
+    if (err instanceof Error && err.name === "AbortError") {
+      return true;
+    }
+    console.warn("Native share failed:", err);
+  }
+  return false;
+}
+
+// Detect whether WebRTC connection is 100% direct Local LAN/Wi-Fi (0 internet data used), direct WAN P2P, or TURN Relay
+export async function detectConnectionType(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  peerConnection: any
+): Promise<{ type: "local-lan" | "p2p-direct" | "relay"; localIp?: string }> {
+  if (!peerConnection || typeof peerConnection.getStats !== "function") {
+    return { type: "p2p-direct" };
+  }
+
+  try {
+    const stats = await peerConnection.getStats();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let selectedPair: any = null;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    stats.forEach((report: any) => {
+      if (report.type === "transport" && report.selectedCandidatePairId) {
+        selectedPair = stats.get(report.selectedCandidatePairId);
+      } else if (
+        report.type === "candidate-pair" &&
+        (report.selected || report.state === "succeeded" || report.nominated)
+      ) {
+        selectedPair = report;
+      }
+    });
+
+    if (selectedPair) {
+      const localCandidate = stats.get(selectedPair.localCandidateId);
+      const remoteCandidate = stats.get(selectedPair.remoteCandidateId);
+
+      if (localCandidate && remoteCandidate) {
+        const localType = localCandidate.candidateType;
+        const remoteType = remoteCandidate.candidateType;
+        const localIp = localCandidate.ip || localCandidate.address || "";
+        const remoteIp = remoteCandidate.ip || remoteCandidate.address || "";
+
+        if (localType === "relay" || remoteType === "relay") {
+          return { type: "relay", localIp };
+        }
+
+        const isPrivateIp = (ip: string) =>
+          /^10\./.test(ip) ||
+          /^192\.168\./.test(ip) ||
+          /^172\.(1[6-9]|2\d|3[0-1])\./.test(ip) ||
+          /^127\./.test(ip) ||
+          /\.local$/i.test(ip);
+
+        if (
+          (localType === "host" && remoteType === "host") ||
+          (isPrivateIp(localIp) && isPrivateIp(remoteIp))
+        ) {
+          return { type: "local-lan", localIp };
+        }
+
+        return { type: "p2p-direct", localIp };
+      }
+    }
+  } catch (err) {
+    console.warn("Could not determine WebRTC connection type:", err);
+  }
+
+  return { type: "p2p-direct" };
 }
