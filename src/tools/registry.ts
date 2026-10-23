@@ -31,6 +31,7 @@ import { pdfCompressorEntry } from "./everyday/pdf-compressor/metadata";
 import { tempoRoutineEntry } from "./everyday/tempo-routine/metadata";
 import { sendToPcEntry } from "./everyday/send-to-pc/metadata";
 import { audioSpectrumAnalyzerEntry } from "./audio/audio-spectrum-analyzer/metadata";
+import { textToSpeechEntry } from "./audio/text-to-speech/metadata";
 import { pregnancyCalculatorEntry } from "./obstetrics/pregnancy-calculator/metadata";
 import { pregnancyTimelineEntry } from "./obstetrics/pregnancy-timeline/metadata";
 import { eddReverseCalculatorEntry } from "./obstetrics/edd-reverse-calculator/metadata";
@@ -81,6 +82,7 @@ export const toolsRegistry: ToolEntry[] = [
   tempoRoutineEntry,
   sendToPcEntry,
   audioSpectrumAnalyzerEntry,
+  textToSpeechEntry,
   whoMecWheelEntry,
   indiaMecWheelEntry,
   gestationalAgeCalculatorEntry,

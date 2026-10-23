@@ -127,6 +127,7 @@ Because this project uses Next.js Static Export, it is perfectly compatible with
 
 ### Audio
 - [**Audio Spectrum Analyzer & Lossless Track Verifier**](https://clinikkit.web.app/tools/audio/audio-spectrum-analyzer): Verify if your audio tracks are truly lossless (FLAC/WAV) or fake transcoded 320 kbps MP3s. Full-track FFT spectrograms, dynamic range audits, and frequency cutoff analysis rendered 100% locally in your browser with zero file uploads.
+- [**Instant Text to Natural Voice & Audio Studio**](https://clinikkit.web.app/tools/audio/text-to-speech): Transform written text into ultra-natural, lifelike human speech instantly. Preview with real-time waveform visualization, customize voice speed, pitch & accents, and record or download high-fidelity audio files directly in your browser.
 
 ### Calculators
 - [**Advanced Clinical BMI Calculator**](https://clinikkit.web.app/tools/calculators/bmi-calculator): Calculate your Body Mass Index (BMI) with WHO classifications, discover your Ideal Body Weight, and explore personalized clinical insights.
@@ -145,10 +146,10 @@ Because this project uses Next.js Static Export, it is perfectly compatible with
 - [**MovieVerse (Now Filmiyaar)**](https://clinikkit.web.app/tools/entertainment/movieverse): MovieVerse has been moved to a separate platform: Filmiyaar.
 
 ### Everyday
-- [**Barcode Generator**](https://clinikkit.web.app/tools/everyday/barcode-generator): Generate high-quality barcodes for products, inventory, and more.
+- [**Barcode Generator**](https://clinikkit.web.app/tools/everyday/barcode-generator): Generate high-density, vector-crisp barcodes for products, retail, inventory, and packaging with instant mobile scanner preview.
 - [**Instant QR Code Generator**](https://clinikkit.web.app/tools/everyday/qr-code-generator): Generate high-quality QR codes for URLs, text, or contacts instantly.
+- [**OmniDrop: Universal Fast Cross-Device Transfer & Clipboard Bridge**](https://clinikkit.web.app/tools/everyday/send-to-pc): Ultra-fast P2P file transfer and cross-device clipboard bridge between any device (Phone, PC, Mac, Tablet). Zero data charge on local Wi-Fi, full drag & drop support, ToffeeShare-style streaming, and auto-download.
 - [**PDF Compressor**](https://clinikkit.web.app/tools/everyday/pdf-compressor): Compress PDFs to specific size limits by optimizing and rasterizing pages.
-- [**Send to PC: Wireless Transfer & Clipboard Bridge**](https://clinikkit.web.app/tools/everyday/send-to-pc): Instantly send photos, camera scans, documents, passwords, and clipboard notes between your phone and PC. Direct encrypted P2P with self-destruct secrets.
 - [**Tempo: Routine Engine**](https://clinikkit.web.app/tools/everyday/tempo-routine): A recurring routine engine to schedule and manage your repeating tasks without setting multiple alarms.
 - [**Upload Ready: Image Requirements Solver**](https://clinikkit.web.app/tools/everyday/image-converter): Precise KB compression, dimension resizing, and format conversion.
 

@@ -1,7 +1,7 @@
 {
   "name": "Audio Spectrum Analyzer & Lossless Verifier",
   "short_name": "Audio Analyzer",
-  "description": "Inspect audio frequencies, verify true FLAC/WAV lossless fidelity vs transcoded MP3s with live FFT spectrograms in the browser.",
+  "description": "Inspect audio frequencies, verify true FLAC/WAV lossless fidelity vs transcoded MP3s with live FFT spectrograms.",
   "start_url": "/tools/audio/audio-spectrum-analyzer/",
   "scope": "/tools/audio/audio-spectrum-analyzer/",
   "id": "/tools/audio/audio-spectrum-analyzer/",

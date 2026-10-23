@@ -35,6 +35,10 @@
       {
         "source": "/gestational-age",
         "destination": "/tools/obstetrics/gestational-age-calculator.html"
+      },
+      {
+        "source": "/text-to-speech",
+        "destination": "/tools/audio/text-to-speech/index.html"
       }
     ]
   }

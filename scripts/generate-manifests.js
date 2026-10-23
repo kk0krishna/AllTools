@@ -250,6 +250,22 @@ const toolsData = [
     short_name: "MovieVerse",
     description: "Discover trending films, track ratings, watch trailers, and explore cinematic recommendations across all genres.",
     theme_color: "#E11D48"
+  },
+  {
+    slug: "text-to-speech",
+    category: "audio",
+    name: "Instant Text to Natural Voice & Audio Studio",
+    short_name: "Voice Studio",
+    description: "Transform written text into ultra-natural, lifelike human speech instantly with waveform tracking and downloadable audio files.",
+    theme_color: "#EC4899"
+  },
+  {
+    slug: "audio-spectrum-analyzer",
+    category: "audio",
+    name: "Audio Spectrum Analyzer & Lossless Verifier",
+    short_name: "Audio Analyzer",
+    description: "Inspect audio frequencies, verify true FLAC/WAV lossless fidelity vs transcoded MP3s with live FFT spectrograms.",
+    theme_color: "#8B5CF6"
   }
 ];
 

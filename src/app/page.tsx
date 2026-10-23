@@ -113,7 +113,7 @@ const CATEGORIES = [
     border: "border-pink-500/20",
     glow: "rgba(236, 72, 153, 0.15)",
     href: "/categories/audio",
-    examples: "Spectrum Analyzer, Lossless Spectrogram",
+    examples: "Natural Voice Studio, Spectrum Analyzer",
   },
   {
     name: "Neurology",
